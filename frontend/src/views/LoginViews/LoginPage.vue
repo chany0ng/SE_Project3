@@ -75,10 +75,8 @@ let setUserType = (type) => {
 // let id = this.$route.params.id;
 
 // 로그인 유무 받아오기
-onMounted(async function loginCheck() {
-  const { getData } = useGetAxios("/login");
-  const response = await getData();
-  console.log(`response: ${response.login}`);
+onMounted(function loginCheck() {
+  const response = useGetAxios("/login");
   if (response.login === true) {
     loginStatus.value = "yes";
   } else {
