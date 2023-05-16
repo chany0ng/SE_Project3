@@ -121,6 +121,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { usePostAxios } from "@/composable";
 
 // submit 후 홈으로 리다이렉트
 import { useRouter } from "vue-router";
@@ -137,12 +138,23 @@ const sameCheck = () => {
   else return true;
 };
 
+// 중복된 계정인지 post요청 후 응답
+async function duplicationCheck() {
+  const response = usePostAxios("/login/signup");
+  if (response.duplication === false) return true;
+  else return false;
+}
 // submit전에 해야하는 동작
 const submitHandler = () => {
-  if (sameCheck()) {
-    submitForm();
-  } else {
+  if (!sameCheck()) {
     alert("비밀번호 동일 여부를 확인해주세요!");
+  } else {
+    if (duplicationCheck()) {
+      alert("회원가입 완료!");
+      submitForm();
+    } else {
+      alert("이미 가입된 회원입니다!");
+    }
   }
 };
 </script>

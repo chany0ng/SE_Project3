@@ -1,11 +1,25 @@
 import axios from "axios";
 import { useRoute } from "vue-router";
-// 서버로 부터 데이터 받아오기
+
+// 서버에 get요청하기
 export function useGetAxios(url) {
   async function getData() {
     try {
       const response = await axios.get(url);
-      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return {
+    getData,
+  };
+}
+// 서버에 post요청하기
+export function usePostAxios(url, data = null) {
+  async function getData() {
+    try {
+      const response = await axios.post(url, data);
       return response.data;
     } catch (error) {
       console.error(error);
