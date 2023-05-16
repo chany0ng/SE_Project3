@@ -84,7 +84,6 @@ onMounted(async function loginCheck() {
   } else {
     loginStatus.value = "no";
   }
-  console.log(`loginStatus: ${loginStatus.value}`);
 });
 </script>
 

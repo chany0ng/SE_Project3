@@ -1,11 +1,7 @@
 <template>
   <div class="container input-bg col-md-4">
     <h1>회원가입</h1>
-    <form
-      action="/login/signup"
-      method="post"
-      @submit.prevent="[sameCheck, submitForm]"
-    >
+    <form action="/login/signup" method="post" @submit.prevent="submitHandler">
       <div class="form-group flex-box">
         <div class="flex-container">
           <label for="userName">이름</label>
@@ -127,19 +123,27 @@
 import { ref } from "vue";
 
 // submit 후 홈으로 리다이렉트
-const submitForm = () => {
-  this.$router.push({ path: "/login" });
-};
+import { useRouter } from "vue-router";
+const router = useRouter();
+function submitForm() {
+  router.push({ name: "Login" });
+}
 
 // 비밀번호 동일 여부 확인
 const password = ref("");
 const passwordCheck = ref("");
 const sameCheck = () => {
-  if (password.value !== passwordCheck.value) {
-    alert("비밀번호를 다시 확인해주세요!");
-    return false;
+  if (password.value !== passwordCheck.value) return false;
+  else return true;
+};
+
+// submit전에 해야하는 동작
+const submitHandler = () => {
+  if (sameCheck()) {
+    submitForm();
+  } else {
+    alert("비밀번호 동일 여부를 확인해주세요!");
   }
-  return true;
 };
 </script>
 
