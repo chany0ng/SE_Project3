@@ -4,7 +4,7 @@
     <div class="col-flex">
       <div id="title" class="font">학사관리 시스템</div>
       <div class="col-md-6">
-        <form action="/" method="post">
+        <form action="/api" method="post">
           <div class="form-group">
             <label for="userNumber"></label>
             <input
@@ -76,7 +76,7 @@ let setUserType = (type) => {
 
 // 로그인 유무 받아오기
 onMounted(function loginCheck() {
-  const response = useGetAxios("/login");
+  const response = useGetAxios("/api/login");
   if (response.login === true) {
     loginStatus.value = "yes";
   } else {

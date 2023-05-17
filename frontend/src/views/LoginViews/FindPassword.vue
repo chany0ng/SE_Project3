@@ -1,7 +1,7 @@
 <template>
   <div class="container input-bg col-md-4">
     <h1>비밀번호 찾기</h1>
-    <form action="/login/findpw" method="post" @submit.prevent="submitForm">
+    <form action="/api/login/findpw" method="post" @submit.prevent="submitForm">
       <div class="form-group flex-box">
         <div class="flex-container" v-show="showQuestion">
           <label for="userName">이름</label>
@@ -69,7 +69,7 @@ const userNumber = ref("");
 function submitForm() {
   // 이름,학번 제출
   if (!showQuestion.value) {
-    const response = usePostAxios("/login/findpw");
+    const response = usePostAxios("/api/login/findpw");
     if (response.exist === true) {
       if (response.question !== "middle") {
         showMiddle.value = !showMiddle.value;
@@ -79,7 +79,7 @@ function submitForm() {
   }
   // 비밀번호 찾기 답변 제출
   else {
-    const response = usePostAxios("/login/findpw", { id: userNumber });
+    const response = usePostAxios("/api/login/findpw", { id: userNumber });
     alert(`비밀번호는 ${response.number}입니다.`);
     router.push({ name: "Login" });
   }

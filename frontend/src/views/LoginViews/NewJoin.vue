@@ -1,7 +1,12 @@
 <template>
   <div class="container input-bg col-md-4">
     <h1>회원가입</h1>
-    <form action="/login/signup" method="post" @submit.prevent="submitHandler">
+    <form
+      action="/api/login/signup"
+      method="post"
+      ref="formRef"
+      @submit.prevent="submitHandler"
+    >
       <div class="form-group flex-box">
         <div class="flex-container">
           <label for="userName">이름</label>
@@ -123,10 +128,12 @@
 import { ref } from "vue";
 import { usePostAxios } from "@/composable";
 
+const formRef = ref(null);
 // submit 후 홈으로 리다이렉트
 import { useRouter } from "vue-router";
 const router = useRouter();
 function submitForm() {
+  formRef.value.reset();
   router.push({ name: "Login" });
 }
 
@@ -140,7 +147,7 @@ const sameCheck = () => {
 
 // 중복된 계정인지 post요청 후 응답
 async function duplicationCheck() {
-  const response = usePostAxios("/login/signup");
+  const response = usePostAxios("/api/login/signup");
   if (response.duplication === false) return true;
   else return false;
 }

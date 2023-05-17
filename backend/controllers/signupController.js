@@ -1,7 +1,6 @@
 const express = require('express');
 const model = require('../models');
 
-
 exports.getSignupPage = async(req, res, next) =>{
 
     if(req.session.student_id) {
