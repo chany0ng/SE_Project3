@@ -55,7 +55,6 @@
           >New to us? Join now!</router-link
         >
       </div>
-      <div>{{ loginStatus }}</div>
     </div>
   </div>
 </template>
@@ -63,11 +62,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useGetAxios } from "@/composable";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 let userNumber = ref("");
 let password = ref("");
 let userType = ref("");
-let loginStatus = ref([]);
 let setUserType = (type) => {
   userType.value = type;
 };
@@ -78,10 +77,11 @@ let setUserType = (type) => {
 onMounted(async function loginCheck() {
   const { getData } = useGetAxios("/api/login");
   const response = await getData();
-  if (response.login === true) {
-    loginStatus.value = "yes";
+  if (response.login === false) {
+    alert("로그인페이지로 이동합니다!");
+    router.push({ name: "Login" });
   } else {
-    loginStatus.value = "no";
+    // 로그인이 되어있으므로 메인페이지로 이동해야함.
   }
 });
 </script>

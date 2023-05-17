@@ -133,10 +133,20 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { usePostAxios } from "@/composable";
+import { ref, reactive, onMounted } from "vue";
+import { usePostAxios, useGetAxios } from "@/composable";
 import { useRouter } from "vue-router";
 
+onMounted(async function loginCheck() {
+  const { getData } = useGetAxios("/api/login");
+  const response = await getData();
+  if (response.login === false) {
+    alert("로그인페이지로 이동합니다!");
+    router.push({ name: "Login" });
+  } else {
+    //로그인이 되어있으므로, 메인페이지로 이동하게 해야 함.
+  }
+});
 const formRef = ref(null);
 const formData = reactive({
   userName: "",
@@ -179,7 +189,7 @@ async function duplicationCheck() {
   else return false;
 }
 // submit전에 해야하는 동작
-const submitHandler = () => {
+const submitHandler = async () => {
   const bothCheck =
     intCheck(formData.phoneNumber) && intCheck(formData.userNumber);
   if (!sameCheck()) {
@@ -187,7 +197,8 @@ const submitHandler = () => {
   } else if (!bothCheck) {
     alert("학번과 전화번호에는 숫자만 입력가능합니다!");
   } else {
-    if (duplicationCheck()) {
+    const response = await duplicationCheck();
+    if (response === true) {
       alert("회원가입 완료!");
       submitForm();
     } else {
