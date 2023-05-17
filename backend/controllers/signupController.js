@@ -1,6 +1,5 @@
 const express = require('express');
 const model = require('../models');
-const path = require('path');
 
 exports.getSignupPage = async(req, res, next) =>{
 
@@ -10,13 +9,13 @@ exports.getSignupPage = async(req, res, next) =>{
     else {
         res.send({login: false});
     }
-    //res.sendFile(path.join(__dirname, '../public/index.html'));
 };
 
 exports.Signup = async(req, res, next) => {
     let id = req.body.userNumber;
-    let check = await model.student.findAll({where: {student_id: id}}).catch((err) => console.log(err)); //학번 중복 체크
-    if(check.length !== 0) {
+    let check = await model.students.findAll({where: {student_id: id}}).catch((err) => console.log(err)); //학번 중복 체크
+    
+    if(check.length === 0) {                    //회원가입 성공
         let datas = {
             student_id: req.body.userNumber,
             pw: req.body.password,
@@ -29,10 +28,10 @@ exports.Signup = async(req, res, next) => {
             phone_number: req.body.phoneNumber
         }
 
-        let result = await model.student.create(datas).catch((err) => console.log(err));
-        res.json({duplication: false});
+        let result = await model.students.create(datas).catch((err) => console.log(err));
+        res.send({duplication: false});
     }
-    else {
-        res.json({duplication: true});
+    else {                                      //중복된 학번 -> 회원가입 실패
+        res.send({duplication: true});
     }
 };
