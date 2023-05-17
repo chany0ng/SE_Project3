@@ -1,15 +1,10 @@
 <template>
   <div class="container input-bg col-md-4">
     <h1>회원가입</h1>
-    <form
-      action="/api/login/signup"
-      method="post"
-      ref="formRef"
-      @submit.prevent="submitHandler"
-    >
+    <form ref="formRef" @submit.prevent="submitHandler">
       <div class="form-group flex-box">
         <div class="flex-container">
-          <label for="userName">이름</label>
+          <label for="userNumber">이름</label>
           <input
             type="text"
             class="form-control"
@@ -17,6 +12,7 @@
             name="userName"
             placeholder="이름을 입력하세요"
             required
+            v-model="formData.userName"
           />
         </div>
         <div class="flex-container">
@@ -28,6 +24,7 @@
             name="userNumber"
             placeholder="학번을 입력하세요"
             required
+            v-model="formData.userNumber"
           />
         </div>
         <div class="flex-container">
@@ -39,7 +36,7 @@
             name="password"
             placeholder="비밀번호를 입력하세요"
             required
-            v-model="password"
+            v-model="formData.password"
           />
         </div>
         <div class="flex-container">
@@ -51,12 +48,18 @@
             name="passwordCheck"
             placeholder="비밀번호 확인"
             required
-            v-model="passwordCheck"
+            v-model="formData.passwordCheck"
           />
         </div>
         <div class="flex-container">
           <label for="userPwQ">비밀번호 찾기 질문</label>
-          <select class="form-select" required name="question" id="userPwQ">
+          <select
+            class="form-select"
+            required
+            name="question"
+            id="userPwQ"
+            v-model="formData.question"
+          >
             <option value="">선택해주세요</option>
             <option value="elementary">졸업한 초등학교 이름</option>
             <option value="middle">졸업한 중학교 이름</option>
@@ -71,6 +74,7 @@
             name="answer"
             placeholder="비밀번호 찾기 질문 답변"
             required
+            v-model="formData.answer"
           />
         </div>
         <div class="flex-container">
@@ -82,6 +86,7 @@
             name="birth"
             placeholder="이름을 입력하세요"
             required
+            v-model="formData.birth"
           />
         </div>
         <div class="flex-container">
@@ -93,6 +98,7 @@
             name="phoneNumber"
             placeholder="숫자로만 입력해주세요"
             required
+            v-model="formData.phoneNumber"
           />
         </div>
         <div class="flex-container">
@@ -104,6 +110,7 @@
             name="major"
             placeholder="학과(학부)를 입력하세요"
             required
+            v-model="formData.major"
           />
         </div>
         <div class="flex-container">
@@ -115,6 +122,7 @@
             name="email"
             placeholder="Email을 입력하세요"
             required
+            v-model="formData.email"
           />
         </div>
         <button type="submit" class="btn">Submit</button>
@@ -125,12 +133,24 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { usePostAxios } from "@/composable";
+import { useRouter } from "vue-router";
 
 const formRef = ref(null);
+const formData = reactive({
+  userName: "",
+  userNumber: "",
+  password: "",
+  passwordCheck: "",
+  question: "",
+  answer: "",
+  birth: "",
+  phoneNumber: "",
+  major: "",
+  email: "",
+});
 // submit 후 홈으로 리다이렉트
-import { useRouter } from "vue-router";
 const router = useRouter();
 function submitForm() {
   formRef.value.reset();
@@ -145,16 +165,27 @@ const sameCheck = () => {
   else return true;
 };
 
+// 학번, 핸드폰 번호 숫자 입력인지 확인
+function intCheck(num) {
+  if (!isNaN(num)) return true;
+  else return false;
+}
+
 // 중복된 계정인지 post요청 후 응답
-async function duplicationCheck() {
-  const response = usePostAxios("/api/login/signup");
+function duplicationCheck() {
+  const { getData } = usePostAxios("/api/login/signup", formData);
+  const response = getData();
   if (response.duplication === false) return true;
   else return false;
 }
 // submit전에 해야하는 동작
 const submitHandler = () => {
+  const bothCheck =
+    intCheck(formData.phoneNumber) && intCheck(formData.userNumber);
   if (!sameCheck()) {
     alert("비밀번호 동일 여부를 확인해주세요!");
+  } else if (!bothCheck) {
+    alert("학번과 전화번호에는 숫자만 입력가능합니다!");
   } else {
     if (duplicationCheck()) {
       alert("회원가입 완료!");
