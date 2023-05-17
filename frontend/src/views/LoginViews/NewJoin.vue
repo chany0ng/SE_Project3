@@ -172,14 +172,14 @@ function intCheck(num) {
 }
 
 // 중복된 계정인지 post요청 후 응답
-function duplicationCheck() {
+async function duplicationCheck() {
   const { getData } = usePostAxios("/api/login/signup", formData);
-  const response = getData();
+  const response = await getData();
   if (response.duplication === false) return true;
   else return false;
 }
 // submit전에 해야하는 동작
-const submitHandler = () => {
+const submitHandler = async () => {
   const bothCheck =
     intCheck(formData.phoneNumber) && intCheck(formData.userNumber);
   if (!sameCheck()) {
@@ -187,7 +187,8 @@ const submitHandler = () => {
   } else if (!bothCheck) {
     alert("학번과 전화번호에는 숫자만 입력가능합니다!");
   } else {
-    if (duplicationCheck()) {
+    const response = await duplicationCheck();
+    if (response === true) {
       alert("회원가입 완료!");
       submitForm();
     } else {

@@ -2,7 +2,7 @@ const express = require('express');
 const model = require('../models');
 
 
-exports.getLoginPage = async(req, res, next) => {
+exports.CheckLogin = async(req, res, next) => {
     
     if(req.session.student_id) {        //로그인 상태
         res.send({login: true});

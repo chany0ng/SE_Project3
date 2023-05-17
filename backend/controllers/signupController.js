@@ -1,20 +1,11 @@
 const express = require('express');
 const model = require('../models');
 
-exports.getSignupPage = async(req, res, next) =>{
-
-    if(req.session.student_id) {
-        res.send({login: true});
-    }
-    else {
-        res.send({login: false});
-    }
-};
 
 exports.Signup = async(req, res, next) => {
     let id = req.body.userNumber;
     let check = await model.students.findAll({where: {student_id: id}}).catch((err) => console.log(err)); //학번 중복 체크
-    
+
     if(check.length === 0) {                    //회원가입 성공
         let datas = {
             student_id: req.body.userNumber,
