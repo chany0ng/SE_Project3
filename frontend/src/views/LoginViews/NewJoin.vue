@@ -61,8 +61,8 @@
             v-model="formData.question"
           >
             <option value="">선택해주세요</option>
-            <option value="elementary">졸업한 초등학교 이름</option>
-            <option value="middle">졸업한 중학교 이름</option>
+            <option value="졸업한 초등학교 이름">졸업한 초등학교 이름</option>
+            <option value="졸업한 중학교 이름">졸업한 중학교 이름</option>
           </select>
         </div>
         <div class="flex-container">
@@ -133,20 +133,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { usePostAxios, useGetAxios } from "@/composable";
+import { ref, reactive } from "vue";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 
-onMounted(async function loginCheck() {
-  const { getData } = useGetAxios("/api/login");
-  const response = await getData();
-  if (response.login === false) {
-    alert("로그인페이지로 이동합니다!");
-    router.push({ name: "Login" });
-  } else {
-    //로그인이 되어있으므로, 메인페이지로 이동하게 해야 함.
-  }
-});
 const formRef = ref(null);
 const formData = reactive({
   userName: "",
@@ -162,7 +152,7 @@ const formData = reactive({
 });
 // submit 후 홈으로 리다이렉트
 const router = useRouter();
-function submitForm() {
+function redirection() {
   formRef.value.reset();
   router.push({ name: "Login" });
 }
@@ -200,7 +190,7 @@ const submitHandler = async () => {
     const response = await duplicationCheck();
     if (response === true) {
       alert("회원가입 완료!");
-      submitForm();
+      redirection();
     } else {
       alert("이미 가입된 회원입니다!");
     }
