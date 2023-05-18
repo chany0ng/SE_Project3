@@ -1,7 +1,7 @@
 const express = require('express');
 const model = require('../models');
 
-
+//회원가입 함수
 exports.Signup = async(req, res, next) => {
     let id = req.body.userNumber;
     let check = await model.students.findAll({where: {student_id: id}}).catch((err) => console.log(err)); //학번 중복 체크

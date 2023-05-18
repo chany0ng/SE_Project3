@@ -1,7 +1,7 @@
 const express = require('express');
 const model = require('../models');
 
-
+//로그인 체크 함수
 exports.CheckLogin = async(req, res, next) => {
     
     if(req.session.student_id) {        //로그인 상태
@@ -11,7 +11,7 @@ exports.CheckLogin = async(req, res, next) => {
         res.send({login: false});       //로그아웃 상태
     }
 };
-
+//로그인 함수
 exports.Login = async(req, res, next) => {
     let id = req.body.userNumber;
     let pw = req.body.password;

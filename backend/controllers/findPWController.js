@@ -1,15 +1,7 @@
 const express = require('express');
 const model = require('../models');
 
-exports.getFindPWPage = async(req, res, next) => {
-    if(req.session.student_id) {        //로그인 상태
-        res.send({login: true});
-    }
-    else {
-        res.send({login: false});       //로그아웃 상태
-    }
-};
-
+//학번 체크 함수
 exports.CheckId = async(req, res, next) => {
     let name = req.body.name;
     let id = req.body.userNumber;
@@ -24,7 +16,7 @@ exports.CheckId = async(req, res, next) => {
     }
 
 };
-
+//비밀번호 찾기 함수
 exports.findPW = async(req, res, next) => {
     let id = req.body.userNumber;
     let answer = req.body.userPwA;
