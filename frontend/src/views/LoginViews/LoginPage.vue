@@ -4,7 +4,7 @@
     <div class="col-flex">
       <div id="title" class="font">학사관리 시스템</div>
       <div class="col-md-6">
-        <form action="/api" method="post">
+        <form action="/api/login" method="post">
           <div class="form-group">
             <label for="userNumber"></label>
             <input
@@ -55,7 +55,6 @@
           >New to us? Join now!</router-link
         >
       </div>
-      <div>{{ loginStatus }}</div>
     </div>
   </div>
 </template>
@@ -63,11 +62,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useGetAxios } from "@/composable";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 let userNumber = ref("");
 let password = ref("");
 let userType = ref("");
-let loginStatus = ref([]);
 let setUserType = (type) => {
   userType.value = type;
 };
@@ -75,12 +74,14 @@ let setUserType = (type) => {
 // let id = this.$route.params.id;
 
 // 로그인 유무 받아오기
-onMounted(function loginCheck() {
-  const response = useGetAxios("/api/login");
-  if (response.login === true) {
-    loginStatus.value = "yes";
+onMounted(async function loginCheck() {
+  const { getData } = useGetAxios("/api/login");
+  const response = await getData();
+  if (response.login === false) {
+    alert("로그인페이지로 이동합니다!");
+    router.push({ name: "Login" });
   } else {
-    loginStatus.value = "no";
+    // 로그인이 되어있으므로 메인페이지로 이동해야함.
   }
 });
 </script>
