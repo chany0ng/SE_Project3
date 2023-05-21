@@ -1,7 +1,7 @@
 <template>
   <div class="container input-bg col-md-4">
     <h1>비밀번호 찾기</h1>
-    <form action="/api/login/findpw" method="post" @submit.prevent="submitForm">
+    <form ref="formRef" @submit.prevent="submitForm">
       <div class="form-group flex-box">
         <div class="flex-container" v-show="showQuestion">
           <label for="userName">이름</label>
@@ -12,6 +12,7 @@
             name="userName"
             placeholder="이름을 입력하세요"
             :required="showQuestion"
+            v-model="formData.name"
           />
         </div>
         <div class="flex-container" v-show="showQuestion">
@@ -23,17 +24,14 @@
             name="userNumber"
             placeholder="학번을 입력하세요"
             :required="showQuestion"
-            v-model="userNumber"
+            v-model="formData.userNumber"
           />
         </div>
         <div class="flex-container" v-show="!showQuestion">
           <label for="userPwQ">비밀번호 찾기 질문</label>
           <select class="form-select" name="question" id="userPwQ">
-            <option value="elementary" v-show="!showMiddle">
-              졸업한 초등학교 이름
-            </option>
-            <option value="middle" v-show="showMiddle">
-              졸업한 중학교 이름
+            <option value="school">
+              {{ pw_question }}
             </option>
           </select>
         </div>
@@ -46,42 +44,61 @@
             name="answer"
             placeholder="비밀번호 찾기 질문 답변"
             :required="!showQuestion"
+            v-model="answer"
           />
         </div>
         <button type="submit" class="btn">Submit</button>
       </div>
     </form>
-    {{ userNumber }}
   </div>
   <router-view></router-view>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const showQuestion = ref(true);
-const showMiddle = ref(true);
-const userNumber = ref("");
+const formRef = ref(null);
+const pw_question = ref("");
+const answer = ref("");
+const formData = reactive({
+  name: "",
+  userNumber: "",
+});
+
+// submit 후 로그인화면으로 redirection
+function redirection() {
+  formRef.value.reset();
+  router.push({ name: "Login" });
+}
 
 // submit 제출
-function submitForm() {
+async function submitForm() {
   // 이름,학번 제출
-  if (!showQuestion.value) {
-    const response = usePostAxios("/api/login/findpw");
-    if (response.exist === true) {
-      if (response.question !== "middle") {
-        showMiddle.value = !showMiddle.value;
-      }
+  if (showQuestion.value) {
+    const { getData } = usePostAxios("/api/login/findpw", formData);
+    const response = await getData();
+    if (response.signup === true) {
+      pw_question.value = response.pw_question;
       showQuestion.value = !showQuestion.value;
-    } else alert("존재하지 않는 계정입니다!");
+    } else alert("이름 혹은 학번이 일치하지 않습니다!");
   }
   // 비밀번호 찾기 답변 제출
   else {
-    const response = usePostAxios("/api/login/findpw", { id: userNumber });
-    alert(`비밀번호는 ${response.number}입니다.`);
-    router.push({ name: "Login" });
+    const { getData } = usePostAxios("/api/login/findpw_process", {
+      userPwA: answer.value,
+      userNumber: formData.userNumber,
+    });
+    const response = await getData();
+    if (response.find === true) {
+      alert(`비밀번호는 ${response.pw}입니다.`);
+      showQuestion.value = !showQuestion.value;
+      redirection();
+    } else {
+      alert(`답변이 일치하지 않습니다!`);
+    }
   }
 }
 </script>
