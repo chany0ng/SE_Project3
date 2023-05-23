@@ -44,7 +44,7 @@ app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/student', studentRouter);
 
-//모든 get 요청은 vue 파일 로드
+//라우팅 경로 외 모든 get 요청은 vue 파일 로드
 app.get('*', (req, res, next) => {
   res.sendfile(path.join(__dirname, './public', 'index.html'));
 });

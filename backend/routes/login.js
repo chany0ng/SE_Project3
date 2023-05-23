@@ -15,4 +15,6 @@ router.get('/findpw', loginController.CheckLogin);
 router.post('/findpw', findPWController.CheckId);
 router.post('/findpw_process', findPWController.findPW);
 
+router.post('/logout', loginController.Logout);
+
 module.exports = router;
