@@ -12,4 +12,6 @@ router.get('/subject/qna', loginController.CheckLogin);
 
 router.get('/subject/syllabus', loginController.CheckLogin);
 
+module.exports = router;
+
 

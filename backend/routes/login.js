@@ -3,7 +3,7 @@ const router = express.Router();
 const loginController = require('../controllers/loginController');
 const signupController = require('../controllers/signupController');
 const findPWController = require('../controllers/findPWController');
-/* GET home page. */
+
 
 router.get('/', loginController.CheckLogin);
 router.post('/', loginController.Login);

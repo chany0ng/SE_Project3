@@ -17,6 +17,7 @@ const option = {
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
+const studentRouter = require('./routes/student');
 
 const app = express();
 db.sequelize.sync();
@@ -41,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/student', studentRouter);
 
 //모든 get 요청은 vue 파일 로드
 app.get('*', (req, res, next) => {

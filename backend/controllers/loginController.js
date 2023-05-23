@@ -19,9 +19,24 @@ exports.Login = async(req, res, next) => {
 
   if (user.length !== 0) {        //로그인 성공
     req.session.student_id = id;
-    console.log(req.session);
     res.send({ user: user, result: true });
   } else {                        //로그인 실패
     res.send({ result: false });
   }
 };
+//로그아웃 함수
+exports.Logout = async(req, res, next) => {
+  let id = req.session.student_id;
+  req.session.destroy((err) => {
+    if (err) {
+      // 로그아웃 실패
+      res.sendStatus(500);
+    } else {
+      // 로그아웃 성공
+      req.session = null;
+      req.session.regenerate(() => {
+        res.sendStatus(200);
+      });
+    }
+  });
+}
