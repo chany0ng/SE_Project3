@@ -7,10 +7,4 @@ router.get('/', function(req, res, next) {
   res.sendfile(path.join(__dirname, '../public', 'index.html'))
 });
 
-// router.post('/', function(req, res, next) {
-//   console.log(req.body.userType);
-//   res.send('success');
-// })
-
-
 module.exports = router;
