@@ -12,7 +12,8 @@ const option = {
   host: config.host,
   user: config.username,
   password: config.password,
-  database: config.database
+  database: config.database,
+  expiration: 1000 * 60 * 60, // 1 hour
 }
 
 const indexRouter = require('./routes/index');
@@ -31,7 +32,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: new MySQLStore(option),
-  expires: 1000 * 60 * 60,  //1hour
 }));
 
 app.use(logger('dev'));
