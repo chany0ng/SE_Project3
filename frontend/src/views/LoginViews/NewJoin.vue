@@ -173,9 +173,9 @@ function intCheck(num) {
 
 // 중복된 계정인지 post요청 후 응답
 async function duplicationCheck() {
-  const { getData } = usePostAxios("/api/login/signup", formData);
-  const response = await getData();
-  if (response.duplication === false) return true;
+  const { postData } = usePostAxios("/api/login/signup", formData);
+  const response = await postData();
+  if (response.status == 200) return true;
   else return false;
 }
 // submit전에 해야하는 동작

@@ -50,12 +50,20 @@
 
 <script setup>
 import { defineExpose } from "vue";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-function confirmLogout() {
+// 로그아웃 버튼 클릭 시 실행 함수
+async function confirmLogout() {
   if (confirm("Are you sure you want to log out?")) {
-    router.push("/login");
+    const { getData } = usePostAxios("/api/login/logout");
+    const response = await getData();
+    if (response.status == 200) {
+      router.push("/login");
+    } else {
+      alert("로그아웃 에러!!");
+    }
   }
 }
 defineExpose({ router });
