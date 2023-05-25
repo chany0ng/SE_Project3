@@ -18,7 +18,7 @@ export function useGetAxios(url) {
 }
 // 서버에 post요청하기
 export function usePostAxios(url, data = null) {
-  async function getData() {
+  async function postData() {
     try {
       const response = await axios.post(url, data);
       return { data: response.data, status: response.status };
@@ -33,7 +33,7 @@ export function usePostAxios(url, data = null) {
     }
   }
   return {
-    getData,
+    postData,
   };
 }
 // 로그인 유무 받아오기

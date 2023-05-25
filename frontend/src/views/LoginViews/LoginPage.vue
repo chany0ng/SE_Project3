@@ -95,8 +95,8 @@ async function loginSubmit() {
     alert("로그인 유형을 선택하세요!!");
     return false;
   }
-  const { getData } = usePostAxios("/api/login/", loginData);
-  const response = await getData();
+  const { postData } = usePostAxios("/api/login/", loginData);
+  const response = await postData();
   if (response.status == 200) {
     // 로그인 성공 시
     redirection();
