@@ -23,6 +23,6 @@ exports.Signup = async(req, res, next) => {
         res.sendStatus(200);
     }
     else {                      //중복된 학번 -> 회원가입 실패
-        res.send(400);          //Bad request
+        res.send(304);          //Bad request
     }
 };

@@ -14,7 +14,7 @@ exports.CheckId = async (req, res, next) => {
         let pw_question = result[0].pw_question;
         res.status(200).send(pw_question);  //비밀번호 찾기 질문
     } else {
-        res.sendStatus(400);                //일치하는 학번이 없음 (비회원) Bad Request
+        res.sendStatus(304);                //일치하는 학번이 없음 (비회원) 
     }
 
 };
@@ -29,6 +29,7 @@ exports.findPW = async (req, res, next) => {
         let pw = result[0].pw;
         res.status(200).send(pw);
     } else {
-        res.sendStatus(400);    //비밀번호 찾기 답변 불일치
+        //비밀번호 찾기 답변 불일치
+        res.sendStatus(304);    
     }
 }
