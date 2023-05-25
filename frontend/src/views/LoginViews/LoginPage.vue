@@ -4,7 +4,7 @@
     <div class="col-flex">
       <div id="title" class="font">학사관리 시스템</div>
       <div class="col-md-6">
-        <form action="/api/login" method="post">
+        <form action="/api/login" method="post" ref="formRef">
           <div class="form-group">
             <label for="userNumber"></label>
             <input
@@ -49,7 +49,9 @@
             </button>
             <input type="hidden" name="userType" :value="userType" />
           </div>
-          <button type="submit" class="btn lgn-btn font">Login</button>
+          <button type="submit" class="btn lgn-btn font" @click="loginSubmit">
+            Login
+          </button>
         </form>
         <router-link to="/login/signup" style="color: var(--brown1)"
           >New to us? Join now!</router-link
@@ -60,20 +62,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { loginCheck } from "@/composable";
+import { onMounted, reactive, ref } from "vue";
+import { loginCheck, usePostAxios } from "@/composable";
+import { useRouter } from "vue-router";
 
-let userNumber = ref("");
-let password = ref("");
-let userType = ref("");
+// 로그인 시 필요한 입력 값
+const loginData = reactive({
+  userNumber: "",
+  password: "",
+  userType: "",
+});
+const formRef = ref(null);
+// 유저 타입 Setter
 let setUserType = (type) => {
-  userType.value = type;
+  loginData.userType = type;
 };
 
+// 입력 값 초기화 후 메인페이지 이동
+const router = useRouter();
+function redirection() {
+  formRef.value.reset();
+  router.push("/student");
+}
 // let id = this.$route.params.id;
 
 // 로그인 유무 받아오기
-onMounted(loginCheck());
+// onMounted(loginCheck());
+
+// 로그인 양식 제출
+async function loginSubmit() {
+  if (loginData.userType == "") {
+    alert("로그인 유형을 선택하세요!!");
+    return false;
+  }
+  const { getData } = usePostAxios("/api/login/", loginData);
+  const response = await getData();
+  if (response.status == 200) {
+    // 로그인 성공 시
+    redirection();
+  } else {
+    alert("존재하지 않는 계정입니다!");
+  }
+}
 </script>
 
 <style scoped>

@@ -175,7 +175,7 @@ function intCheck(num) {
 async function duplicationCheck() {
   const { getData } = usePostAxios("/api/login/signup", formData);
   const response = await getData();
-  if (response.duplication === false) return true;
+  if (response.status == 200) return true;
   else return false;
 }
 // submit전에 해야하는 동작

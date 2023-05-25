@@ -7,7 +7,7 @@ export function useGetAxios(url) {
   async function getData() {
     try {
       const response = await axios.get(url);
-      return response.data;
+      return { data: response.data, status: response.status };
     } catch (error) {
       console.error(error);
     }
@@ -21,9 +21,15 @@ export function usePostAxios(url, data = null) {
   async function getData() {
     try {
       const response = await axios.post(url, data);
-      return response.data;
+      return { data: response.data, status: response.status };
     } catch (error) {
-      console.error(error);
+      if (error.response) {
+        // The error was a response from the server
+        return { data: null, status: error.response.status };
+      } else {
+        // Other types of errors
+        console.error(error);
+      }
     }
   }
   return {
@@ -34,10 +40,11 @@ export function usePostAxios(url, data = null) {
 export async function loginCheck() {
   const { getData } = useGetAxios("/api/login");
   const response = await getData();
-  if (response.login === false) {
-    router.push({ name: "Login" });
+  if (response.status == 200) {
+    router.push({ name: "학생 메인화면" });
   } else {
     // 로그인이 되어있으므로 메인페이지로 이동해야함.
+    router.push({ name: "Login" });
   }
 }
 
