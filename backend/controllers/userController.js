@@ -12,7 +12,7 @@ exports.CheckPW = async(req, res, next) => {
         res.sendStatus(200);
     } else {
         //비밀번호 불일치
-        res.sendStatus(304);           
+        res.sendStatus(401);       //Unauthorized     
     }
 };
 //내 정보 수정 함수
@@ -36,6 +36,6 @@ exports.updateUser = async(req, res, next) => {
         res.sendStatus(200);
     } else {
         //수정 실패
-        res.sendStatus(304);   
+        res.sendStatus(400);        //Bad request
     }
 };

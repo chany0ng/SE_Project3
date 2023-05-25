@@ -8,7 +8,7 @@ exports.CheckLogin = async(req, res, next) => {
         res.sendStatus(200);
     }
     else {
-        res.sendStatus(304);            //로그아웃 상태
+        res.sendStatus(401);            //로그아웃 상태
     }
 };
 //로그인 함수
@@ -21,7 +21,7 @@ exports.Login = async(req, res, next) => {
     req.session.student_id = id;
     res.status(200).send(user);
   } else {                        //로그인 실패
-    res.sendStatus(304);          
+    res.sendStatus(401);          //Unauthorized
   }
 };
 //로그아웃 함수
@@ -29,7 +29,7 @@ exports.Logout = async(req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
       // 로그아웃 실패
-      res.sendStatus(304);        
+      res.sendStatus(401);         //Unauthorized
     } else {
       // 로그아웃 성공
       req.session = null;
