@@ -65,6 +65,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { loginCheck, usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
+import store from "@/store";
 
 // 로그인 시 필요한 입력 값
 const loginData = reactive({
@@ -86,8 +87,8 @@ function redirection() {
 }
 // let id = this.$route.params.id;
 
-// 로그인 유무 받아오기
-// onMounted(loginCheck());
+//로그인 유무 받아오기
+onMounted(loginCheck());
 
 // 로그인 양식 제출
 async function loginSubmit() {
@@ -99,6 +100,8 @@ async function loginSubmit() {
   const response = await postData();
   if (response.status == 200) {
     // 로그인 성공 시
+    const userData = response.data;
+    console.log(userData);
     redirection();
   } else {
     alert("존재하지 않는 계정입니다!");
