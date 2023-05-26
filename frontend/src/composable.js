@@ -49,7 +49,7 @@ export async function loginCheck() {
   if (response.status == 200) {
     router.push({ name: "학생 메인화면" });
   } else {
-    // 로그인이 되어있으므로 메인페이지로 이동해야함.
+    // 로그인이 안되어 있으므로 메인페이지로 이동해야함.
     alert("로그인이 필요합니다!");
     router.push({ name: "Login" });
   }

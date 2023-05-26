@@ -57,8 +57,8 @@ const router = useRouter();
 // 로그아웃 버튼 클릭 시 실행 함수
 async function confirmLogout() {
   if (confirm("Are you sure you want to log out?")) {
-    const { getData } = usePostAxios("/api/login/logout");
-    const response = await getData();
+    const { postData } = usePostAxios("/api/login/logout");
+    const response = await postData();
     if (response.status == 200) {
       router.push("/login");
     } else {

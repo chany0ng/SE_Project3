@@ -65,7 +65,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { loginCheck, usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
-import store from "@/store";
+// import store from "@/store";
 
 // 로그인 시 필요한 입력 값
 const loginData = reactive({
@@ -96,7 +96,7 @@ async function loginSubmit() {
     alert("로그인 유형을 선택하세요!!");
     return false;
   }
-  const { postData } = usePostAxios("/api/login/", loginData);
+  const { postData } = usePostAxios("/api/login", loginData);
   const response = await postData();
   if (response.status == 200) {
     // 로그인 성공 시

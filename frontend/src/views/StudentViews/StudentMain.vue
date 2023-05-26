@@ -2,7 +2,7 @@
   <router-view></router-view>
   <main>
     <StudentHeader />
-    <Asidebar />
+    <!-- <Asidebar /> -->
     <div id="time-table">
       <table class="table table-sm table-hover">
         <thead>
@@ -43,7 +43,7 @@
 <script setup>
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
-import Asidebar from "../../layouts/AsideBar.vue";
+// import Asidebar from "../../layouts/AsideBar.vue";
 
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";
