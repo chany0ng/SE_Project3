@@ -3,7 +3,7 @@ const router = express.Router();
 const loginController = require('../controllers/loginController');
 const userController = require('../controllers/userController');
 
-//router.get('/', loginController.CheckLogin);
+router.get('/', loginController.CheckLogin);
 
 router.get('/application', loginController.CheckLogin);
 
