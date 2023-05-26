@@ -13,7 +13,9 @@ const option = {
   user: config.username,
   password: config.password,
   database: config.database,
-  expiration: 1000 * 60 * 60, // 1 hour
+  expirationMS: 1000 * 60 * 60,               //1hour
+  clearExpired: true,
+  checkExpirationInterval: 1000 * 60 * 60
 }
 
 const indexRouter = require('./routes/index');
