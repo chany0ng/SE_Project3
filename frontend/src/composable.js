@@ -45,7 +45,6 @@ export function usePostAxios(url, data = null) {
 export async function loginCheck(url) {
   const { getData } = useGetAxios(url);
   const response = await getData();
-  console.log(`axios 로그인 유무: ${response.status}`);
   if (response.status === 200) {
     return true;
   } else {

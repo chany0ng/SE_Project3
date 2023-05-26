@@ -51,11 +51,8 @@ import router from "@/router";
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("api/student");
-  console.log(`학생메인화면 로그인여부: ${loggedIn}`);
-
-  if (loggedIn === true) {
-    router.push("/student");
-  } else {
+  if (loggedIn === false) {
+    alert("로그인 해야합니다!");
     router.push("/login");
   }
 });

@@ -107,14 +107,9 @@ async function loginSubmit() {
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("api/login");
-  console.log(`로그인화면 로그인여부: ${loggedIn}`);
-
   if (loggedIn === true) {
     alert("로그인 되어있습니다!");
     router.push("/student");
-  } else {
-    alert("로그인이 필요합니다!");
-    router.push("/login");
   }
 });
 </script>
