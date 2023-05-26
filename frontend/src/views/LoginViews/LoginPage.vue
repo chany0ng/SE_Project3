@@ -14,7 +14,7 @@
               name="userNumber"
               placeholder="학번을 입력하세요"
               required
-              v-model="userNumber"
+              v-model="loginData.userNumber"
             />
           </div>
           <div class="form-group">
@@ -26,7 +26,7 @@
               name="password"
               placeholder="비밀번호를 입력하세요"
               required
-              v-model="password"
+              v-model="loginData.password"
             />
           </div>
           <router-link to="/login/findpw" id="forgot"
@@ -47,7 +47,7 @@
             >
               For professor
             </button>
-            <input type="hidden" name="userType" :value="userType" />
+            <input type="hidden" name="userType" :value="loginData.userType" />
           </div>
           <button type="submit" class="btn lgn-btn font" @click="loginSubmit">
             Login
@@ -62,10 +62,10 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
-import { loginCheck, usePostAxios } from "@/composable";
+import { reactive, ref } from "vue";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
-import store from "@/store";
+// import store from "@/store";
 
 // 로그인 시 필요한 입력 값
 const loginData = reactive({
@@ -87,16 +87,13 @@ function redirection() {
 }
 // let id = this.$route.params.id;
 
-//로그인 유무 받아오기
-onMounted(loginCheck());
-
 // 로그인 양식 제출
 async function loginSubmit() {
   if (loginData.userType == "") {
     alert("로그인 유형을 선택하세요!!");
     return false;
   }
-  const { postData } = usePostAxios("/api/login/", loginData);
+  const { postData } = usePostAxios("/api/login", loginData);
   const response = await postData();
   if (response.status == 200) {
     // 로그인 성공 시

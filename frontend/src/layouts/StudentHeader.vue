@@ -34,6 +34,7 @@
       <button
         type="button"
         @click="confirmLogout"
+        id="logout"
         style="
           color: white;
           font-size: small;
@@ -42,7 +43,7 @@
           margin-bottom: 20px;
         "
       >
-        <router-link to="/login" id="logout">Logout -></router-link>
+        Logout ->
       </button>
     </div>
   </nav>
@@ -57,13 +58,15 @@ const router = useRouter();
 // 로그아웃 버튼 클릭 시 실행 함수
 async function confirmLogout() {
   if (confirm("Are you sure you want to log out?")) {
-    const { getData } = usePostAxios("/api/login/logout");
-    const response = await getData();
-    if (response.status == 200) {
+    const { postData } = usePostAxios("/api/login/logout");
+    const response = await postData();
+    if (response.status === 200) {
       router.push("/login");
     } else {
       alert("로그아웃 에러!!");
     }
+  } else {
+    alert("로그아웃 취소");
   }
 }
 defineExpose({ router });
@@ -134,6 +137,8 @@ nav ul ul li a:hover {
 }
 #logout {
   padding: 1px;
+  width: 80px;
+  height: 30px;
   color: yello;
   font-weight: bold;
 }
