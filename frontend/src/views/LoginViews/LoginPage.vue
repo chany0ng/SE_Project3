@@ -14,7 +14,7 @@
               name="userNumber"
               placeholder="학번을 입력하세요"
               required
-              v-model="userNumber"
+              v-model="loginData.userNumber"
             />
           </div>
           <div class="form-group">
@@ -26,7 +26,7 @@
               name="password"
               placeholder="비밀번호를 입력하세요"
               required
-              v-model="password"
+              v-model="loginData.password"
             />
           </div>
           <router-link to="/login/findpw" id="forgot"
@@ -47,7 +47,7 @@
             >
               For professor
             </button>
-            <input type="hidden" name="userType" :value="userType" />
+            <input type="hidden" name="userType" :value="loginData.userType" />
           </div>
           <button type="submit" class="btn lgn-btn font" @click="loginSubmit">
             Login
