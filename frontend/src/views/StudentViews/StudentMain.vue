@@ -49,12 +49,13 @@ import router from "@/router";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기
-onMounted(() => {
-  if (loginCheck()) {
-    alert("로그인 되어있습니다!");
+onMounted(async () => {
+  const loggedIn = await loginCheck("api/student");
+  console.log(`학생메인화면 로그인여부: ${loggedIn}`);
+
+  if (loggedIn === true) {
     router.push("/student");
   } else {
-    alert("로그인이 필요합니다!");
     router.push("/login");
   }
 });

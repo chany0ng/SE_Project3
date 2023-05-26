@@ -42,9 +42,10 @@ export function usePostAxios(url, data = null) {
   };
 }
 // 로그인 유무 받아오기
-export async function loginCheck() {
-  const { getData } = useGetAxios("/api/login");
+export async function loginCheck(url) {
+  const { getData } = useGetAxios(url);
   const response = await getData();
+  console.log(`axios 로그인 유무: ${response.status}`);
   if (response.status === 200) {
     return true;
   } else {

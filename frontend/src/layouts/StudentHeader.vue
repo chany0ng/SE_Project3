@@ -61,6 +61,7 @@ async function confirmLogout() {
     const { postData } = usePostAxios("/api/login/logout");
     const response = await postData();
     if (response.status === 200) {
+      alert("로그아웃 성공!!");
       router.push("/login");
     } else {
       alert("로그아웃 에러!!");
