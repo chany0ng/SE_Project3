@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
-const router = useRouter();
+import { useRoute } from "vue-router";
 
 // 서버에 get요청하기
 export function useGetAxios(url) {
@@ -46,12 +45,10 @@ export function usePostAxios(url, data = null) {
 export async function loginCheck() {
   const { getData } = useGetAxios("/api/login");
   const response = await getData();
-  if (response.status == 200) {
-    router.push({ name: "학생 메인화면" });
+  if (response.status === 200) {
+    return true;
   } else {
-    // 로그인이 안되어 있으므로 메인페이지로 이동해야함.
-    alert("로그인이 필요합니다!");
-    router.push({ name: "Login" });
+    return false;
   }
 }
 

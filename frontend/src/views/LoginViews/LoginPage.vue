@@ -62,8 +62,8 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
-import { loginCheck, usePostAxios } from "@/composable";
+import { reactive, ref } from "vue";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 // import store from "@/store";
 
@@ -86,9 +86,6 @@ function redirection() {
   router.push("/student");
 }
 // let id = this.$route.params.id;
-
-//로그인 유무 받아오기
-onMounted(loginCheck());
 
 // 로그인 양식 제출
 async function loginSubmit() {
