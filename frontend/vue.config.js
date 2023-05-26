@@ -16,13 +16,11 @@ module.exports = defineConfig({
       },
     },
   },
-  configureWebpack: {
-    resolve: {
-      alias: {
-        "@store": path.resolve(__dirname, "src/store/index.js"),
-        // Add your custom aliases here
-      },
-    },
+  chainWebpack: (config) => {
+    config.resolve.alias.set(
+      "@store",
+      path.resolve(__dirname, "src/store/index.js")
+    );
+    // Add your custom aliases here
   },
 });
-
