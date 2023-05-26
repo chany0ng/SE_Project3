@@ -62,8 +62,8 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
-import { usePostAxios } from "@/composable";
+import { reactive, ref, onMounted } from "vue";
+import { usePostAxios, loginCheck } from "@/composable";
 import { useRouter } from "vue-router";
 // import store from "@/store";
 
@@ -86,7 +86,15 @@ function redirection() {
   router.push("/student");
 }
 // let id = this.$route.params.id;
-
+onMounted(() => {
+  if (loginCheck()) {
+    alert("로그인 되어있습니다!");
+    router.push("/student");
+  } else {
+    alert("로그인이 필요합니다!");
+    router.push("/login");
+  }
+});
 // 로그인 양식 제출
 async function loginSubmit() {
   if (loginData.userType == "") {

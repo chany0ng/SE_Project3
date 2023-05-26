@@ -3,7 +3,7 @@ const model = require('../models');
 
 //로그인 체크 함수
 exports.CheckLogin = async(req, res, next) => {
-    
+    console.log(req.session.student_id);
     if(req.session.student_id) {        //로그인 상태
         res.sendStatus(200);
     }
@@ -28,14 +28,12 @@ exports.Login = async(req, res, next) => {
 exports.Logout = async(req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
-      // 로그아웃 실패
+      console.log(err);
       res.sendStatus(401);         //Unauthorized
     } else {
       // 로그아웃 성공
       req.session = null;
-      req.session.regenerate(() => {
-        res.sendStatus(200);
-      });
+      res.sendStatus(200);
     }
   });
 }
