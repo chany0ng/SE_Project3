@@ -92,7 +92,6 @@ async function submitForm() {
       userNumber: formData.userNumber,
     });
     const response = await postData();
-    console.log(response);
     if (response.status === 200) {
       alert(`비밀번호는 ${response.data}입니다.`);
       showQuestion.value = !showQuestion.value;

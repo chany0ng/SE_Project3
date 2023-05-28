@@ -53,6 +53,7 @@
 import { defineExpose } from "vue";
 import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
+import store from "@/store";
 const router = useRouter();
 
 // 로그아웃 버튼 클릭 시 실행 함수
@@ -61,15 +62,21 @@ async function confirmLogout() {
     const { postData } = usePostAxios("/api/login/logout");
     const response = await postData();
     if (response.status === 200) {
+      logout(); // vuex 초기화
       alert("로그아웃 성공!!");
       router.push("/login");
     } else {
       alert("로그아웃 에러!!");
     }
-  } else {
-    alert("로그아웃 취소");
   }
 }
+const logout = () => {
+  // Clear user information from the Vuex store
+  store.dispatch("userInfo/setUser", null);
+
+  // Clear persisted state from the storage (localStorage)
+  localStorage.removeItem("user-Info"); // Replace with your specified key
+};
 defineExpose({ router });
 </script>
 

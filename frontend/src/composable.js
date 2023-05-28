@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useRoute } from "vue-router";
+import store from "./store";
+import { computed } from "vue";
 
 // 서버에 get요청하기
 export function useGetAxios(url) {
@@ -52,6 +54,11 @@ export async function loginCheck(url) {
   }
 }
 
+export function useUser() {
+  const userData = computed(() => store.getters["userInfo/getUser"]);
+  console.log("컴포저블: ", userData.value);
+  return userData;
+}
 // 현재 경로의 페이지 이름 받아오기
 export function usePageName() {
   const route = useRoute();
