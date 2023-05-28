@@ -13,7 +13,7 @@ const option = {
   user: config.username,
   password: config.password,
   database: config.database,
-  expirationMS: 1000 * 60 * 60,               //1hour
+  expiration: 1000 * 60 * 60,               //1hour
   clearExpired: true,
   checkExpirationInterval: 1000 * 60 * 60
 }
