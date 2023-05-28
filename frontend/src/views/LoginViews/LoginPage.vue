@@ -49,7 +49,11 @@
             </button>
             <input type="hidden" name="userType" :value="loginData.userType" />
           </div>
-          <button type="submit" class="btn lgn-btn font" @click="loginSubmit">
+          <button
+            type="submit"
+            class="btn lgn-btn font"
+            @click.prevent="loginSubmit"
+          >
             Login
           </button>
         </form>
@@ -65,8 +69,7 @@
 import { reactive, ref, onMounted } from "vue";
 import { usePostAxios, loginCheck } from "@/composable";
 import { useRouter } from "vue-router";
-// import store from '@/store';
-
+import store from "@/store";
 // 로그인 시 필요한 입력 값
 const loginData = reactive({
   userNumber: "",
@@ -74,6 +77,7 @@ const loginData = reactive({
   userType: "",
 });
 const formRef = ref(null);
+
 // 유저 타입 Setter
 let setUserType = (type) => {
   loginData.userType = type;
@@ -105,7 +109,8 @@ async function loginSubmit() {
     if (response.status == 200) {
       // 로그인 성공 시
       const userData = response.data;
-      console.log(userData);
+      store.dispatch("userInfo/setUser", userData);
+      console.log("vuex에 정보 넣기:", store.state.userInfo.user);
       redirection();
     } else {
       alert("존재하지 않는 계정입니다!");
@@ -115,6 +120,7 @@ async function loginSubmit() {
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("api/login");
+  console.log("로그인 마운티드: ", store.state.userInfo.user);
   if (loggedIn === true) {
     alert("로그인 되어있습니다!");
     router.push("/student");
