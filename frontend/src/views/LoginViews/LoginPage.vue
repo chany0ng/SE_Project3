@@ -90,15 +90,7 @@ function redirection() {
   router.push("/student");
 }
 // let id = this.$route.params.id;
-onMounted(() => {
-  if (loginCheck()) {
-    alert("로그인 되어있습니다!");
-    router.push("/student");
-  } else {
-    alert("로그인이 필요합니다!");
-    router.push("/login");
-  }
-});
+
 // 로그인 양식 제출
 async function loginSubmit() {
   if (loginData.userType == "") {
@@ -119,7 +111,7 @@ async function loginSubmit() {
 }
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("api/login");
+  const loggedIn = await loginCheck("/api/login");
   console.log("로그인 마운티드: ", store.state.userInfo.user);
   if (loggedIn === true) {
     alert("로그인 되어있습니다!");

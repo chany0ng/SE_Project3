@@ -7,7 +7,7 @@ const persistedState = createPersistedState({
 
 const userInfo = {
   namespaced: true,
-  plugins: [persistedState()],
+  plugins: [persistedState],
   // store.state로 접근, 직접 수정 x, mutations를 이용
   state: {
     user: {},

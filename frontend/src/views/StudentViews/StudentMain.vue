@@ -58,7 +58,7 @@ import store from "@/store";
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("api/student");
+  const loggedIn = await loginCheck("/api/student");
   console.log("메인 마운티드: ", store.state.userInfo.user);
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
@@ -67,10 +67,10 @@ onMounted(async () => {
 });
 // 유저정보 반응형 추가
 const userData = useUser();
-console.log(userData);
-console.log(userData.name);
-console.log(store.state.userInfo.user);
-console.log(store.state.userInfo.user.name);
+// console.log(userData);
+// console.log(userData.name);
+// console.log(store.state.userInfo.user);
+// console.log(store.state.userInfo.user.name);
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";
 // const message = ref("Hello from parent!");
