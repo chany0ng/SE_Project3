@@ -80,7 +80,11 @@ const formRef = ref(null);
 
 // 유저 타입 Setter
 let setUserType = (type) => {
-  loginData.userType = type;
+  if (loginData.userType === "") {
+    loginData.userType = type;
+  } else {
+    loginData.userType = "";
+  }
 };
 
 // 입력 값 초기화 후 메인페이지 이동
