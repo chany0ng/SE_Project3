@@ -3,13 +3,9 @@
   <main>
     <StudentHeader />
     <!-- <Asidebar /> -->
-    <div>
-      <ul>
-        <li v-for="(value, key) in userData[0]" :key="key">
-          {{ key }}: {{ value }}
-        </li>
-      </ul>
-    </div>
+    <p v-for="(value, key) of userData[0]" :key="key">
+      {{ key }} : {{ value }}
+    </p>
     <div id="time-table">
       <table class="table table-sm table-hover">
         <thead>
@@ -48,15 +44,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
-import { loginCheck, setRef } from "@/composable";
+import { onMounted, computed } from "vue";
+import { loginCheck } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
+import store from "@/store";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
-// 유저정보 로컬스토리지에서 가져오기
-const userData = setRef();
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/student");
@@ -65,6 +60,7 @@ onMounted(async () => {
     router.push("/login");
   }
 });
+const userData = computed(() => store.getters["userInfo/getUser"]);
 
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";

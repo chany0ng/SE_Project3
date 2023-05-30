@@ -67,8 +67,9 @@
 
 <script setup>
 import { reactive, ref, onMounted } from "vue";
-import { usePostAxios, loginCheck, saveUser } from "@/composable";
+import { usePostAxios, loginCheck } from "@/composable";
 import { useRouter } from "vue-router";
+import store from "@/store";
 
 // 로그인 시 필요한 입력 값
 const loginData = reactive({
@@ -105,7 +106,7 @@ async function loginSubmit() {
     if (response.status == 200) {
       // 로그인 성공 시
       const userData = response.data;
-      saveUser(userData);
+      store.dispatch("userInfo/setUser", userData);
       redirection();
     } else {
       alert("존재하지 않는 계정입니다!");

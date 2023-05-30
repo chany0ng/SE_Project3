@@ -55,8 +55,9 @@
 
 <script setup>
 import { defineExpose } from "vue";
-import { usePostAxios, deleteUser } from "@/composable";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
+import store from "@/store";
 const router = useRouter();
 
 // 로그아웃 버튼 클릭 시 실행 함수
@@ -74,7 +75,8 @@ async function confirmLogout() {
 }
 const logout = () => {
   // Clear user information from the Vuex store
-  deleteUser();
+  store.dispatch("userInfo/setUser", null);
+  localStorage.removeItem("vuex");
 };
 defineExpose({ router });
 </script>

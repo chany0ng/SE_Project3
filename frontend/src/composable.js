@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useRoute } from "vue-router";
-import { ref, watch } from "vue";
 
 // 서버에 get요청하기
 export function useGetAxios(url) {
@@ -52,32 +51,7 @@ export async function loginCheck(url) {
     return false;
   }
 }
-// 유저정보 로컬스토리지에 저장하기
-export function saveUser(userData) {
-  localStorage.setItem("user-Info", JSON.stringify(userData));
-}
-// 유저정보 로컬스토리지로부터 받아오기
-export function loadUser() {
-  const savedData = localStorage.getItem("user-Info");
-  return JSON.parse(savedData);
-}
-// 유저정보 로컬스토리지에 삭제하기
-export function deleteUser() {
-  localStorage.removeItem("user-Info");
-}
-// 유저정보 반응형 설정
-export function setRef() {
-  const userData = ref(loadUser());
 
-  watch(
-    () => localStorage.getItem("user-Info"),
-    (newValue) => {
-      userData.value = JSON.parse(newValue);
-    }
-  );
-
-  return userData;
-}
 // 현재 경로의 페이지 이름 받아오기
 export function usePageName() {
   const route = useRoute();
