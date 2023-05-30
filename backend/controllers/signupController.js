@@ -20,9 +20,9 @@ exports.Signup = async(req, res, next) => {
         };
 
         let result = await model.students.create(datas).catch((err) => console.log(err));
-        res.sendStatus(200);
+        return res.sendStatus(200);
     }
     else {                      //중복된 학번 -> 회원가입 실패
-        res.sendStatus(400);          //Bad request 
+        return res.sendStatus(400);          //Bad request 
     }
 };

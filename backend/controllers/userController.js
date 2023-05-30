@@ -9,10 +9,10 @@ exports.CheckPW = async(req, res, next) => {
     let pw_check = await model.students.findAll({ where: { student_id: id, pw:pw } }).catch((err) => console.log(err));
     if (pw_check.length !== 0) {        
         //비밀번호 일치
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } else {
         //비밀번호 불일치
-        res.sendStatus(401);       //Unauthorized     
+        return res.sendStatus(401);       //Unauthorized     
     }
 };
 //내 정보 수정 함수
@@ -33,10 +33,10 @@ exports.updateUser = async(req, res, next) => {
     let result = await model.students.update(datas, {where: {student_id: id}}).catch((err) => console.log(err));
     if(result.length !== 0) {
         //수정 성공
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } else {
         //수정 실패
-        res.sendStatus(400);        //Bad request
+        return res.sendStatus(400);        //Bad request
     }
 };
 //수강 신청 함수
@@ -48,10 +48,10 @@ exports.updateUser = async(req, res, next) => {
     뭐 만약에 수강 신청한거 실시간으로 시간표에 띄우는거 할거라거나 수강 신청 했던 거 삭제도 할거면 말 ㄱ
 */
 exports.enrollment = async(req, res, next) => {
-    let subjectId = 'H020-4-0846-01';//req.body.subjectNumber;
-    let studentId = '2018202033';//req.body.userNumber;
-    let year = '4';//req.body.year;
-    let semester = '2';//req.body.semester;
+    let subjectId = req.body.subjectNumber;
+    let studentId = req.body.userNumber;
+    let year = req.body.year;
+    let semester = req.body.semester;
     
     //신청한 과목 시간 가져오기
     let subject = await model.subjects.findOne({where: {subject_id: subjectId}}).catch((err) => console.log(err));
@@ -61,18 +61,24 @@ exports.enrollment = async(req, res, next) => {
      let enrollments = await model.enrollments.findAll({where : {student_id: studentId, year:year, semester:semester }
      ,include: model.subjects}).catch((err) => console.log(err));
 
-    
-    // for (let enrollment of enrollments) {
-    // }
-    
-    // if(result.length !== 0) {
-    //     //수강 신청 성공
-    //     res.sendStatus(200);
-    // } else {
-    //     //수강 신청 실패
-    //     res.sendStatus(400);
-    // }
-    res.send(enrollments);
+    //신청한 과목 시간과 기존의 시간표와 겹치는지 확인
+    for (let enrollment of enrollments) {
+        let enrollmentTime = enrollment.subject.subject_time;
+        if(checkTime(enrollmentTime, subjectTime) === true) {
+            //수강 신청 실패 (시간 겹침)
+            return res.sendStatus(400);
+        }
+    }
+
+    let datas = {
+        subject_id: subjectId,
+        student_id: studentId,
+        year: year,
+        semester: semester
+    };
+    //수강 신청 성공
+    let result = await model.enrollments.create(datas).catch((err) => console.log(err));
+    return res.sendStatus(200);
 };
 
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수

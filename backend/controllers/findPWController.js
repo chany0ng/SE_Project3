@@ -12,9 +12,9 @@ exports.CheckId = async (req, res, next) => {
       .findAll({ where: { student_id: id } })
       .catch((err) => console.log(err));
         let pw_question = result[0].pw_question;
-        res.status(200).send(pw_question);  //비밀번호 찾기 질문
+        return res.status(200).send(pw_question);  //비밀번호 찾기 질문
     } else {
-        res.sendStatus(400);                //일치하는 학번이 없음 (비회원) Bad request
+        return res.sendStatus(400);                //일치하는 학번이 없음 (비회원) Bad request
     }
 
 };
@@ -27,9 +27,9 @@ exports.findPW = async (req, res, next) => {
   if (result.length !== 0) {
     //비밀번호 찾기 답변 일치
         let pw = result[0].pw;
-        res.status(200).send(pw);
+        return res.status(200).send(pw);
     } else {
         //비밀번호 찾기 답변 불일치
-        res.sendStatus(400);    
+        return res.sendStatus(400);    
     }
 }
