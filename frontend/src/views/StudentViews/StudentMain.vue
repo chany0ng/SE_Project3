@@ -4,10 +4,11 @@
     <StudentHeader />
     <!-- <Asidebar /> -->
     <div>
-      <p>Username: {{ userData.name }}</p>
-      <p>StudentId: {{ userData.student_id }}</p>
-      <p>Email: {{ userData.email }}</p>
-      <p>Email: {{ userData }}</p>
+      <ul>
+        <li v-for="(value, key) in userData[0]" :key="key">
+          {{ key }}: {{ value }}
+        </li>
+      </ul>
     </div>
     <div id="time-table">
       <table class="table table-sm table-hover">
@@ -47,30 +48,24 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-import { loginCheck, useUser } from "@/composable";
+import { onMounted, ref, watch } from "vue";
+import { loginCheck, setRef } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
-import store from "@/store";
-
 // import Asidebar from "../../layouts/AsideBar.vue";
 
+// 유저정보 로컬스토리지에서 가져오기
+const userData = setRef();
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/student");
-  console.log("메인 마운티드: ", store.state.userInfo.user);
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
   }
 });
-// 유저정보 반응형 추가
-const userData = useUser();
-// console.log(userData);
-// console.log(userData.name);
-// console.log(store.state.userInfo.user);
-// console.log(store.state.userInfo.user.name);
+
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";
 // const message = ref("Hello from parent!");

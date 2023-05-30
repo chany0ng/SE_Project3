@@ -28,7 +28,11 @@
           <button><router-link to="">수강 신청</router-link></button>
         </li>
         <li>
-          <button><router-link to="">마이페이지</router-link></button>
+          <button>
+            <router-link to="/student/mypage/information"
+              >마이페이지</router-link
+            >
+          </button>
         </li>
       </ul>
       <button
@@ -51,19 +55,17 @@
 
 <script setup>
 import { defineExpose } from "vue";
-import { usePostAxios } from "@/composable";
+import { usePostAxios, deleteUser } from "@/composable";
 import { useRouter } from "vue-router";
-import store from "@/store";
 const router = useRouter();
 
 // 로그아웃 버튼 클릭 시 실행 함수
 async function confirmLogout() {
-  if (confirm("Are you sure you want to log out?")) {
+  if (confirm("로그아웃 하시겠습니까?")) {
     const { postData } = usePostAxios("/api/login/logout");
     const response = await postData();
     if (response.status === 200) {
       logout(); // vuex 초기화
-      alert("로그아웃 성공!!");
       router.push("/login");
     } else {
       alert("로그아웃 에러!!");
@@ -72,10 +74,7 @@ async function confirmLogout() {
 }
 const logout = () => {
   // Clear user information from the Vuex store
-  store.dispatch("userInfo/setUser", null);
-
-  // Clear persisted state from the storage (localStorage)
-  localStorage.removeItem("user-Info"); // Replace with your specified key
+  deleteUser();
 };
 defineExpose({ router });
 </script>
