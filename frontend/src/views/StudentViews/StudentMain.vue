@@ -39,13 +39,16 @@
         </tbody>
       </table>
     </div>
+    <p v-for="(value, key) of userData[0]" :key="key">
+      {{ key }} : {{ value }}
+    </p>
     <MainFooter />
   </main>
 </template>
 
 <script setup>
 import { onMounted, computed } from "vue";
-import { loginCheck } from "@/composable";
+import { loginCheck, useGetAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
@@ -59,8 +62,22 @@ onMounted(async () => {
     alert("로그인 해야합니다!");
     router.push("/login");
   }
+  // const response = useGetAxios("/api/student/enrollment");
+  // const subjectData = response.data;
+  // console.log(subjectData);
+  // store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+  // console.log(store.state.subjectInfo.subject);
+  // if(response.status === 200){
+  //   const subjectData = response.getData;
+  //   store.dispatch("userInfo/setUser", userData); // 과목정보
+  // }
+  // else{
+  //   alert("과목 정보 에러");
+  // }
 });
 const userData = computed(() => store.getters["userInfo/getUser"]);
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+console.log(subjectData.value);
 
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";

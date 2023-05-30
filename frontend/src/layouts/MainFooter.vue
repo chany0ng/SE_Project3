@@ -27,7 +27,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: var(--main4-color);
+  background-color: var(--footer);
   color: black;
   text-align: center;
   padding-bottom: 50px;

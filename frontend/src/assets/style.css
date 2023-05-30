@@ -6,6 +6,7 @@
   --main3-color: #ffe5ca;
   --main4-color: #fff3e2;
   --brown1: #6d5d6e;
+  --footer: #7b697c;
 }
 #app {
   box-sizing: border-box;
@@ -34,7 +35,9 @@
 
 main {
   position: relative;
+  overflow: scroll;
   min-height: 100vh;
+  padding-bottom: 50px;
 }
 nav button:hover {
   transition: 0.1s;
