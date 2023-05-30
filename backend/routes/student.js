@@ -5,8 +5,9 @@ const userController = require('../controllers/userController');
 
 router.get('/', loginController.CheckLogin);
 
-router.get('/enrollment', loginController.CheckLogin);
-router.post('/enrollment', userController.enrollment);
+router.get('/enrollment', userController.enrollment);
+//router.get('/enrollment', loginController.CheckLogin);
+//router.post('/enrollment', userController.enrollment);
 
 router.get('/subject/announcement', loginController.CheckLogin);
 
