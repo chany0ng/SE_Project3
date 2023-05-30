@@ -6,6 +6,11 @@
     <p v-for="(value, key) of userData[0]" :key="key">
       {{ key }} : {{ value }}
     </p>
+    <Background>
+      <template v-slot:title>
+        <h3>학생 메인페이지</h3>
+      </template>
+    </Background>
     <div id="time-table">
       <table class="table table-sm table-hover">
         <thead>
@@ -39,11 +44,8 @@
         </tbody>
       </table>
     </div>
-    <p v-for="(value, key) of userData[0]" :key="key">
-      {{ key }} : {{ value }}
-    </p>
-    <MainFooter />
   </main>
+  <MainFooter />
 </template>
 
 <script setup>
@@ -53,6 +55,7 @@ import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
 import store from "@/store";
+import Background from "@/components/Background.vue";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기

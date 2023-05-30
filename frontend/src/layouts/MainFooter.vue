@@ -28,10 +28,10 @@ footer {
   bottom: 0;
   width: 100%;
   background-color: var(--footer);
-  color: black;
+  color: white;
   text-align: center;
-  padding-bottom: 50px;
   border-top: 0.1px solid gray;
+  margin-top: 10px;
 }
 .flex-container {
   display: flex;
@@ -45,7 +45,7 @@ footer {
   max-height: 100%;
 }
 a {
-  color: black;
+  color: white;
   font-size: x-small;
   text-decoration: none;
   text-decoration: underline;
