@@ -24,14 +24,24 @@ exports.Login = async(req, res, next) => {
       //교수인 경우
       user = await model.professors.findAll({where: {professor_id: id, pw:pw}}).catch((err) => console.log(err)); 
     }
-    
-    if (user.length !== 0) {        //로그인 성공
+
+    if (user.length !== 0) {        
+      //로그인 성공
       req.session.loginId = id;
+      //로그인한 사용자의 수강 정보(과목 정보, 그 과목의 교수 정보) 가져오기
       let enrollments = await model.enrollments.findAll({where : {student_id: id}
-      ,include: model.subjects}).catch((err) => console.log(err));
+      ,include: [
+        {
+          model: model.subjects, 
+          include: {
+              model: model.professors
+          }
+        }
+      ]}).catch((err) => console.log(err));
       let data = [user, enrollments];
       return res.status(200).send(data);
-    } else {                        //로그인 실패
+    } else {                       
+      //로그인 실패
       return res.sendStatus(401);   //Unauthorized
     }
 };

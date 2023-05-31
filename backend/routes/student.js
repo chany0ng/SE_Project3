@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const loginController = require('../controllers/loginController');
 const userController = require('../controllers/userController');
+const enrollmentController = require('../controllers/enrollmentController');
 
 router.get('/', loginController.CheckLogin);
 
-
 router.get('/enrollment', loginController.CheckLogin);
-router.post('/enrollment', userController.enrollment);
-router.post('/enrollment/delete', userController.deleteEnrollment);
+router.post('/enrollment', enrollmentController.enrollment);
+router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 
 router.get('/subject/announcement', loginController.CheckLogin);
 
