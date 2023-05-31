@@ -3,7 +3,7 @@ const model = require('../models');
 
 //비밀번호 체크 함수
 exports.CheckPW = async(req, res, next) => {
-    let id = req.body.userNumber;
+    let id = req.session.loginId;
     let pw = req.body.password;
     //비밀번호 체크
     let pw_check = await model.students.findAll({ where: { student_id: id, pw:pw } }).catch((err) => console.log(err));
@@ -17,13 +17,13 @@ exports.CheckPW = async(req, res, next) => {
 };
 //내 정보 수정 함수
 /*
-    브라우저에서 넘겨줄 정보: 학번, 비밀번호, 이메일, 전화번호
+    브라우저에서 넘겨줄 정보: 비밀번호, 이메일, 전화번호
     학번은 변경사항은 아닌데 테이블에서 검색을 위해 넘겨줘야 함.
     변경되지 않은 정보는 기존의 정보를 넘겨주면 됨.
     비밀번호의 경우도 사용자가 변경하면 새 비밀번호, 하지 않으면 기존 비밀번호를 넘겨주면 됨.
 */
 exports.updateUser = async(req, res, next) => {
-    let id = req.body.userNumber;
+    let id = req.session.loginId;
     let datas = {
         pw: req.body.password,
         email: req.body.email,
@@ -41,7 +41,7 @@ exports.updateUser = async(req, res, next) => {
 };
 //수강 신청 함수
 /*
-    브라우저에서 넘겨줄 정보: 학번, 학정번호, 그 과목 듣는 학년, 학기 
+    브라우저에서 넘겨줄 정보: 학정번호, 그 과목 듣는 학년, 학기 
     아마 학년, 학기는 뭐 4학년 2학기던 수강 신청하는 학년, 학기로 통일하는게 나을 듯
     아마 시간 겹치는 지 비교해서 안된다고 뜨는건 수강 신청 4학년 2학기 시간표 이미 있는데 추가한다거나 이럴 때 필요할듯
     학생마다 다르게 할거면 학생이 몇학년인지 알게하는 정보가 필요할듯
@@ -49,7 +49,7 @@ exports.updateUser = async(req, res, next) => {
 */
 exports.enrollment = async(req, res, next) => {
     let subjectId = req.body.subjectNumber;
-    let studentId = req.body.userNumber;
+    let studentId = req.session.loginId;
     let year = req.body.year;
     let semester = req.body.semester;
     
@@ -80,7 +80,27 @@ exports.enrollment = async(req, res, next) => {
     let result = await model.enrollments.create(datas).catch((err) => console.log(err));
     return res.sendStatus(200);
 };
+//수강 삭제 함수
+/*
+    브라우저에서 넘겨줄 정보: 과목번호
+*/
+exports.deleteEnrollment = async(req, res, next) => {
+    let studentId = '2018202033';//req.session.loginId;
+    let subjectId = 'H020-4-0846-01';//req.body.subjectNumber;
+    let enrollment = await model.enrollments.findOne({where: {student_id: studentId, subject_id: subjectId}}).catch((err) => console.log(err));
 
+    let result = await model.enrollments.destroy({
+    where: {enrollment_id: enrollment.enrollment_id}}).catch((err) => console.log(err));
+
+    if (result.length !== 0) {
+        //수강 삭제 성공
+        res.sendStatus(200);
+    } else {
+        //수강 삭제 실패
+        res.sendStatus(400);
+    }
+
+};
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수
 function checkTime(existingTime, newTime) {
     let existing_time = [];

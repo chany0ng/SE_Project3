@@ -3,7 +3,7 @@ const model = require('../models');
 
 //로그인 체크 함수
 exports.CheckLogin = async(req, res, next) => {
-    if(req.session.id) {        //로그인 상태
+    if(req.session.loginId) {        //로그인 상태
         return res.sendStatus(200);
     }
     else {
@@ -24,10 +24,13 @@ exports.Login = async(req, res, next) => {
       //교수인 경우
       user = await model.professors.findAll({where: {professor_id: id, pw:pw}}).catch((err) => console.log(err)); 
     }
-
+    
     if (user.length !== 0) {        //로그인 성공
-      req.session.id = id;
-      return res.status(200).send(user);
+      req.session.loginId = id;
+      let enrollments = await model.enrollments.findAll({where : {student_id: id}
+      ,include: model.subjects}).catch((err) => console.log(err));
+      let data = [user, enrollments];
+      return res.status(200).send(data);
     } else {                        //로그인 실패
       return res.sendStatus(401);   //Unauthorized
     }
