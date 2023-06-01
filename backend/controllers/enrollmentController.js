@@ -1,5 +1,7 @@
 const express = require("express");
 const model = require("../models");
+const sequelize = require("sequelize");
+const Op = sequelize.Op;
 
 //수강 신청 함수
 /*
@@ -75,47 +77,63 @@ exports.deleteEnrollment = async (req, res, next) => {
     res.sendStatus(400);
   }
 };
-
-//exports.searchEnrollment
+// 과목 검색 함수
+// 브라우저에서 넘겨줄 정보: 검색 값 (searchData)
+exports.searchSubject = async(req, res, next) => {
+    let keyword = req.body.searchData;
+    let result = await model.subjects.findAll({
+      where: {
+        subject_name: {
+          [Op.like]: "%" + keyword + "%" }}}).catch((err) => console.log(err));
+    
+    console.log(result);
+    if (result.length !== 0) {
+        //검색 성공
+        res.status(200).send(result);
+    } else {
+        //검색 실패
+        res.sendStatus(404);    //not found
+    }
+}
 
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수
 function checkTime(existingTime, newTime) {
-  let existing_time = [];
-  let new_time = [];
-  let duplication = false;
-  //ex) 월1,7,8/수2 => 월1,7,8  수2 로 /를 기준으로 split 하는 작업
-  let split_existingTime = existingTime.split("/");
-  let split_newTime = newTime.split("/");
-  //기존 수강 시간 변환
-  //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
-  for (let i = 0; i < split_existingTime.length; i++) {
-    let day = split_existingTime[i][0];
-    for (let j = 0; j < split_existingTime[i].length; j++) {
-      if (!isNaN(split_existingTime[i][j])) {
-        //숫자인 경우
-        existing_time.push(day + split_existingTime[i][j]);
+    let existing_time = [];
+    let new_time = [];
+    let duplication = false;
+    //ex) 월1,7,8/수2 => 월1,7,8  수2 로 /를 기준으로 split 하는 작업
+    let split_existingTime = existingTime.split("/");
+    let split_newTime = newTime.split("/");
+    //기존 수강 시간 변환
+    //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+    for (let i = 0; i < split_existingTime.length; i++) {
+      let day = split_existingTime[i][0];
+      for (let j = 0; j < split_existingTime[i].length; j++) {
+        if (!isNaN(split_existingTime[i][j])) {
+          //숫자인 경우
+          existing_time.push(day + split_existingTime[i][j]);
+        }
       }
     }
-  }
-  //새롭게 신청한 수강 시간 변환
-  //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
-  for (let i = 0; i < split_newTime.length; i++) {
-    let day = split_newTime[i][0];
-    for (let j = 0; j < split_newTime[i].length; j++) {
-      if (!isNaN(split_newTime[i][j])) {
-        //숫자인 경우
-        new_time.push(day + split_newTime[i][j]);
+    //새롭게 신청한 수강 시간 변환
+    //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+    for (let i = 0; i < split_newTime.length; i++) {
+      let day = split_newTime[i][0];
+      for (let j = 0; j < split_newTime[i].length; j++) {
+        if (!isNaN(split_newTime[i][j])) {
+          //숫자인 경우
+          new_time.push(day + split_newTime[i][j]);
+        }
       }
     }
-  }
-  //수강 시간이 중복되는지 비교
-  for (let i = 0; i < existing_time.length; i++) {
-    if (new_time.includes(existing_time[i])) {
-      //중복되는 경우
-      duplication = true;
-      break;
+    //수강 시간이 중복되는지 비교
+    for (let i = 0; i < existing_time.length; i++) {
+      if (new_time.includes(existing_time[i])) {
+        //중복되는 경우
+        duplication = true;
+        break;
+      }
     }
-  }
 
-  return duplication;
+    return duplication;
 }
