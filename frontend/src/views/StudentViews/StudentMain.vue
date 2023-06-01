@@ -3,14 +3,6 @@
   <main>
     <StudentHeader />
     <!-- <Asidebar /> -->
-    <p v-for="(value, key) of userData[0]" :key="key">
-      {{ key }} : {{ value }}
-    </p>
-    <Background>
-      <template v-slot:title>
-        <h3>학생 메인페이지</h3>
-      </template>
-    </Background>
     <div id="time-table">
       <table class="table table-sm table-hover">
         <thead>
@@ -50,12 +42,11 @@
 
 <script setup>
 import { onMounted, computed } from "vue";
-import { loginCheck, useGetAxios } from "@/composable";
+import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
 import store from "@/store";
-import Background from "@/components/Background.vue";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기
@@ -65,22 +56,9 @@ onMounted(async () => {
     alert("로그인 해야합니다!");
     router.push("/login");
   }
-  // const response = useGetAxios("/api/student/enrollment");
-  // const subjectData = response.data;
-  // console.log(subjectData);
-  // store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
-  // console.log(store.state.subjectInfo.subject);
-  // if(response.status === 200){
-  //   const subjectData = response.getData;
-  //   store.dispatch("userInfo/setUser", userData); // 과목정보
-  // }
-  // else{
-  //   alert("과목 정보 에러");
-  // }
 });
 const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-console.log(subjectData.value);
 
 // <----------provide & inject 사용---------->
 // import { provide, ref } from "vue";

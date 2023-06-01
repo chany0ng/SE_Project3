@@ -105,10 +105,20 @@ async function loginSubmit() {
     const response = await postData();
     if (response.status == 200) {
       // 로그인 성공 시
-      const userData = response.data;
+      // 로그인한 유저 정보 받기
+      console.log(response.data);
+      console.log(typeof response.data);
+      const userData = response.data[0];
       store.dispatch("userInfo/setUser", userData);
+      // 수강중인 과목 정보 받기
+      const subjectData = response.data[1];
+      console.log(subjectData);
+      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+      console.log(store.state.subjectInfo.subject);
       redirection();
     } else {
+      formRef.value.reset();
+      loginData.userType = "";
       alert("존재하지 않는 계정입니다!");
     }
   }
