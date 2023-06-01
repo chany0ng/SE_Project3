@@ -25,7 +25,9 @@
           </ul>
         </li>
         <li>
-          <button><router-link to="">수강 신청</router-link></button>
+          <button>
+            <router-link to="/student/enrollment">수강 신청</router-link>
+          </button>
         </li>
         <li>
           <button>
@@ -76,6 +78,7 @@ async function confirmLogout() {
 const logout = () => {
   // Clear user information from the Vuex store
   store.dispatch("userInfo/setUser", null);
+  store.dispatch("subjectInfo/setSubject", null);
   localStorage.removeItem("vuex");
 };
 defineExpose({ router });
