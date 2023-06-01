@@ -5,17 +5,15 @@
       <h4>수강신청</h4>
     </template>
     <template v-slot:content>
-      <p v-for="(value, key) of userData[0]" :key="key">
+      <p v-for="(value, key) of subjectData[0]" :key="key">
+        {{ key }} : {{ value }}
+      </p>
+      <p v-for="(value, key) of subjectData[0].subject" :key="key">
         {{ key }} : {{ value }}
       </p>
     </template>
     <template v-slot:pagination>
-      <p v-for="(value, key) of subjectData[0]" :key="key">
-        {{ key }} : {{ value }}
-      </p>
-      <p v-for="(value, key) of userData[0]" :key="key">
-        {{ key }} : {{ value }}
-      </p>
+      <Pagination />
     </template>
   </Background>
   <MainFooter />
@@ -29,6 +27,7 @@ import StudentHeader from "@/layouts/StudentHeader.vue";
 import router from "@/router";
 import store from "@/store";
 import Background from "@/components/Background.vue";
+import Pagination from "@/components/Pagination.vue";
 
 //로그인 유무 받아오기
 onMounted(async () => {
