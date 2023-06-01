@@ -9,6 +9,7 @@ router.get('/', loginController.CheckLogin);
 router.get('/enrollment', loginController.CheckLogin);
 router.post('/enrollment', enrollmentController.enrollment);
 router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
+router.get('/enrollment/search', enrollmentController.searchSubject);
 
 router.get('/subject/announcement', loginController.CheckLogin);
 
