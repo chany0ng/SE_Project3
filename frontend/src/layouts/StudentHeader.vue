@@ -104,6 +104,7 @@ ul {
   border: 2px solid var(--main-color);
   padding: 2px 5px;
   margin-top: 10px;
+  margin-left: 10px;
 }
 nav li {
   margin-right: 3rem;
