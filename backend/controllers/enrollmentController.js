@@ -86,7 +86,6 @@ exports.searchSubject = async(req, res, next) => {
         subject_name: {
           [Op.like]: "%" + keyword + "%" }}}).catch((err) => console.log(err));
     
-    console.log(result);
     if (result.length !== 0) {
         //검색 성공
         res.status(200).send(result);
@@ -94,7 +93,26 @@ exports.searchSubject = async(req, res, next) => {
         //검색 실패
         res.sendStatus(404);    //not found
     }
-}
+};
+//과목 목록 가져오는 함수
+// 브라우저에서 넘겨줄 정보: 페이지 번호
+exports.getSubjectList = async(req, res, next) => {
+    let page = req.params.page;
+    let perPage = 10;
+    //이름 오름차순 정렬
+    let result = await model.subjects.findAll({
+      order: [['subject_name', 'ASC']],
+      limit: perPage,
+      offset: (page - 1) * perPage }).catch((err) => console.log(err));
+    
+    if(result.length !== 0) {
+        //과목 가져오기 성공
+        res.status(200).send(result);
+    } else {
+        //과목 가져오기 실패
+        res.sendStatus(404);    //Not Found
+    }
+};
 
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수
 function checkTime(existingTime, newTime) {

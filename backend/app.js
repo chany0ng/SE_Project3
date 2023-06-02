@@ -48,7 +48,7 @@ app.use('/api/student', studentRouter);
 
 //라우팅 경로 외 모든 get 요청은 vue 파일 로드
 app.get('*', (req, res, next) => {
-  res.sendfile(path.join(__dirname, './public', 'index.html'));
+    res.sendfile(path.join(__dirname, './public', 'index.html'));
 });
 
 // catch 404 and forward to error handler
