@@ -71,10 +71,10 @@ exports.deleteEnrollment = async (req, res, next) => {
 
   if (result.length !== 0) {
     //수강 삭제 성공
-    res.sendStatus(200);
+    return res.sendStatus(200);
   } else {
     //수강 삭제 실패
-    res.sendStatus(400);
+    return res.sendStatus(400);
   }
 };
 // 과목 검색 함수
@@ -88,10 +88,10 @@ exports.searchSubject = async(req, res, next) => {
     
     if (result.length !== 0) {
         //검색 성공
-        res.status(200).send(result);
+        return res.status(200).send(result);
     } else {
         //검색 실패
-        res.sendStatus(404);    //not found
+        return res.sendStatus(404);    //not found
     }
 };
 //과목 목록 가져오는 함수
@@ -99,7 +99,7 @@ exports.searchSubject = async(req, res, next) => {
 exports.getSubjectList = async(req, res, next) => {
     let page = req.params.page;
     let perPage = 10;
-    //이름 오름차순 정렬
+    //과목이름 오름차순 정렬
     let result = await model.subjects.findAll({
       order: [['subject_name', 'ASC']],
       limit: perPage,
@@ -107,10 +107,10 @@ exports.getSubjectList = async(req, res, next) => {
     
     if(result.length !== 0) {
         //과목 가져오기 성공
-        res.status(200).send(result);
+        return res.status(200).send(result);
     } else {
         //과목 가져오기 실패
-        res.sendStatus(404);    //Not Found
+        return res.sendStatus(404);    //Not Found
     }
 };
 
