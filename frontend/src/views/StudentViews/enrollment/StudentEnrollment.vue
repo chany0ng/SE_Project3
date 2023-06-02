@@ -1,22 +1,24 @@
-<template v-if="isRendered">
-  <StudentHeader />
-  <Background>
-    <template v-slot:title>
-      <h4>수강신청</h4>
-    </template>
-    <template v-slot:content>
-      <p v-for="(value, key) of subjectData[0]" :key="key">
-        {{ key }} : {{ value }}
-      </p>
-      <p v-for="(value, key) of subjectData[0].subject" :key="key">
-        {{ key }} : {{ value }}
-      </p>
-    </template>
-    <template v-slot:pagination>
-      <Pagination />
-    </template>
-  </Background>
-  <MainFooter />
+<template>
+  <div v-if="isRendered">
+    <StudentHeader />
+    <Background>
+      <template v-slot:title>
+        <h4>수강신청</h4>
+      </template>
+      <template v-slot:content>
+        <p v-for="(value, key) of subjectData[0]" :key="key">
+          {{ key }} : {{ value }}
+        </p>
+        <p v-for="(value, key) of subjectData[0].subject" :key="key">
+          {{ key }} : {{ value }}
+        </p>
+      </template>
+      <template v-slot:pagination>
+        <Pagination />
+      </template>
+    </Background>
+    <MainFooter />
+  </div>
 </template>
 
 <script setup>

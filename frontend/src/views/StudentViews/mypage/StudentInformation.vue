@@ -1,15 +1,17 @@
 <template>
-  <StudentHeader />
-  <div>학생 마이페이지</div>
-  <p>{{ userData[0].pw }}</p>
-  <p>{{ userData[0].name }}</p>
-  <p>{{ userData[0].student_id }}</p>
-  <button @click="change">버튼</button>
-  <MainFooter />
+  <div v-if="isRendered">
+    <StudentHeader />
+    <div>학생 마이페이지</div>
+    <p>{{ userData[0].pw }}</p>
+    <p>{{ userData[0].name }}</p>
+    <p>{{ userData[0].student_id }}</p>
+    <button @click="change">버튼</button>
+    <MainFooter />
+  </div>
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { loginCheck } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -22,8 +24,12 @@ onMounted(async () => {
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
+  } else {
+    isRendered.value = true;
   }
 });
+const isRendered = ref(false);
+
 const userData = computed(() => store.getters["userInfo/getUser"]);
 
 function change() {
@@ -32,4 +38,4 @@ function change() {
 }
 </script>
 
-<style></style>
+<style scoped></style>
