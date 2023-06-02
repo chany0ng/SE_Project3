@@ -134,8 +134,8 @@ async function loginSubmit() {
       store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
       redirection();
     } else {
-      formRef.value.reset();
       loginData.userType = "";
+      loginButton.value.blur();
       alert("존재하지 않는 계정입니다!");
     }
   }
