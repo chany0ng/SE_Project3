@@ -22,13 +22,15 @@
 }
 #title {
   text-align: left;
-  padding: 25px 20px 0px 20px;
+  padding: 25px 20px 20px 30px;
 }
 #content {
   background-color: aquamarine;
 }
 #pagination {
-  background-color: blueviolet;
+  color: var(--main-color);
+  align-self: center;
+  padding-top: 20px;
 }
 .background {
   background-color: white;
@@ -41,7 +43,7 @@
 }
 .inner-background {
   background-color: var(--main4-color);
-  width: 55%;
+  width: 90%;
   display: flex;
   flex-direction: column;
   align-self: center;

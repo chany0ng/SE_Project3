@@ -1,6 +1,6 @@
 <template>
   <router-view></router-view>
-  <main>
+  <main v-if="isRendered">
     <StudentHeader />
     <!-- <Asidebar /> -->
     <div id="time-table">
@@ -13,25 +13,10 @@
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr>
-            <th scope="row">산학협력캡스톤설계</th>
+          <tr v-for="(course, index) of subjectData" :key="index">
+            <th scope="row">{{ course.subject.subject_name }}</th>
             <td>새로운 과제가 없습니다!</td>
             <td>새로운 공지사항이 있습니다!</td>
-          </tr>
-          <tr>
-            <th scope="row">소프트웨어공학</th>
-            <td>없습니다!</td>
-            <td>있습니다!</td>
-          </tr>
-          <tr>
-            <th scope="row">소프트웨어프로젝트1</th>
-            <td>없습니다!</td>
-            <td>있습니다!</td>
-          </tr>
-          <tr>
-            <th scope="row">생활속의과학</th>
-            <td>없습니다!</td>
-            <td>있습니다!</td>
           </tr>
         </tbody>
       </table>
@@ -41,7 +26,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { onBeforeMount, computed, ref } from "vue";
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
@@ -50,13 +35,16 @@ import store from "@/store";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기
-onMounted(async () => {
+onBeforeMount(async () => {
   const loggedIn = await loginCheck("/api/student");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
+  } else {
+    isRendered.value = true;
   }
 });
+const isRendered = ref(false);
 const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 
@@ -70,15 +58,18 @@ const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 <style scoped>
 #time-table {
   background-color: white;
-  width: 50vw;
+  width: 55vw;
   margin: 0 auto;
   margin-top: 10px;
   padding: 10px;
-  border: 1px solid var(--main3-color);
-  border-radius: 5px;
+  border: 2px solid var(--main3-color);
+  border-radius: 10px;
 }
 table {
   height: 100px;
   font-size: small;
+}
+thead {
+  font-size: 1.1rem;
 }
 </style>
