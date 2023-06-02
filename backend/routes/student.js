@@ -7,9 +7,10 @@ const enrollmentController = require('../controllers/enrollmentController');
 router.get('/', loginController.CheckLogin);
 
 router.get('/enrollment', loginController.CheckLogin);
+router.get('/enrollment/:page', enrollmentController.getSubjectList);
 router.post('/enrollment', enrollmentController.enrollment);
 router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
-router.get('/enrollment/search', enrollmentController.searchSubject);
+router.post('/enrollment/search', enrollmentController.searchSubject);
 
 router.get('/subject/announcement', loginController.CheckLogin);
 
