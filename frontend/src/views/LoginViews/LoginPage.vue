@@ -47,6 +47,13 @@
             >
               For professor
             </button>
+            <button
+              type="button"
+              @click="setUserType('admin')"
+              class="btn for-btn font"
+            >
+              For admin
+            </button>
             <input type="hidden" name="userType" :value="loginData.userType" />
           </div>
           <button
@@ -167,7 +174,7 @@ input {
 
 .btn {
   background-color: rgba(250, 152, 133, 0.3);
-  width: 35%;
+  width: 25%;
   color: var(--main-color);
   font-weight: bold;
 }

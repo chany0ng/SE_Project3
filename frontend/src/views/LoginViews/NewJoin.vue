@@ -4,6 +4,21 @@
     <form ref="formRef" @submit.prevent="submitHandler">
       <div class="form-group flex-box">
         <div class="flex-container">
+          <label for="userType">회원가입 유형</label>
+          <select
+            class="form-select"
+            required
+            name="userType"
+            id="userType"
+            v-model="formData.userType"
+          >
+            <option value="">선택해주세요</option>
+            <option value="student">학생</option>
+            <option value="professor">교수</option>
+            <option value="admin">관리자</option>
+          </select>
+        </div>
+        <div class="flex-container">
           <label for="userNumber">이름</label>
           <input
             type="text"
@@ -16,13 +31,13 @@
           />
         </div>
         <div class="flex-container">
-          <label for="userNumber">학번</label>
+          <label for="userNumber">이용자 번호</label>
           <input
             type="text"
             class="form-control"
             id="userNumber"
             name="userNumber"
-            placeholder="학번을 입력하세요"
+            placeholder="학번 혹은 교수번호를 입력하세요"
             required
             v-model="formData.userNumber"
           />
@@ -139,6 +154,7 @@ import { useRouter } from "vue-router";
 
 const formRef = ref(null);
 const formData = reactive({
+  userType: "",
   userName: "",
   userNumber: "",
   password: "",

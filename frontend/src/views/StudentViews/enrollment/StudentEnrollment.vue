@@ -1,4 +1,4 @@
-<template>
+<template v-if="isRendered">
   <StudentHeader />
   <Background>
     <template v-slot:title>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -35,8 +35,11 @@ onMounted(async () => {
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
+  } else {
+    isRendered.value = true;
   }
 });
+const isRendered = ref(false);
 const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 </script>

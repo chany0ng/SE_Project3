@@ -37,18 +37,7 @@
           </button>
         </li>
       </ul>
-      <button
-        type="button"
-        @click="confirmLogout"
-        id="logout"
-        style="
-          color: white;
-          font-size: small;
-          font-weight: 300;
-          margin-right: 10px;
-          margin-bottom: 20px;
-        "
-      >
+      <button type="button" @click="confirmLogout" id="logout">
         Logout ->
       </button>
     </div>
@@ -149,10 +138,10 @@ nav ul ul li a:hover {
   font-weight: bold;
 }
 #logout {
-  padding: 1px;
-  width: 80px;
-  height: 30px;
-  color: yello;
-  font-weight: bold;
+  color: var(--main-color);
+  font-size: small;
+  font-weight: 300;
+  margin-right: 10px;
+  margin-bottom: 20px;
 }
 </style>
