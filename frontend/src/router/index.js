@@ -60,7 +60,12 @@ const routes = [
       import("../views/StudentViews/mypage/StudentInformation.vue"),
   },
   {
-    path: "/student/enrollment",
+    path: "/student/mypage/friends",
+    name: "친구 추가",
+    component: () => import("../views/StudentViews/mypage/StudentFriends.vue"),
+  },
+  {
+    path: "/student/enrollment/:page",
     name: "수강 신청",
     component: () =>
       import("../views/StudentViews/enrollment/StudentEnrollment"),

@@ -11,30 +11,58 @@
         <li>
           <button>수강 관리</button>
           <ul>
-            <li><router-link to="">공지사항 조회</router-link></li>
-            <li><router-link to="">강의계획서 조회</router-link></li>
-            <li><router-link to="">강의 묻고 답하기</router-link></li>
+            <li>
+              <router-link to="/student/subject/annoucement"
+                >공지사항 조회</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/subject/syllabus"
+                >강의계획서 조회</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/subject/qna"
+                >강의 묻고 답하기</router-link
+              >
+            </li>
           </ul>
         </li>
         <li>
           <button>학습 지원실</button>
           <ul>
-            <li><router-link to="">과제 제출</router-link></li>
-            <li><router-link to="">성적 조회</router-link></li>
-            <li><router-link to="">석차 조회</router-link></li>
+            <li>
+              <router-link to="/student/studying/assignment"
+                >과제 제출</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/studying/grade">성적 조회</router-link>
+            </li>
+            <li>
+              <router-link to="/student/studying/performance"
+                >석차 조회</router-link
+              >
+            </li>
           </ul>
         </li>
         <li>
           <button>
-            <router-link to="/student/enrollment">수강 신청</router-link>
+            <router-link to="/student/enrollment/1">수강 신청</router-link>
           </button>
         </li>
         <li>
-          <button>
-            <router-link to="/student/mypage/information"
-              >마이페이지</router-link
-            >
-          </button>
+          <button>마이페이지</button>
+          <ul>
+            <li>
+              <router-link to="/student/mypage/information"
+                >내 정보 조회/수정</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/mypage/friends">친구 관리</router-link>
+            </li>
+          </ul>
         </li>
       </ul>
       <button type="button" @click="confirmLogout" id="logout">
