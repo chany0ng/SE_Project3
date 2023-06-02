@@ -35,6 +35,7 @@
           <div class="row-flex">
             <button
               type="button"
+              ref="studentButton"
               @click="setUserType('student')"
               class="btn for-btn font"
             >
@@ -42,6 +43,7 @@
             </button>
             <button
               type="button"
+              ref="professorButton"
               @click="setUserType('professor')"
               class="btn for-btn font"
             >
@@ -49,6 +51,7 @@
             </button>
             <button
               type="button"
+              ref="adminButton"
               @click="setUserType('admin')"
               class="btn for-btn font"
             >
@@ -58,6 +61,7 @@
           </div>
           <button
             type="submit"
+            ref="loginButton"
             class="btn lgn-btn font"
             @click.prevent="loginSubmit"
           >
@@ -85,13 +89,23 @@ const loginData = reactive({
   userType: "",
 });
 const formRef = ref(null);
-
+const studentButton = ref(null);
+const professorButton = ref(null);
+const adminButton = ref(null);
+const loginButton = ref(null);
 // 유저 타입 Setter
 let setUserType = (type) => {
-  if (loginData.userType === "") {
-    loginData.userType = type;
-  } else {
+  if (loginData.userType === type) {
+    // 이미 선택된 유형인 경우 선택 해제
     loginData.userType = "";
+    studentButton.value.blur();
+    professorButton.value.blur();
+    adminButton.value.blur();
+    console.log(loginData.userType);
+  } else {
+    // 선택되지 않은 유형인 경우 선택
+    loginData.userType = type;
+    console.log(loginData.userType);
   }
 };
 
@@ -101,12 +115,12 @@ function redirection() {
   formRef.value.reset();
   router.push("/student");
 }
-// let id = this.$route.params.id;
 
 // 로그인 양식 제출
 async function loginSubmit() {
-  if (loginData.userType == "") {
+  if (loginData.userType === "") {
     alert("로그인 유형을 선택하세요!!");
+    loginButton.value.blur();
   } else {
     const { postData } = usePostAxios("/api/login", loginData);
     const response = await postData();
@@ -118,11 +132,10 @@ async function loginSubmit() {
       // 수강중인 과목 정보 받기
       const subjectData = response.data[1];
       store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
-      console.log(store.state.subjectInfo.subject);
       redirection();
     } else {
-      formRef.value.reset();
       loginData.userType = "";
+      loginButton.value.blur();
       alert("존재하지 않는 계정입니다!");
     }
   }
