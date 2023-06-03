@@ -3,24 +3,28 @@
     <ul class="pagination pagination-sm">
       <li class="page-item">
         <router-link
-          to="getLink(currentPage - 1)"
+          :to="getLink(currentPage - 1)"
           class="page-link"
           @click="prevPage"
-          :disabled="currentPage === 1"
+          :class="{ 'disabled-link': currentPage === 1 }"
           >이전으로</router-link
         >
       </li>
       <li class="page-item" v-for="page in totalPages" :key="page">
-        <router-link :to="getLink(page)" class="page-link">
+        <router-link
+          :to="getLink(page)"
+          @click="movePage(page)"
+          class="page-link"
+        >
           {{ page }}
         </router-link>
       </li>
       <li class="page-item">
         <router-link
-          to="getLink(currentPage + 1)"
+          :to="getLink(currentPage + 1)"
           class="page-link"
           @click="nextPage"
-          :disabled="currentPage === totalPages"
+          :class="{ 'disabled-link': currentPage === totalPages }"
           >다음으로</router-link
         >
       </li>
@@ -46,6 +50,7 @@ const currentPath = toRef(props, "path");
 const serverPath = "/api" + currentPath.value;
 // 부모에게 보낼 과목 리스트 정보
 const emits = defineEmits(["update-courses"]);
+
 // 페이지 로드될 때, 초기 실행 함수
 onMounted(async () => {
   // 초기 강의 목록과 페이지 개수 설정
@@ -63,7 +68,6 @@ const getCourses = async () => {
     courses.value = response.data;
     // 부모에게 강의목록 전송
     emits("update-courses", courses.value);
-    console.log(courses.value);
   } else {
     alert("Pagination error");
   }
@@ -75,13 +79,21 @@ const getLink = (page) => {
 
 // 전체 페이지 수 계산을 위한 함수
 const calculateTotalPages = (totalCourses) => {
-  totalPages.value = Math.ceil(totalCourses / perPage);
+  // totalPages.value = Math.ceil(totalCourses / perPage);
+  totalPages.value = 2;
 };
 
 // 이전으로 클릭 시 실행 함수
 const prevPage = async () => {
   if (currentPage.value > 1) {
     currentPage.value--;
+    await getCourses();
+  }
+};
+// 숫자 페이지 클릭 시 실행 함수
+const movePage = async (page) => {
+  if (page > 0 && page < totalPages.value + 1) {
+    currentPage.value = page;
     await getCourses();
   }
 };
@@ -96,6 +108,20 @@ const nextPage = async () => {
 
 <style scoped>
 a {
+  color: var(--main-color);
+}
+a:hover {
+  opacity: 0.8;
+  color: var(--main-color);
+}
+.disabled-link {
+  color: gray;
+  cursor: default;
+  pointer-events: none;
+}
+.page-link:focus,
+.page-link:active {
+  box-shadow: none;
   color: var(--main-color);
 }
 </style>
