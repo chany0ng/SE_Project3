@@ -104,10 +104,13 @@ exports.getSubjectList = async(req, res, next) => {
       order: [['subject_name', 'ASC']],
       limit: perPage,
       offset: (page - 1) * perPage }).catch((err) => console.log(err));
-    
+    //과목의 총 개수
+    let count = await model.subjects.count();
+
+    let data = [result, count];
     if(result.length !== 0) {
         //과목 가져오기 성공
-        return res.status(200).send(result);
+        return res.status(200).send(data);
     } else {
         //과목 가져오기 실패
         return res.sendStatus(404);    //Not Found
