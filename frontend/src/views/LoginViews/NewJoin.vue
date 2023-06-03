@@ -128,6 +128,18 @@
             v-model="formData.major"
           />
         </div>
+        <div class="flex-container" v-if="isProfessor">
+          <label for="userRoom">연구실</label>
+          <input
+            type="text"
+            class="form-control"
+            id="userRoom"
+            name="room"
+            placeholder="연구실(교수실) 입력하세요"
+            required
+            v-model="formData.room"
+          />
+        </div>
         <div class="flex-container">
           <label for="userEmail">이메일</label>
           <input
@@ -148,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 
@@ -164,7 +176,21 @@ const formData = reactive({
   birth: "",
   phoneNumber: "",
   major: "",
+  room: "",
   email: "",
+});
+// 교수 선택시 -> 연구실 입력
+const isProfessor = ref(false);
+watch(formData, () => {
+  console.log(formData.userType);
+  console.log(isProfessor.value);
+  if (formData.userType === "professor") {
+    isProfessor.value = true;
+  } else {
+    isProfessor.value = false;
+  }
+  console.log(formData.userType);
+  console.log(isProfessor.value);
 });
 // submit 후 홈으로 리다이렉트
 const router = useRouter();

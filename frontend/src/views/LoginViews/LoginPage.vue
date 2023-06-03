@@ -101,11 +101,9 @@ let setUserType = (type) => {
     studentButton.value.blur();
     professorButton.value.blur();
     adminButton.value.blur();
-    console.log(loginData.userType);
   } else {
     // 선택되지 않은 유형인 경우 선택
     loginData.userType = type;
-    console.log(loginData.userType);
   }
 };
 
