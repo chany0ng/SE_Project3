@@ -46,11 +46,23 @@ exports.enrollment = async (req, res, next) => {
     year: year,
     semester: semester,
   };
-  //수강 신청 성공
+  //수강 테이블에 정보 입력
   let result = await model.enrollments
     .create(datas)
     .catch((err) => console.log(err));
-  return res.sendStatus(200);
+  //로그인 유저의 변경된 수강 정보
+  let data = await model.enrollments.findAll({
+    where: {student_id: studentId}, 
+    include: model.subjects
+  }).catch((err) => console.log(err));
+
+  if(result.length !== 0) {
+      //수강 신청 성공
+      return res.Status(200).send(data);
+  } else {
+      //수강 신청 실패
+      return res.sendStatus(400);
+  }
 };
 //수강 삭제 함수
 /*
@@ -69,9 +81,15 @@ exports.deleteEnrollment = async (req, res, next) => {
     })
     .catch((err) => console.log(err));
 
+   //로그인 유저의 변경된 수강 정보
+   let data = await model.enrollments.findAll({
+    where: {student_id: studentId}, 
+    include: model.subjects
+  }).catch((err) => console.log(err));
+
   if (result.length !== 0) {
     //수강 삭제 성공
-    return res.sendStatus(200);
+    return res.Status(200).send(data);
   } else {
     //수강 삭제 실패
     return res.sendStatus(400);
