@@ -25,7 +25,6 @@
   padding: 25px 20px 20px 30px;
 }
 #content {
-  background-color: aquamarine;
 }
 #pagination {
   color: var(--main-color);
@@ -40,6 +39,8 @@
   flex-direction: column;
   border-radius: 10px;
   padding-bottom: 20px;
+  min-height: 70vh;
+  margin-top: 5vh;
 }
 .inner-background {
   background-color: var(--main4-color);
@@ -47,8 +48,8 @@
   display: flex;
   flex-direction: column;
   align-self: center;
-  font-weight: bold;
-  padding: 10px;
+  font-weight: 500;
+  padding: 5px;
   border-radius: 10px;
 }
 </style>
