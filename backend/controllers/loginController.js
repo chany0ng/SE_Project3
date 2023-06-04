@@ -33,8 +33,7 @@ exports.Login = async (req, res, next) => {
     //로그인 성공
     req.session.loginId = id;
     //로그인한 사용자의 수강 정보(과목 정보, 그 과목의 교수 정보) 가져오기
-    let enrollments = await model.enrollments
-      .findAll({
+    let enrollments = await model.enrollments.findAll({
         where: { student_id: id },
         include: [
           {
@@ -46,8 +45,8 @@ exports.Login = async (req, res, next) => {
         ],
       })
       .catch((err) => console.log(err));
+
     let data = [user, enrollments];
-    console.log(data);
     return res.status(200).send(data);
   } else {
     //로그인 실패

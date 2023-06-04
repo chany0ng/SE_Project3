@@ -115,6 +115,10 @@ exports.searchSubject = async(req, res, next) => {
 // 브라우저에서 넘겨줄 정보: 페이지 번호
 exports.getSubjectList = async(req, res, next) => {
     let page = req.params.page;
+    //page가 숫자가 아닌 경우
+    if (isNaN(page)) {
+        return res.sendStatus(400);   //Bad request
+    }
     let perPage = 10;
     //과목이름 오름차순 정렬
     let result = await model.subjects.findAll({
