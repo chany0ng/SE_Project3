@@ -12,56 +12,71 @@ const Op = sequelize.Op;
     뭐 만약에 수강 신청한거 실시간으로 시간표에 띄우는거 할거라거나 수강 신청 했던 거 삭제도 할거면 말 ㄱ
 */
 exports.enrollment = async (req, res, next) => {
-  let subjectId = req.body.subjectNumber;
+ 
+  let subjectId = req.body.subject_id;
   let studentId = req.session.loginId;
-  let year = req.body.year;
-  let semester = req.body.semester;
+  //수강 신청 학기는 2023년도 2학기로 고정
+  let year = 2023;
+  let semester = 2;
 
-  //신청한 과목 시간 가져오기
-  let subject = await model.subjects
-    .findOne({ where: { subject_id: subjectId } })
-    .catch((err) => console.log(err));
-  let subjectTime = subject.subject_time;
-
-  //학생이 수강 중인 과목의 시간 정보 가져오기
-  let enrollments = await model.enrollments
-    .findAll({
-      where: { student_id: studentId, year: year, semester: semester },
-      include: model.subjects,
-    })
+  //이미 수강한 과목인지 확인
+  let check = await model.enrollments.findOne({
+    where: {student_id: studentId, subject_id: subjectId}})
     .catch((err) => console.log(err));
 
-  //신청한 과목 시간과 기존의 시간표와 겹치는지 확인
-  for (let enrollment of enrollments) {
-    let enrollmentTime = enrollment.subject.subject_time;
-    if (checkTime(enrollmentTime, subjectTime) === true) {
-      //수강 신청 실패 (시간 겹침)
-      return res.sendStatus(400);
-    }
-  }
-
-  let datas = {
-    subject_id: subjectId,
-    student_id: studentId,
-    year: year,
-    semester: semester,
-  };
-  //수강 테이블에 정보 입력
-  let result = await model.enrollments
-    .create(datas)
-    .catch((err) => console.log(err));
-
-  if(result.length !== 0) {
-      //수강 신청 성공
-      //로그인 유저의 변경된 수강 정보
-      let data = await model.enrollments.findAll({
-        where: {student_id: studentId}, 
-        include: model.subjects
-      }).catch((err) => console.log(err));
-      return res.Status(200).send(data);
+  if(check.length !== 0) {
+      //이미 수강한 과목
+      return res.sendStatus(401);
   } else {
-      //수강 신청 실패
-      return res.sendStatus(400);
+    //처음 수강하는 과목
+    //신청한 과목 시간 가져오기
+    let subjectTime = req.body.subject_time;
+
+    //학생이 수강 중인 과목의 시간 정보 가져오기
+    let enrollments = await model.enrollments
+      .findAll({
+        where: { student_id: studentId, year: year, semester: semester },
+        include: model.subjects,
+      })
+      .catch((err) => console.log(err));
+
+    //신청한 과목 시간과 기존의 시간표와 겹치는지 확인
+    for (let enrollment of enrollments) {
+      let enrollmentTime = enrollment.subject.subject_time;
+      if (checkTime(enrollmentTime, subjectTime) === true) {
+        //수강 신청 실패 (시간 겹침)
+        return res.sendStatus(400);
+      }
+    }
+
+    let datas = {
+      subject_id: subjectId,
+      student_id: studentId,
+      year: year,
+      semester: semester,
+    };
+    //수강 테이블에 정보 입력
+    let result = await model.enrollments
+      .create(datas)
+      .catch((err) => console.log(err));
+
+    if(result.length !== 0) {
+        //수강 신청 성공
+        //로그인 유저의 변경된 수강 정보
+        let data = await model.enrollments.findAll({
+          where: {student_id: studentId}, 
+          include: [
+            {
+              model: model.subjects,
+              include: {model: model.profesors}
+            }
+          ]
+        }).catch((err) => console.log(err));
+        return res.Status(200).send(data);
+    } else {
+        //수강 신청 실패
+        return res.sendStatus(400);
+    }
   }
 };
 //수강 삭제 함수
@@ -101,7 +116,10 @@ exports.searchSubject = async(req, res, next) => {
     let result = await model.subjects.findAll({
       where: {
         subject_name: {
-          [Op.like]: "%" + keyword + "%" }}}).catch((err) => console.log(err));
+          [Op.like]: "%" + keyword + "%" }
+        },
+      include: {model: model.professors}
+    }).catch((err) => console.log(err));
     
     if (result.length !== 0) {
         //검색 성공
@@ -124,10 +142,12 @@ exports.getSubjectList = async(req, res, next) => {
     let result = await model.subjects.findAll({
       order: [['subject_name', 'ASC']],
       limit: perPage,
-      offset: (page - 1) * perPage }).catch((err) => console.log(err));
+      offset: (page - 1) * perPage,
+      include: {model: model.professors}
+    }).catch((err) => console.log(err));
     //과목의 총 개수
     let count = await model.subjects.count();
-
+    
     let data = [result, count];
     if(result.length !== 0) {
         //과목 가져오기 성공

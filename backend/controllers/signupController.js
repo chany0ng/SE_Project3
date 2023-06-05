@@ -30,11 +30,11 @@ exports.Signup = async(req, res, next) => {
         }
     //회원가입 유형: 교수
     } else if (type === 'professor') {
-        let check = await model.professors.findAll({where: {student_id: id}}).catch((err) => console.log(err)); //학번 중복 체크
+        let check = await model.professors.findAll({where: {professor_id: id}}).catch((err) => console.log(err)); //학번 중복 체크
         if(check.length === 0) {  
             //회원가입 성공
             let datas = {
-                student_id: req.body.userNumber,
+                professor_id: req.body.userNumber,
                 pw: req.body.password,
                 name: req.body.userName,
                 room: req.body.room,
