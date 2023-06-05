@@ -18,7 +18,6 @@ exports.getNoticeList = async(req, res, next) => {
 
 //공지사항 작성 함수
 exports.writeNotice = async(req, res, next) => {
-    //console.log(req.files);
     let filename = req.files[0].originalname;
     let filedata = req.files[0].buffer;
     let mimetype = req.files[0].mimetype;
@@ -31,9 +30,19 @@ exports.writeNotice = async(req, res, next) => {
 
     let result = await model.files.create(datas).catch((err) => console.log(err));
 };
+
+//공지사항 보여주는 함수
 exports.getNotice = async(req, res, next) => {
-    let id = 1;
-    let file = await model.files.findOne({where: {file_id: id}}).catch((err) => console.log(err));
+    let noticeId = req.params.id;
+    let notice = await model.notices.fineOne({where: {notice_id: noticeId}}).catch((err) => console.log(err));
+
+    if(notice) {
+        //공지사항 전송 성공
+        return res.status(200).send(notice);
+    } else {
+        //공지사항 전송 실패 (Not Found)
+        return res.sendStatus(404);
+    }
 };
 
 exports.Download = async(req, res, next) => {
