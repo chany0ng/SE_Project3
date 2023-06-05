@@ -65,7 +65,7 @@ const routes = [
     component: () => import("../views/StudentViews/mypage/StudentFriends.vue"),
   },
   {
-    path: "/student/enrollment/:page",
+    path: "/student/enrollment/:page/:keyword",
     name: "수강 신청",
     component: () =>
       import("../views/StudentViews/enrollment/StudentEnrollment"),
@@ -81,11 +81,11 @@ const routes = [
     name: "교수 메인화면",
     component: () => import("../views/ProfessorViews/ProfessorMain"),
   },
-
   {
-    path: "/professor/notice/upload",
+    path: "/professor/notice/write",
     name: "교수 공지사항 등록",
-    component: () => import("../views/ProfessorViews/management/ProfessorNoticeUpload"),
+    component: () =>
+      import("../views/ProfessorViews/management/ProfessorNoticeWrite"),
   },
 ];
 

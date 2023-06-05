@@ -4,8 +4,8 @@
     <Background>
       <template v-slot:title>
         <h4>수강신청</h4>
-        <select id="select" v-model="yearSemester">
-          <option value="2023/1" selected>2023학년도 1학기</option>
+        <select id="select" v-model="yearSemester" style="margin-top: 5px">
+          <option value="2023/2" selected>2023학년도 2학기</option>
         </select>
       </template>
       <template v-slot:content>
@@ -30,7 +30,7 @@
               <td>{{ course.subject_name }}</td>
               <td>{{ course.subject_type }}</td>
               <td>{{ course.subject_grade }}</td>
-              <td>{{ course.subject_professor }}</td>
+              <td>{{ course.professor.name }}</td>
               <td>{{ course.subject_capacity }}</td>
               <td>{{ course.subject_time }}</td>
               <td>{{ course.subject_room }}</td>
@@ -39,7 +39,19 @@
         </table>
       </template>
       <template v-slot:pagination>
-        <Pagination :path="currentPath" @update-courses="updateCourses" />
+        <Pagination
+          :path="currentPath"
+          :keyword="searchKeyword"
+          @update-courses="updateCourses"
+        />
+        <div id="searchForm">
+          <input
+            type="text"
+            v-model="searchKeyword.word"
+            placeholder="과목 이름을 입력하세요"
+          />
+          <button @click="search">검색</button>
+        </div>
       </template>
     </Background>
     <MainFooter />
@@ -67,9 +79,13 @@ onMounted(async () => {
   }
 });
 
-const currentPath = "/student/enrollment";
+const currentPath = ref("/student/enrollment");
 const isRendered = ref(false);
 const courses = ref();
+const yearSemester = ref("2023/2"); // 초기 값 설정
+const searchKeyword = ref({
+  word: "",
+});
 
 // updateCourses 이벤트 핸들러를 정의
 const updateCourses = (newCourses) => {
@@ -87,12 +103,17 @@ async function applySubject(course) {
       // 여기서 수강과목 리스트 받기
       const mySubject = response.data;
       store.dispatch("subjectInfo/setSubject", mySubject);
+    } else if (response.status === 401) {
+      alert("이미 수강신청한 과목입니다!");
     } else {
-      alert("수강신청 오류!");
+      alert("과목 시간이 중복됩니다!");
     }
   }
 }
-
+// 검색 기능 함수
+const search = () => {
+  console.log("검색함수 실행: ", searchKeyword.value);
+};
 // const userData = computed(() => store.getters["userInfo/getUser"]);
 // const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 </script>
@@ -121,5 +142,9 @@ th,
 thead,
 tr {
   padding: 7px;
+}
+#searchForm {
+  display: flex;
+  justify-content: center;
 }
 </style>
