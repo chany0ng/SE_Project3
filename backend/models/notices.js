@@ -31,6 +31,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    notice_file: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+          model: 'files',
+          key: 'file_id'
+      }
+    },
     notice_views: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -52,6 +60,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'subject_id',
       targetKey: 'subject_id'
     });
+    
+    notices.belongsTo(models.files, {
+      foreignKey: 'notice_file',
+      targetKey: 'file_id'
+    });
+    
     // associations can be defined here
   };
   return notices;
