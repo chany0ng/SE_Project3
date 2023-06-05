@@ -14,8 +14,6 @@ exports.getNoticeList = async(req, res, next) => {
     return res.status(200).send(notices);
 };
 
-
-
 //공지사항 작성 함수
 exports.writeNotice = async(req, res, next) => {
 

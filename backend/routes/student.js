@@ -3,7 +3,7 @@ const router = express.Router();
 const loginController = require('../controllers/loginController');
 const myPageController = require('../controllers/myPageController');
 const enrollmentController = require('../controllers/enrollmentController');
-const noticeController = require('../controllers/noticeController');
+const subjectController = require('../controllers/subjectController');
 
 router.get('/', loginController.CheckLogin);
 
@@ -14,7 +14,7 @@ router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 router.post('/enrollment/search', enrollmentController.searchSubject);
 
 router.get('/subject/notice', loginController.CheckLogin);
-router.get('/subject/notice/:id', noticeController.getNoticeList);
+router.get('/subject/notice/:id', subjectController.getNoticeList);
 
 router.get('/subject/qna', loginController.CheckLogin);
 
