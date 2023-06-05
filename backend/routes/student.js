@@ -11,14 +11,14 @@ const upload = multer();
 router.get('/', loginController.CheckLogin);
 
 router.get('/enrollment', loginController.CheckLogin);
-router.get('/enrollment/:page/:', enrollmentController.getSubjectList);
+router.get('/enrollment/:page/:keyword?', enrollmentController.getSubjectList);
 router.post('/enrollment', enrollmentController.enrollment);
 router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 //router.post('/enrollment/search/:page', enrollmentController.searchSubject);
 
 router.get('/subject/notice', loginController.CheckLogin);
 router.get('/subject/notice/:id', subjectController.getNoticeList);
-router.post('/subject/notice/write', upload.array('upload'), (req, res) => {subjectController.writeNotice(req, res)});
+router.post('/subject/notice/write', upload.single('upload'), (req, res) => {subjectController.writeNotice(req, res)});
 router.get('/subject/notice/view/:id', subjectController.getNotice);
 router.get('/subject/download', subjectController.Download);
 

@@ -34,9 +34,6 @@ exports.writeNotice = async(req, res, next) => {
 exports.getNotice = async(req, res, next) => {
     let id = 1;
     let file = await model.files.findOne({where: {file_id: id}}).catch((err) => console.log(err));
-
-
-    res.send(file.file_content);
 };
 
 exports.Download = async(req, res, next) => {

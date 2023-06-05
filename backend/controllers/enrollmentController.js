@@ -150,13 +150,14 @@ exports.getSubjectList = async(req, res, next) => {
     let keyword = req.params.keyword;
     let perPage = 10;
     let result = '';
+    let count = '';
     //page가 숫자가 아닌 경우
     if (isNaN(page)) {
         return res.sendStatus(400);   //Bad request
     }
     if(keyword) {
         //검색어가 있는 경우
-          result = await model.subjects.findAll({
+        result = await model.subjects.findAll({
           where: {
             subject_name: {
               [Op.like]: "%" + keyword + "%" }
@@ -166,20 +167,21 @@ exports.getSubjectList = async(req, res, next) => {
           offset: (page - 1) * perPage,
           include: {model: model.professors}
         }).catch((err) => console.log(err));
+        //검색한 결과 총 개수
+        count = result.length;
     } else{
         //과목이름 오름차순 정렬
-          result = await model.subjects.findAll({
+        result = await model.subjects.findAll({
           order: [['subject_name', 'ASC']],
           limit: perPage,
           offset: (page - 1) * perPage,
           include: {model: model.professors}
         }).catch((err) => console.log(err));
-        
+        //과목 전체 개수 
+        count = await model.subjects.count();
     }
     if(result.length !== 0) {
       //과목 가져오기 성공
-      //과목의 총 개수  
-      let count = result.length;
       let data = [result, count];
       return res.status(200).send(data);
   } else {
