@@ -21,6 +21,17 @@
         </tbody>
       </table>
     </div>
+    <select id="select" v-model="yearSemester" style="margin-top: 10px">
+      <option value="2023/2">2023학년도 2학기</option>
+      <option value="2023/1" selected>2023학년도 1학기</option>
+      <option value="2022/2">2022학년도 2학기</option>
+      <option value="2022/1">2022학년도 1학기</option>
+      <option value="2021/2">2021학년도 2학기</option>
+      <option value="2021/1">2021학년도 1학기</option>
+      <option value="2020/1">2020학년도 2학기</option>
+      <option value="2020/1">2020학년도 1학기</option>
+    </select>
+
     <div>
       <table id="time-table">
         <tr id="row-header">
@@ -34,75 +45,72 @@
         </tr>
         <tr>
           <td>1교시</td>
-          <td style="background-color: lightblue">과목1</td>
-          <td>과목2</td>
-          <td>과목3</td>
-          <td>과목4</td>
-          <td>과목5</td>
-          <td>과목6</td>
+          <td ref="월1"></td>
+          <td ref="화1"></td>
+          <td ref="수1"></td>
+          <td ref="목1"></td>
+          <td ref="금1"></td>
+          <td ref="토1"></td>
         </tr>
         <tr>
           <td>2교시</td>
-          <td>과목7</td>
-          <td>과목8</td>
-          <td>과목9</td>
           <td v-for="(course, index) of subjectData" :key="index">
             {{ course.subject.subject_name }}
           </td>
         </tr>
         <tr>
           <td>3교시</td>
-          <td>과목13</td>
-          <td>과목14</td>
-          <td>과목15</td>
-          <td>과목16</td>
-          <td>과목17</td>
-          <td>과목18</td>
+          <td ref="월3"></td>
+          <td ref="화3"></td>
+          <td ref="수3"></td>
+          <td ref="목3"></td>
+          <td ref="금3"></td>
+          <td ref="토3"></td>
         </tr>
         <tr>
           <td>4교시</td>
-          <td>과목19</td>
-          <td>과목20</td>
-          <td>과목21</td>
-          <td>과목22</td>
-          <td>과목23</td>
-          <td>과목24</td>
+          <td ref="월4"></td>
+          <td ref="화4"></td>
+          <td ref="수4"></td>
+          <td ref="목4"></td>
+          <td ref="금4"></td>
+          <td ref="토4"></td>
         </tr>
         <tr>
           <td>5교시</td>
-          <td>과목25</td>
-          <td>과목26</td>
-          <td>과목27</td>
-          <td>과목28</td>
-          <td>과목29</td>
-          <td>과목30</td>
+          <td ref="월5"></td>
+          <td ref="화5"></td>
+          <td ref="수5"></td>
+          <td ref="목5"></td>
+          <td ref="금5"></td>
+          <td ref="토5"></td>
         </tr>
         <tr>
           <td>6교시</td>
-          <td>과목31</td>
-          <td>과목32</td>
-          <td>과목33</td>
-          <td>과목34</td>
-          <td>과목35</td>
-          <td>과목36</td>
+          <td ref="월6"></td>
+          <td ref="화6"></td>
+          <td ref="수6"></td>
+          <td ref="목6"></td>
+          <td ref="금6"></td>
+          <td ref="토6"></td>
         </tr>
         <tr>
           <td>7교시</td>
-          <td>과목31</td>
-          <td>과목32</td>
-          <td>과목33</td>
-          <td>과목34</td>
-          <td>과목35</td>
-          <td>과목36</td>
+          <td ref="월7"></td>
+          <td ref="화7"></td>
+          <td ref="수7"></td>
+          <td ref="목7"></td>
+          <td ref="금7"></td>
+          <td ref="토7"></td>
         </tr>
         <tr>
           <td>8교시</td>
-          <td>과목31</td>
-          <td>과목32</td>
-          <td>과목33</td>
-          <td>과목34</td>
-          <td>과목35</td>
-          <td>과목36</td>
+          <td ref="월8"></td>
+          <td ref="화8"></td>
+          <td ref="수8"></td>
+          <td ref="목8"></td>
+          <td ref="금8"></td>
+          <td ref="토8"></td>
         </tr>
       </table>
     </div>
@@ -132,6 +140,7 @@ onBeforeMount(async () => {
 const isRendered = ref(false);
 const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+const yearSemester = ref("2023/1"); // 초기 값 설정
 </script>
 
 <style scoped>
@@ -141,7 +150,7 @@ const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
   margin: 0 auto;
   margin-top: 10px;
   padding: 10px;
-  border: 2px solid var(--main3-color);
+  border: 2px solid var(--main2-color);
   border-radius: 10px;
 }
 
@@ -153,7 +162,7 @@ const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
   margin: 0 auto;
   margin-top: 10px;
   padding: 10px;
-  border: 2px solid var(--main3-color);
+  border: 2px solid var(--main2-color);
   border-radius: 10px;
   table-layout: fixed;
 }
@@ -161,7 +170,7 @@ const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
   font-size: small;
   padding: 1px;
   border: 1px solid var(--main2-color);
-  width: 30px;
+  width: 10px;
   height: 50px;
 }
 #time-table tr td:nth-child(n + 2) {

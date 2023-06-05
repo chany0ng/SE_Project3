@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted, defineProps, defineEmits, toRef } from "vue";
-import { useGetAxios } from "@/composable";
+import { useGetAxios, usePostAxios } from "@/composable";
 const currentPage = ref(1);
 const perPage = 10; // Number of courses per page
 const courses = ref([]);
@@ -44,9 +44,12 @@ const totalCourses = ref(0);
 // 부모로 부터 받은 경로 설정
 const props = defineProps({
   path: String,
+  keyword: Object,
 });
 // 넘어온 원본 경로
 const currentPath = toRef(props, "path");
+// 넘어온 검색어
+const searchKeyword = toRef(props, "keyword");
 // axios요청 할 서버 경로
 const serverPath = "/api" + currentPath.value;
 // 부모에게 보낼 과목 리스트 정보
@@ -61,22 +64,53 @@ onMounted(async () => {
 
 // 페이지에 해당하는 강의목록 받아오기
 const getCourses = async () => {
-  // 페이지별 get요청
-  const { getData } = useGetAxios(`${serverPath}/${currentPage.value}`);
-  const response = await getData();
-  // 경로 제대로 받아올 때
-  if (response.status === 200) {
-    courses.value = response.data[0];
-    // 부모에게 강의목록 전송
-    emits("update-courses", courses.value);
-    totalCourses.value = response.data[1];
-  } else {
-    alert("Pagination error");
+  console.log("get: ", currentPath.value);
+  console.log("get: ", searchKeyword.value.word);
+
+  // 검색어 없을 때
+  if (searchKeyword.value.word === "") {
+    console.log("검색어 없음");
+    // 페이지별 get요청
+    const { getData } = useGetAxios(`${serverPath}/${currentPage.value}`);
+    const response = await getData();
+    // 경로 제대로 받아올 때
+    if (response.status === 200) {
+      courses.value = response.data[0];
+      // 부모에게 강의목록 전송
+      emits("update-courses", courses.value);
+      totalCourses.value = response.data[1];
+    } else {
+      alert("Pagination error");
+    }
+  }
+  // 검색어가 있을 때
+  else {
+    console.log("검색어 있음");
+
+    // 검색 후 페이지별 post요청
+    const { getData } = useGetAxios(
+      `${serverPath}/${currentPath.value}/${searchKeyword.value.word}`
+    );
+    const response = await getData();
+    // 경로 제대로 받아올 때
+    if (response.status === 200) {
+      courses.value = response.data[0];
+      // 부모에게 강의목록 전송
+      emits("update-courses", courses.value);
+      totalCourses.value = response.data[1];
+    } else {
+      alert("Search Pagination error");
+    }
   }
 };
+
 // 동적 경로 설정 함수
 const getLink = (page) => {
-  return `${currentPath.value}/${page}`;
+  if (searchKeyword.value.word === "") {
+    return `${currentPath.value}/${page}`;
+  } else {
+    return `${currentPath.value}/${page}/${searchKeyword.value.word}`;
+  }
 };
 
 // 전체 페이지 수 계산을 위한 함수
