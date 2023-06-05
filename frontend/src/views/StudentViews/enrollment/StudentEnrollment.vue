@@ -5,7 +5,7 @@
       <template v-slot:title>
         <h4>수강신청</h4>
         <select id="select" v-model="yearSemester">
-          <option value="2023/1">2023년도 1학기</option>
+          <option value="2023/1" selected>2023학년도 1학기</option>
         </select>
       </template>
       <template v-slot:content>
@@ -52,6 +52,7 @@ import { loginCheck, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
 import router from "@/router";
+import store from "@/store";
 import Background from "@/components/Background.vue";
 import Pagination from "@/components/Pagination.vue";
 
@@ -70,23 +71,6 @@ const currentPath = "/student/enrollment";
 const isRendered = ref(false);
 const courses = ref();
 
-// 몇학년 몇학기 인지 받기
-const yearSemester = ref("");
-const year = computed(() => {
-  if (yearSemester.value) {
-    return yearSemester.value.split("/")[0];
-  } else {
-    return "";
-  }
-});
-const semester = computed(() => {
-  if (yearSemester.value) {
-    return yearSemester.value.split("/")[1];
-  } else {
-    return "";
-  }
-});
-
 // updateCourses 이벤트 핸들러를 정의
 const updateCourses = (newCourses) => {
   courses.value = newCourses;
@@ -102,7 +86,9 @@ async function applySubject(course) {
     if (response.status === 200) {
       // 여기서 수강과목 리스트 받기
       const mySubject = response.data;
-      console.log(mySubject);
+      store.dispatch("subjectInfo/setSubject", mySubject);
+    } else {
+      alert("수강신청 오류!");
     }
   }
 }
