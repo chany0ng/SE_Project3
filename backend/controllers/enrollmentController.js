@@ -101,7 +101,12 @@ exports.deleteEnrollment = async (req, res, next) => {
     //로그인 유저의 변경된 수강 정보
     let data = await model.enrollments.findAll({
       where: {student_id: studentId}, 
-      include: model.subjects
+      include: [
+        {
+          model: model.subjects,
+          include: {model: model.professors}
+        }
+      ]
     }).catch((err) => console.log(err));
     return res.Status(200).send(data);
   } else {
@@ -112,18 +117,27 @@ exports.deleteEnrollment = async (req, res, next) => {
 // 과목 검색 함수
 // 브라우저에서 넘겨줄 정보: 검색 값 (searchData)
 exports.searchSubject = async(req, res, next) => {
+    let page = req.params.page;
+    let perPage = 10;
     let keyword = req.body.searchData;
     let result = await model.subjects.findAll({
       where: {
         subject_name: {
           [Op.like]: "%" + keyword + "%" }
         },
+      order: [['subject_name', 'ASC']],
+      limit: perPage,
+      offset: (page - 1) * perPage,
       include: {model: model.professors}
     }).catch((err) => console.log(err));
+
+
     
     if (result.length !== 0) {
         //검색 성공
-        return res.status(200).send(result);
+        let count = result.length;
+        let data = [result, count];
+        return res.status(200).send(data);
     } else {
         //검색 실패
         return res.sendStatus(404);    //not found

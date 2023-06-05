@@ -81,6 +81,12 @@ const routes = [
     name: "교수 메인화면",
     component: () => import("../views/ProfessorViews/ProfessorMain"),
   },
+
+  {
+    path: "/professor/notice/upload",
+    name: "교수 공지사항 등록",
+    component: () => import("../views/ProfessorViews/management/ProfessorNoticeUpload"),
+  },
 ];
 
 const router = createRouter({
