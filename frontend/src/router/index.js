@@ -65,7 +65,7 @@ const routes = [
     component: () => import("../views/StudentViews/mypage/StudentFriends.vue"),
   },
   {
-    path: "/student/enrollment/:page/:keyword",
+    path: "/student/enrollment/:page/:keyword?",
     name: "수강 신청",
     component: () =>
       import("../views/StudentViews/enrollment/StudentEnrollment"),

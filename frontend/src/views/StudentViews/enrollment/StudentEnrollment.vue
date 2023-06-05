@@ -39,19 +39,7 @@
         </table>
       </template>
       <template v-slot:pagination>
-        <Pagination
-          :path="currentPath"
-          :keyword="searchKeyword"
-          @update-courses="updateCourses"
-        />
-        <div id="searchForm">
-          <input
-            type="text"
-            v-model="searchKeyword.word"
-            placeholder="과목 이름을 입력하세요"
-          />
-          <button @click="search">검색</button>
-        </div>
+        <Pagination :path="currentPath" @update-courses="updateCourses" />
       </template>
     </Background>
     <MainFooter />
@@ -83,13 +71,11 @@ const currentPath = ref("/student/enrollment");
 const isRendered = ref(false);
 const courses = ref();
 const yearSemester = ref("2023/2"); // 초기 값 설정
-const searchKeyword = ref({
-  word: "",
-});
 
 // updateCourses 이벤트 핸들러를 정의
 const updateCourses = (newCourses) => {
   courses.value = newCourses;
+  console.log("얻어온 과목리스트: ", courses.value);
 };
 
 async function applySubject(course) {
@@ -101,6 +87,7 @@ async function applySubject(course) {
     // 수강신청 성공했을 때
     if (response.status === 200) {
       // 여기서 수강과목 리스트 받기
+      alert("수강신청에 성공했습니다!");
       const mySubject = response.data;
       store.dispatch("subjectInfo/setSubject", mySubject);
     } else if (response.status === 401) {
@@ -110,10 +97,7 @@ async function applySubject(course) {
     }
   }
 }
-// 검색 기능 함수
-const search = () => {
-  console.log("검색함수 실행: ", searchKeyword.value);
-};
+
 // const userData = computed(() => store.getters["userInfo/getUser"]);
 // const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 </script>
@@ -143,8 +127,9 @@ thead,
 tr {
   padding: 7px;
 }
-#searchForm {
+Pagination {
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
 </style>

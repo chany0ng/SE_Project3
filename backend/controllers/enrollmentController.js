@@ -12,21 +12,23 @@ const Op = sequelize.Op;
     뭐 만약에 수강 신청한거 실시간으로 시간표에 띄우는거 할거라거나 수강 신청 했던 거 삭제도 할거면 말 ㄱ
 */
 exports.enrollment = async (req, res, next) => {
- 
   let subjectId = req.body.subject_id;
   let studentId = req.session.loginId;
   //수강 신청 학기는 2023년도 2학기로 고정
   let year = 2023;
   let semester = 2;
 
+  console.log(subjectId);
   //이미 수강한 과목인지 확인
-  let check = await model.enrollments.findOne({
-    where: {student_id: studentId, subject_id: subjectId}})
+  let check = await model.enrollments
+    .findOne({
+      where: { student_id: studentId, subject_id: subjectId },
+    })
     .catch((err) => console.log(err));
-
-  if(check.length !== 0) {
-      //이미 수강한 과목
-      return res.sendStatus(401);
+  console.log(check);
+  if (check) {
+    //이미 수강한 과목
+    return res.sendStatus(401);
   } else {
     //처음 수강하는 과목
     //신청한 과목 시간 가져오기
@@ -60,22 +62,24 @@ exports.enrollment = async (req, res, next) => {
       .create(datas)
       .catch((err) => console.log(err));
 
-    if(result.length !== 0) {
-        //수강 신청 성공
-        //로그인 유저의 변경된 수강 정보
-        let data = await model.enrollments.findAll({
-          where: {student_id: studentId}, 
+    if (result.length !== 0) {
+      //수강 신청 성공
+      //로그인 유저의 변경된 수강 정보
+      let data = await model.enrollments
+        .findAll({
+          where: { student_id: studentId },
           include: [
             {
               model: model.subjects,
-              include: {model: model.profesors}
-            }
-          ]
-        }).catch((err) => console.log(err));
-        return res.Status(200).send(data);
+              include: { model: model.professors },
+            },
+          ],
+        })
+        .catch((err) => console.log(err));
+      return res.status(200).send(data);
     } else {
-        //수강 신청 실패
-        return res.sendStatus(400);
+      //수강 신청 실패
+      return res.sendStatus(400);
     }
   }
 };
@@ -99,15 +103,17 @@ exports.deleteEnrollment = async (req, res, next) => {
   if (result.length !== 0) {
     //수강 삭제 성공
     //로그인 유저의 변경된 수강 정보
-    let data = await model.enrollments.findAll({
-      where: {student_id: studentId}, 
-      include: [
-        {
-          model: model.subjects,
-          include: {model: model.professors}
-        }
-      ]
-    }).catch((err) => console.log(err));
+    let data = await model.enrollments
+      .findAll({
+        where: { student_id: studentId },
+        include: [
+          {
+            model: model.subjects,
+            include: { model: model.professors },
+          },
+        ],
+      })
+      .catch((err) => console.log(err));
     return res.Status(200).send(data);
   } else {
     //수강 삭제 실패
@@ -116,119 +122,124 @@ exports.deleteEnrollment = async (req, res, next) => {
 };
 // 과목 검색 함수
 // 브라우저에서 넘겨줄 정보: 검색 값 (searchData)
-exports.searchSubject = async(req, res, next) => {
-    let page = req.params.page;
-    let perPage = 10;
-    let keyword = req.body.searchData;
-    let result = await model.subjects.findAll({
+exports.searchSubject = async (req, res, next) => {
+  let page = req.params.page;
+  let perPage = 10;
+  let keyword = req.body.searchData;
+  let result = await model.subjects
+    .findAll({
       where: {
         subject_name: {
-          [Op.like]: "%" + keyword + "%" }
+          [Op.like]: "%" + keyword + "%",
         },
-      order: [['subject_name', 'ASC']],
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      include: {model: model.professors}
-    }).catch((err) => console.log(err));
+        order: [["subject_name", "ASC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.professors },
+      },
+    })
+    .catch((err) => console.log(err));
 
-
-    
-    if (result.length !== 0) {
-        //검색 성공
-        let count = result.length;
-        let data = [result, count];
-        return res.status(200).send(data);
-    } else {
-        //검색 실패
-        return res.sendStatus(404);    //not found
-    }
+  if (result.length !== 0) {
+    //검색 성공
+    let count = result.length;
+    let data = [result, count];
+    return res.status(200).send(data);
+  } else {
+    //검색 실패
+    return res.sendStatus(404); //not found
+  }
 };
 //과목 목록 가져오는 함수
 // 브라우저에서 넘겨줄 정보: 페이지 번호
-exports.getSubjectList = async(req, res, next) => {
-    let page = req.params.page;
-    let keyword = req.params.keyword;
-    let perPage = 10;
-    let result = '';
-    let count = '';
-    //page가 숫자가 아닌 경우
-    if (isNaN(page)) {
-        return res.sendStatus(400);   //Bad request
-    }
-    if(keyword) {
-        //검색어가 있는 경우
-        result = await model.subjects.findAll({
-          where: {
-            subject_name: {
-              [Op.like]: "%" + keyword + "%" }
-            },
-          order: [['subject_name', 'ASC']],
-          limit: perPage,
-          offset: (page - 1) * perPage,
-          include: {model: model.professors}
-        }).catch((err) => console.log(err));
-        //검색한 결과 총 개수
-        count = result.length;
-    } else{
-        //과목이름 오름차순 정렬
-        result = await model.subjects.findAll({
-          order: [['subject_name', 'ASC']],
-          limit: perPage,
-          offset: (page - 1) * perPage,
-          include: {model: model.professors}
-        }).catch((err) => console.log(err));
-        //과목 전체 개수 
-        count = await model.subjects.count();
-    }
-    if(result.length !== 0) {
-      //과목 가져오기 성공
-      let data = [result, count];
-      return res.status(200).send(data);
-  } else {
-      //과목 가져오기 실패
-      return res.sendStatus(404);    //Not Found
+exports.getSubjectList = async (req, res, next) => {
+  let page = req.params.page;
+  let keyword = req.params.keyword;
+  let perPage = 10;
+  let result = "";
+  let count = "";
+  //page가 숫자가 아닌 경우
+  if (isNaN(page)) {
+    return res.sendStatus(400); //Bad request
   }
-
+  if (keyword) {
+    //검색어가 있는 경우
+    result = await model.subjects
+      .findAll({
+        where: {
+          subject_name: {
+            [Op.like]: "%" + keyword + "%",
+          },
+        },
+        order: [["subject_name", "ASC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.professors },
+      })
+      .catch((err) => console.log(err));
+    //검색한 결과 총 개수
+    count = result.length;
+  } else {
+    //과목이름 오름차순 정렬
+    result = await model.subjects
+      .findAll({
+        order: [["subject_name", "ASC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.professors },
+      })
+      .catch((err) => console.log(err));
+    //과목 전체 개수
+    count = await model.subjects.count();
+  }
+  if (result.length !== 0) {
+    //과목 가져오기 성공
+    let data = [result, count];
+    return res.status(200).send(data);
+  } else {
+    //과목 가져오기 실패
+    return res.sendStatus(404); //Not Found
+  }
 };
 
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수
 function checkTime(existingTime, newTime) {
-    let existing_time = [];
-    let new_time = [];
-    let duplication = false;
-    //ex) 월1,7,8/수2 => 월1,7,8  수2 로 /를 기준으로 split 하는 작업
-    let split_existingTime = existingTime.split("/");
-    let split_newTime = newTime.split("/");
-    //기존 수강 시간 변환
-    //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
-    for (let i = 0; i < split_existingTime.length; i++) {
-      let day = split_existingTime[i][0];
-      for (let j = 0; j < split_existingTime[i].length; j++) {
-        if (!isNaN(split_existingTime[i][j])) {
-          //숫자인 경우
-          existing_time.push(day + split_existingTime[i][j]);
-        }
+  let existing_time = [];
+  let new_time = [];
+  let duplication = false;
+  //ex) 월1,7,8/수2 => 월1,7,8  수2 로 /를 기준으로 split 하는 작업
+  let split_existingTime = existingTime.split("/");
+  let split_newTime = newTime.split("/");
+  //기존 수강 시간 변환
+  //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+  for (let i = 0; i < split_existingTime.length; i++) {
+    let day = split_existingTime[i][0];
+    for (let j = 0; j < split_existingTime[i].length; j++) {
+      if (!isNaN(split_existingTime[i][j])) {
+        //숫자인 경우
+        existing_time.push(day + split_existingTime[i][j]);
       }
     }
-    //새롭게 신청한 수강 시간 변환
-    //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
-    for (let i = 0; i < split_newTime.length; i++) {
-      let day = split_newTime[i][0];
-      for (let j = 0; j < split_newTime[i].length; j++) {
-        if (!isNaN(split_newTime[i][j])) {
-          //숫자인 경우
-          new_time.push(day + split_newTime[i][j]);
-        }
+  }
+  //새롭게 신청한 수강 시간 변환
+  //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+  for (let i = 0; i < split_newTime.length; i++) {
+    let day = split_newTime[i][0];
+    for (let j = 0; j < split_newTime[i].length; j++) {
+      if (!isNaN(split_newTime[i][j])) {
+        //숫자인 경우
+        new_time.push(day + split_newTime[i][j]);
       }
     }
-    //수강 시간이 중복되는지 비교
-    for (let i = 0; i < existing_time.length; i++) {
-      if (new_time.includes(existing_time[i])) {
-        //중복되는 경우
-        duplication = true;
-        break;
-      }
+  }
+  //수강 시간이 중복되는지 비교
+  for (let i = 0; i < existing_time.length; i++) {
+    if (new_time.includes(existing_time[i])) {
+      //중복되는 경우
+      duplication = true;
+      break;
     }
+  }
 
-    return duplication;
+  return duplication;
 }
