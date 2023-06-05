@@ -18,9 +18,16 @@ exports.getNoticeList = async(req, res, next) => {
 
 //공지사항 작성 함수
 exports.writeNotice = async(req, res, next) => {
-    let filename = req.file.name;
-    let filedata = req.file.buffer;
+    //console.log(req.files);
+    let filename = req.files[0].originalname;
+    let filedata = req.files[0].buffer;
+    let mimetype = req.files[0].mimetype;
 
-    console.log(filename);
-    console.log(filedata);
+    let datas = {
+        file_name: filename,
+        file_content: filedata,
+        file_mimetype: mimetype
+    }
+
+    let result = await model.files.create(datas).catch((err) => console.log(err));
 };
