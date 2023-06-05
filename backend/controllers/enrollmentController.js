@@ -147,29 +147,46 @@ exports.searchSubject = async(req, res, next) => {
 // 브라우저에서 넘겨줄 정보: 페이지 번호
 exports.getSubjectList = async(req, res, next) => {
     let page = req.params.page;
+    let keyword = req.params.keyword;
+    let perPage = 10;
+    let result = '';
     //page가 숫자가 아닌 경우
     if (isNaN(page)) {
         return res.sendStatus(400);   //Bad request
     }
-    let perPage = 10;
-    //과목이름 오름차순 정렬
-    let result = await model.subjects.findAll({
-      order: [['subject_name', 'ASC']],
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      include: {model: model.professors}
-    }).catch((err) => console.log(err));
-    //과목의 총 개수
-    let count = await model.subjects.count();
-    
-    let data = [result, count];
-    if(result.length !== 0) {
-        //과목 가져오기 성공
-        return res.status(200).send(data);
-    } else {
-        //과목 가져오기 실패
-        return res.sendStatus(404);    //Not Found
+    if(keyword) {
+        //검색어가 있는 경우
+          result = await model.subjects.findAll({
+          where: {
+            subject_name: {
+              [Op.like]: "%" + keyword + "%" }
+            },
+          order: [['subject_name', 'ASC']],
+          limit: perPage,
+          offset: (page - 1) * perPage,
+          include: {model: model.professors}
+        }).catch((err) => console.log(err));
+    } else{
+        //과목이름 오름차순 정렬
+          result = await model.subjects.findAll({
+          order: [['subject_name', 'ASC']],
+          limit: perPage,
+          offset: (page - 1) * perPage,
+          include: {model: model.professors}
+        }).catch((err) => console.log(err));
+        
     }
+    if(result.length !== 0) {
+      //과목 가져오기 성공
+      //과목의 총 개수  
+      let count = result.length;
+      let data = [result, count];
+      return res.status(200).send(data);
+  } else {
+      //과목 가져오기 실패
+      return res.sendStatus(404);    //Not Found
+  }
+
 };
 
 //수강 신청 시 겹치는 시간이 있는지 확인하는 함수

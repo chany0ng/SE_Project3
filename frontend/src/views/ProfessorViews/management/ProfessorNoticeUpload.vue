@@ -1,8 +1,8 @@
 <template>
     <main>
 
-      <form action="/api/student/subject/notice/write" method="post">
-        <input type="file" name="upload" id="upload">
+      <form action="/api/student/subject/notice/write" method="post" enctype="multipart/form-data">
+        <input type="file" name="upload" id="upload" multiple>
         <button type="submit">파일 업로드</button>
       </form>
 
