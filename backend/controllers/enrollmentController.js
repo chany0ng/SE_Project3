@@ -4,13 +4,6 @@ const sequelize = require("sequelize");
 const Op = sequelize.Op;
 
 //수강 신청 함수
-/*
-    브라우저에서 넘겨줄 정보: 학정번호, 그 과목 듣는 학년, 학기 
-    아마 학년, 학기는 뭐 4학년 2학기던 수강 신청하는 학년, 학기로 통일하는게 나을 듯
-    아마 시간 겹치는 지 비교해서 안된다고 뜨는건 수강 신청 4학년 2학기 시간표 이미 있는데 추가한다거나 이럴 때 필요할듯
-    학생마다 다르게 할거면 학생이 몇학년인지 알게하는 정보가 필요할듯
-    뭐 만약에 수강 신청한거 실시간으로 시간표에 띄우는거 할거라거나 수강 신청 했던 거 삭제도 할거면 말 ㄱ
-*/
 exports.enrollment = async (req, res, next) => {
   let subjectId = req.body.subject_id;
   let studentId = req.session.loginId;
@@ -25,7 +18,7 @@ exports.enrollment = async (req, res, next) => {
       where: { student_id: studentId, subject_id: subjectId },
     })
     .catch((err) => console.log(err));
-  console.log(check);
+
   if (check) {
     //이미 수강한 과목
     return res.sendStatus(401);
@@ -83,10 +76,8 @@ exports.enrollment = async (req, res, next) => {
     }
   }
 };
+
 //수강 삭제 함수
-/*
-    브라우저에서 넘겨줄 정보: 과목번호
-*/
 exports.deleteEnrollment = async (req, res, next) => {
   let studentId = req.session.loginId;
   let subjectId = req.body.subjectNumber;
@@ -120,38 +111,8 @@ exports.deleteEnrollment = async (req, res, next) => {
     return res.sendStatus(400);
   }
 };
-// 과목 검색 함수
-// 브라우저에서 넘겨줄 정보: 검색 값 (searchData)
-exports.searchSubject = async (req, res, next) => {
-  let page = req.params.page;
-  let perPage = 10;
-  let keyword = req.body.searchData;
-  let result = await model.subjects
-    .findAll({
-      where: {
-        subject_name: {
-          [Op.like]: "%" + keyword + "%",
-        },
-        order: [["subject_name", "ASC"]],
-        limit: perPage,
-        offset: (page - 1) * perPage,
-        include: { model: model.professors },
-      },
-    })
-    .catch((err) => console.log(err));
 
-  if (result.length !== 0) {
-    //검색 성공
-    let count = result.length;
-    let data = [result, count];
-    return res.status(200).send(data);
-  } else {
-    //검색 실패
-    return res.sendStatus(404); //not found
-  }
-};
 //과목 목록 가져오는 함수
-// 브라우저에서 넘겨줄 정보: 페이지 번호
 exports.getSubjectList = async (req, res, next) => {
   let page = req.params.page;
   let keyword = req.params.keyword;
