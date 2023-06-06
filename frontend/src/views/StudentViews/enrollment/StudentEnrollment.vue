@@ -75,7 +75,6 @@ const yearSemester = ref("2023/2"); // 초기 값 설정
 // updateCourses 이벤트 핸들러를 정의
 const updateCourses = (newCourses) => {
   courses.value = newCourses;
-  console.log("얻어온 과목리스트: ", courses.value);
 };
 
 async function applySubject(course) {
