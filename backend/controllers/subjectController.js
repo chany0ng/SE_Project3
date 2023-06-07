@@ -8,7 +8,7 @@ exports.getNoticeList = async(req, res, next) => {
     let subjectId = req.params.id;
     let notices = await model.notices.findAll({
         where: {subject_id: subjectId},
-        include: model.professors
+        include: {model: model.professors}
     }).catch((err) => {
         console.log(err);
         return res.sendStatus(400);     //Bad request
@@ -31,20 +31,7 @@ exports.writeNotice = async(req, res, next) => {
     let result = await model.files.create(datas).catch((err) => console.log(err));
 };
 
-//공지사항 보여주는 함수
-exports.getNotice = async(req, res, next) => {
-    let noticeId = req.params.id;
-    let notice = await model.notices.fineOne({where: {notice_id: noticeId}}).catch((err) => console.log(err));
-
-    if(notice) {
-        //공지사항 전송 성공
-        return res.status(200).send(notice);
-    } else {
-        //공지사항 전송 실패 (Not Found)
-        return res.sendStatus(404);
-    }
-};
-
+//다운로드 함수
 exports.Download = async(req, res, next) => {
     let id = 1;
     let file = await model.files.findOne({where: {file_id: id}}).catch((err) => console.log(err));
@@ -58,4 +45,45 @@ exports.Download = async(req, res, next) => {
     fileStream.push(null);
     fileStream.pipe(res);
     
+};
+
+//묻고 답하기 조회
+exports.getQnAList = async(req, res, next)  => {
+    let subjectId = req.params.id;
+    let qnas = await model.QnAs.findAll({
+        where: {subject_id: subjectId},
+        include: {model: model.students}
+    }).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);     //Bad request
+    });
+    return res.status(200).send(qnas);
+}
+
+//묻고 답하기 작성
+exports.writeQnA = async(req, res, next) => {
+    let studentId = req.session.loginId;
+    let subjectId = req.params.id;
+    let datas = {
+        student_id: studentId,
+        subject_id: subjectId,
+        QnA_title: req.body.title,
+        QnA_description: req.body.description,
+        isDeleted: 0,
+    }
+    //묻고 답하기 작성
+    let result = await model.QnAs.create(datas)
+    .catch((err) => console.log(err));
+
+    if (result.length !== 0) {
+        //작성 성공
+        let data = await model.QnAs.findAll({
+            where: {student_id: studentId, subject_id: subjectId },
+            include: {model: model.students}
+        }).catch((err) => console.log(err));
+        return res.status(200).send(data);
+    } else {
+        //작성 실패
+        return res.sendStatus(400); //Bad request
+    }
 };

@@ -7,11 +7,7 @@ const Op = sequelize.Op;
 exports.enrollment = async (req, res, next) => {
   let subjectId = req.body.subject_id;
   let studentId = req.session.loginId;
-  //수강 신청 학기는 2023년도 2학기로 고정
-  let year = 2023;
-  let semester = 2;
 
-  console.log(subjectId);
   //이미 수강한 과목인지 확인
   let check = await model.enrollments
     .findOne({
@@ -47,8 +43,8 @@ exports.enrollment = async (req, res, next) => {
     let datas = {
       subject_id: subjectId,
       student_id: studentId,
-      year: year,
-      semester: semester,
+      year: 2023,
+      semester: 2,
     };
     //수강 테이블에 정보 입력
     let result = await model.enrollments

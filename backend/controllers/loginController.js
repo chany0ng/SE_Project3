@@ -32,6 +32,7 @@ exports.Login = async (req, res, next) => {
   if (user.length !== 0) {
     //로그인 성공
     req.session.loginId = id;
+    req.session.loginType = type;
     //로그인한 사용자의 수강 정보(과목 정보, 그 과목의 교수 정보) 가져오기
     let enrollments = await model.enrollments.findAll({
         where: { student_id: id },
