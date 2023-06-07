@@ -14,16 +14,29 @@
         </thead>
         <tbody class="table-group-divider">
           <tr v-for="(course, index) of subjectData" :key="index">
-            <th scope="row">{{ course.subject.subject_name }}</th>
+            <th scope="row">
+              {{ course.subject.subject_name }}
+              <button
+                style="
+                  color: red;
+                  font-size: small;
+                  float: left;
+                  border-style: none;
+                "
+                @click="deleteSubject(course)"
+              >
+                X
+              </button>
+            </th>
             <td>새로운 과제가 없습니다!</td>
-            <td>새로운 공지사항이 있습니다!</td>
+            <td>새로운 공지사항이 없습니다!</td>
           </tr>
         </tbody>
       </table>
     </div>
     <select id="select" v-model="yearSemester" style="margin-top: 10px">
-      <option value="2023/2">2023학년도 2학기</option>
-      <option value="2023/1" selected>2023학년도 1학기</option>
+      <option value="2023/2" selected>2023학년도 2학기</option>
+      <option value="2023/1">2023학년도 1학기</option>
       <option value="2022/2">2022학년도 2학기</option>
       <option value="2022/1">2022학년도 1학기</option>
       <option value="2021/2">2021학년도 2학기</option>
@@ -48,22 +61,22 @@
           <td
             ref="월1"
             v-text="timeTable.월1.시간"
-            :style="timeTable.월1.배경"
+            :style="`background-color: ${timeTable.월1.배경}`"
           ></td>
           <td
             ref="화1"
             v-text="timeTable.화1.시간"
-            :style="timeTable.화1.배경"
+            :style="`background-color: ${timeTable.화1.배경}`"
           ></td>
           <td
             ref="수1"
             v-text="timeTable.수1.시간"
-            :style="timeTable.수1.배경"
+            :style="`background-color: ${timeTable.수1.배경}`"
           ></td>
           <td
             ref="목1"
             v-text="timeTable.목1.시간"
-            :style="timeTable.목1.배경"
+            :style="`background-color: ${timeTable.목1.배경}`"
           ></td>
           <td
             ref="금1"
@@ -73,7 +86,7 @@
           <td
             ref="토1"
             v-text="timeTable.토1.시간"
-            :style="timeTable.토1.배경"
+            :style="`background-color: ${timeTable.토1.배경}`"
           ></td>
         </tr>
         <tr>
@@ -84,32 +97,32 @@
           <td
             ref="월2"
             v-text="timeTable.월2.시간"
-            :style="timeTable.월2.배경"
+            :style="`background-color: ${timeTable.월2.배경}`"
           ></td>
           <td
             ref="화2"
             v-text="timeTable.화2.시간"
-            :style="timeTable.화2.배경"
+            :style="`background-color: ${timeTable.화2.배경}`"
           ></td>
           <td
             ref="수2"
             v-text="timeTable.수2.시간"
-            :style="timeTable.수2.배경"
+            :style="`background-color: ${timeTable.수2.배경}`"
           ></td>
           <td
             ref="목2"
             v-text="timeTable.목2.시간"
-            :style="timeTable.목2.배경"
+            :style="`background-color: ${timeTable.목2.배경}`"
           ></td>
           <td
             ref="금2"
             v-text="timeTable.금2.시간"
-            :style="timeTable.금2.배경"
+            :style="`background-color: ${timeTable.금2.배경}`"
           ></td>
           <td
             ref="토2"
             v-text="timeTable.토2.시간"
-            :style="timeTable.토2.배경"
+            :style="`background-color: ${timeTable.토2.배경}`"
           ></td>
         </tr>
         <tr>
@@ -122,27 +135,27 @@
           <td
             ref="화3"
             v-text="timeTable.화3.시간"
-            :style="timeTable.화3.배경"
+            :style="`background-color: ${timeTable.화3.배경}`"
           ></td>
           <td
             ref="수3"
             v-text="timeTable.수3.시간"
-            :style="timeTable.수3.배경"
+            :style="`background-color: ${timeTable.수3.배경}`"
           ></td>
           <td
             ref="목3"
             v-text="timeTable.목3.시간"
-            :style="timeTable.목3.배경"
+            :style="`background-color: ${timeTable.목3.배경}`"
           ></td>
           <td
             ref="금3"
             v-text="timeTable.금3.시간"
-            :style="timeTable.금3.배경"
+            :style="`background-color: ${timeTable.금3.배경}`"
           ></td>
           <td
             ref="토3"
             v-text="timeTable.토3.시간"
-            :style="timeTable.토3.배경"
+            :style="`background-color: ${timeTable.토3.배경}`"
           ></td>
         </tr>
         <tr>
@@ -150,12 +163,12 @@
           <td
             ref="월4"
             v-text="timeTable.월4.시간"
-            :style="timeTable.월4.배경"
+            :style="`background-color: ${timeTable.월4.배경}`"
           ></td>
           <td
             ref="화4"
             v-text="timeTable.화4.시간"
-            :style="timeTable.화4.배경"
+            :style="`background-color: ${timeTable.화4.배경}`"
           ></td>
           <td
             ref="수4"
@@ -165,17 +178,17 @@
           <td
             ref="목4"
             v-text="timeTable.목4.시간"
-            :style="timeTable.목4.배경"
+            :style="`background-color: ${timeTable.목4.배경}`"
           ></td>
           <td
             ref="금4"
             v-text="timeTable.금4.시간"
-            :style="timeTable.금4.배경"
+            :style="`background-color: ${timeTable.금4.배경}`"
           ></td>
           <td
             ref="토4"
             v-text="timeTable.토4.시간"
-            :style="timeTable.토4.배경"
+            :style="`background-color: ${timeTable.토4.배경}`"
           ></td>
         </tr>
         <tr>
@@ -188,12 +201,12 @@
           <td
             ref="화5"
             v-text="timeTable.화5.시간"
-            :style="timeTable.화5.배경"
+            :style="`background-color: ${timeTable.화5.배경}`"
           ></td>
           <td
             ref="수5"
             v-text="timeTable.수5.시간"
-            :style="timeTable.수5.배경"
+            :style="`background-color: ${timeTable.수5.배경}`"
           ></td>
           <td
             ref="목5"
@@ -203,12 +216,12 @@
           <td
             ref="금5"
             v-text="timeTable.금5.시간"
-            :style="timeTable.금5.배경"
+            :style="`background-color: ${timeTable.금5.배경}`"
           ></td>
           <td
             ref="토5"
             v-text="timeTable.토5.시간"
-            :style="timeTable.토5.배경"
+            :style="`background-color: ${timeTable.토5.배경}`"
           ></td>
         </tr>
         <tr>
@@ -216,12 +229,12 @@
           <td
             ref="월6"
             v-text="timeTable.월6.시간"
-            :style="timeTable.월6.배경"
+            :style="`background-color: ${timeTable.월6.배경}`"
           ></td>
           <td
             ref="화6"
             v-text="timeTable.화6.시간"
-            :style="timeTable.화6.배경"
+            :style="`background-color: ${timeTable.화6.배경}`"
           ></td>
           <td
             ref="수6"
@@ -231,17 +244,17 @@
           <td
             ref="목6"
             v-text="timeTable.목6.시간"
-            :style="timeTable.목6.배경"
+            :style="`background-color: ${timeTable.목6.배경}`"
           ></td>
           <td
             ref="금6"
             v-text="timeTable.금6.시간"
-            :style="timeTable.금6.배경"
+            :style="`background-color: ${timeTable.금6.배경}`"
           ></td>
           <td
             ref="토6"
             v-text="timeTable.토6.시간"
-            :style="timeTable.토6.배경"
+            :style="`background-color: ${timeTable.토6.배경}`"
           ></td>
         </tr>
         <tr>
@@ -249,32 +262,32 @@
           <td
             ref="월7"
             v-text="timeTable.월7.시간"
-            :style="timeTable.월7.배경"
+            :style="`background-color: ${timeTable.월7.배경}`"
           ></td>
           <td
             ref="화7"
             v-text="timeTable.화7.시간"
-            :style="timeTable.화7.배경"
+            :style="`background-color: ${timeTable.화7.배경}`"
           ></td>
           <td
             ref="수7"
             v-text="timeTable.수7.시간"
-            :style="timeTable.수7.배경"
+            :style="`background-color: ${timeTable.수7.배경}`"
           ></td>
           <td
             ref="목7"
             v-text="timeTable.목7.시간"
-            :style="timeTable.목7.배경"
+            :style="`background-color: ${timeTable.목7.배경}`"
           ></td>
           <td
             ref="금7"
             v-text="timeTable.금7.시간"
-            :style="timeTable.금7.배경"
+            :style="`background-color: ${timeTable.금7.배경}`"
           ></td>
           <td
             ref="토7"
             v-text="timeTable.토7.시간"
-            :style="timeTable.토7.배경"
+            :style="`background-color: ${timeTable.토7.배경}`"
           ></td>
         </tr>
         <tr>
@@ -282,32 +295,32 @@
           <td
             ref="월8"
             v-text="timeTable.월8.시간"
-            :style="timeTable.월8.배경"
+            :style="`background-color: ${timeTable.월8.배경}`"
           ></td>
           <td
             ref="화8"
             v-text="timeTable.화8.시간"
-            :style="timeTable.화8.배경"
+            :style="`background-color: ${timeTable.화8.배경}`"
           ></td>
           <td
             ref="수8"
             v-text="timeTable.수8.시간"
-            :style="timeTable.수8.배경"
+            :style="`background-color: ${timeTable.수8.배경}`"
           ></td>
           <td
             ref="목8"
             v-text="timeTable.목8.시간"
-            :style="timeTable.목8.배경"
+            :style="`background-color: ${timeTable.목8.배경}`"
           ></td>
           <td
             ref="금8"
             v-text="timeTable.금8.시간"
-            :style="timeTable.금8.배경"
+            :style="`background-color: ${timeTable.금8.배경}`"
           ></td>
           <td
             ref="토8"
             v-text="timeTable.토8.시간"
-            :style="timeTable.토8.배경"
+            :style="`background-color: ${timeTable.토8.배경}`"
           ></td>
         </tr>
       </table>
@@ -318,7 +331,7 @@
 
 <script setup>
 import { onBeforeMount, computed, ref, reactive, watch } from "vue";
-import { loginCheck } from "@/composable";
+import { loginCheck, usePostAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
@@ -339,14 +352,17 @@ onBeforeMount(async () => {
 const isRendered = ref(false);
 const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-const yearSemester = ref("2023/1"); // 초기 값 설정
+const yearSemester = ref("2023/2"); // 초기 값 설정
 // 시간표 변수
 const timeTable = reactive({
   월1: {
     시간: "",
     배경: "",
   },
-  월2: "",
+  월2: {
+    시간: "",
+    배경: "",
+  },
   월3: {
     시간: "",
     배경: "",
@@ -356,61 +372,178 @@ const timeTable = reactive({
     시간: "",
     배경: "",
   },
-  월6: "",
-  월7: "",
-  월8: "",
-  화1: "",
-  화2: "",
-  화3: "",
-  화4: "",
-  화5: "",
-  화6: "",
-  화7: "",
-  화8: "",
-  수1: "",
-  수2: "",
-  수3: "",
+  월6: {
+    시간: "",
+    배경: "",
+  },
+  월7: {
+    시간: "",
+    배경: "",
+  },
+  월8: {
+    시간: "",
+    배경: "",
+  },
+  화1: {
+    시간: "",
+    배경: "",
+  },
+  화2: {
+    시간: "",
+    배경: "",
+  },
+  화3: {
+    시간: "",
+    배경: "",
+  },
+  화4: {
+    시간: "",
+    배경: "",
+  },
+  화5: {
+    시간: "",
+    배경: "",
+  },
+  화6: {
+    시간: "",
+    배경: "",
+  },
+  화7: {
+    시간: "",
+    배경: "",
+  },
+  화8: {
+    시간: "",
+    배경: "",
+  },
+  수1: {
+    시간: "",
+    배경: "",
+  },
+  수2: {
+    시간: "",
+    배경: "",
+  },
+  수3: {
+    시간: "",
+    배경: "",
+  },
   수4: {
     시간: "",
     배경: "",
   },
-  수5: "",
+  수5: {
+    시간: "",
+    배경: "",
+  },
   수6: {
     시간: "",
     배경: "",
   },
-  수7: "",
-  수8: "",
-  목1: "",
-  목2: "",
-  목3: "",
-  목4: "",
+  수7: {
+    시간: "",
+    배경: "",
+  },
+  수8: {
+    시간: "",
+    배경: "",
+  },
+  목1: {
+    시간: "",
+    배경: "",
+  },
+  목2: {
+    시간: "",
+    배경: "",
+  },
+  목3: {
+    시간: "",
+    배경: "",
+  },
+  목4: {
+    시간: "",
+    배경: "",
+  },
   목5: {
     시간: "",
     배경: "",
   },
-  목6: "",
-  목7: "",
-  목8: "",
+  목6: {
+    시간: "",
+    배경: "",
+  },
+  목7: {
+    시간: "",
+    배경: "",
+  },
+  목8: {
+    시간: "",
+    배경: "",
+  },
   금1: {
     시간: "",
     배경: "",
   },
-  금2: "",
-  금3: "",
-  금4: "",
-  금5: "",
-  금6: "",
-  금7: "",
-  금8: "",
-  토1: "",
-  토2: "",
-  토3: "",
-  토4: "",
-  토5: "",
-  토6: "",
-  토7: "",
-  토8: "",
+  금2: {
+    시간: "",
+    배경: "",
+  },
+  금3: {
+    시간: "",
+    배경: "",
+  },
+  금4: {
+    시간: "",
+    배경: "",
+  },
+  금5: {
+    시간: "",
+    배경: "",
+  },
+  금6: {
+    시간: "",
+    배경: "",
+  },
+  금7: {
+    시간: "",
+    배경: "",
+  },
+  금8: {
+    시간: "",
+    배경: "",
+  },
+  토1: {
+    시간: "",
+    배경: "",
+  },
+  토2: {
+    시간: "",
+    배경: "",
+  },
+  토3: {
+    시간: "",
+    배경: "",
+  },
+  토4: {
+    시간: "",
+    배경: "",
+  },
+  토5: {
+    시간: "",
+    배경: "",
+  },
+  토6: {
+    시간: "",
+    배경: "",
+  },
+  토7: {
+    시간: "",
+    배경: "",
+  },
+  토8: {
+    시간: "",
+    배경: "",
+  },
 });
 const splitTime = ref([]);
 // 수강 과목 리스트가 변경될 때 마다 getTime함수 실행.
@@ -418,8 +551,8 @@ watch(
   subjectData,
   () => {
     getTime();
-  },
-  { immediate: true }
+  }
+  // { immediate: true }
 );
 // 강의 듣는 날짜와 시간 저장하는 함수
 function getTime() {
@@ -428,10 +561,11 @@ function getTime() {
     const time = currentArray.subject.subject_time;
     const time2 = time.split("/");
     // 각 강의 시간을 splitTime배열에 저장.
+    const color = getRandomColor();
     for (const item of time2) {
       splitTime.value.push(item);
       timeTable[item].시간 = currentArray.subject.subject_name;
-      timeTable[item].배경 = getRandomColor();
+      timeTable[item].배경 = color;
     }
   }
 }
@@ -444,6 +578,18 @@ function getRandomColor() {
   }
 
   return color;
+}
+
+function deleteSubject(course) {
+  const { postData } = usePostAxios("/api/student/enrollment/delete", course);
+  const response = postData();
+  if (response.status === 200) {
+    const mySubject = response.data;
+    store.dispatch("subjectInfo/setSubject", mySubject);
+    alert("과목이 삭제되었습니다");
+  } else {
+    alert("과목 삭제 실패!");
+  }
 }
 </script>
 
@@ -476,14 +622,14 @@ function getRandomColor() {
   padding: 1px;
   border: 1px solid var(--main2-color);
   width: 10px;
-  height: 50px;
+  height: 70px;
 }
 #time-table tr td:nth-child(n + 2) {
   border: 1px solid var(--main2-color);
   padding: 8px;
-  height: 50px;
+  height: 70px;
   width: 70px;
-  font-size: small;
+  font-size: medium;
   font-weight: bold;
 }
 #time-table th {
