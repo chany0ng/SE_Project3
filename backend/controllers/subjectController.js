@@ -16,6 +16,23 @@ exports.getNoticeList = async(req, res, next) => {
     return res.status(200).send(notices);
 };
 
+//공지사항 조회 함수
+exports.getNotice = async(req, res, next) => {
+    let noticeId = req.params.id;
+    let notice = await model.notices.findOne({where: {notice_id: noticeId}}).catch((err) => console.log(err));
+
+    if (notice) {
+        //공지사항 조회 성공
+        //조회 수 1 증가
+        notice.notice_views += 1;
+        await notice.save();
+        return res.status(200).send(notice);
+    } else {
+        //공지사항 조회 오류
+        return res.sendStatus(400);     //Bad request
+    }
+}
+
 //공지사항 작성 함수
 exports.writeNotice = async(req, res, next) => {
     let filename = req.files[0].originalname;
@@ -47,7 +64,7 @@ exports.Download = async(req, res, next) => {
     
 };
 
-//묻고 답하기 조회
+//묻고 답하기 조회 함수
 exports.getQnAList = async(req, res, next)  => {
     let subjectId = req.params.id;
     let qnas = await model.QnAs.findAll({
@@ -60,7 +77,7 @@ exports.getQnAList = async(req, res, next)  => {
     return res.status(200).send(qnas);
 }
 
-//묻고 답하기 작성
+//묻고 답하기 작성 함수
 exports.writeQnA = async(req, res, next) => {
     let studentId = req.session.loginId;
     let subjectId = req.params.id;
@@ -87,3 +104,22 @@ exports.writeQnA = async(req, res, next) => {
         return res.sendStatus(400); //Bad request
     }
 };
+
+//묻고 답하기 삭제 함수
+exports.deleteQnA = async(req, res, next) => {
+    let id = req.body.QnA_id;
+    let subjectId = req.body.subject_id;
+    let qna = await model.QnAs.findOne({where: {QnA_id: id}}).catch((err) => console.log(err));
+
+    if(qna) {
+        //삭제할 Q&A 가져오기 성공
+        //isDeleted 변수를 1로 주어 삭제 표시
+        qna.isDeleted = 1;
+        await qna.save();
+        //삭제 성공
+        return res.sendStatus(200);
+    } else {
+        //삭제할 Q&A 가져오기 실패
+        return res.sendStatus(400);
+    }
+}

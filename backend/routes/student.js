@@ -17,6 +17,7 @@ router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 
 router.get('/subject/notice', loginController.CheckLogin);
 router.get('/subject/notice/:id', subjectController.getNoticeList);
+router.get('/subject/notice/view/:id', subjectController.getNotice);
 //router.post('/subject/notice/write', upload.single('upload'), (req, res) => {subjectController.writeNotice(req, res)});
 router.get('/subject/download', subjectController.Download);
 
