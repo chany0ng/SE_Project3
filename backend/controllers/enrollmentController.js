@@ -26,7 +26,7 @@ exports.enrollment = async (req, res, next) => {
     //학생이 수강 중인 과목의 시간 정보 가져오기
     let enrollments = await model.enrollments
       .findAll({
-        where: { student_id: studentId, year: year, semester: semester },
+        where: { student_id: studentId, year: 2023, semester: 2},
         include: model.subjects,
       })
       .catch((err) => console.log(err));
@@ -76,7 +76,7 @@ exports.enrollment = async (req, res, next) => {
 //수강 삭제 함수
 exports.deleteEnrollment = async (req, res, next) => {
   let studentId = req.session.loginId;
-  let subjectId = req.body.subjectNumber;
+  let subjectId = req.body.subject_id;
   let enrollment = await model.enrollments
     .findOne({ where: { student_id: studentId, subject_id: subjectId } })
     .catch((err) => console.log(err));
@@ -101,7 +101,7 @@ exports.deleteEnrollment = async (req, res, next) => {
         ],
       })
       .catch((err) => console.log(err));
-    return res.Status(200).send(data);
+    return res.status(200).send(data);
   } else {
     //수강 삭제 실패
     return res.sendStatus(400);
@@ -119,6 +119,7 @@ exports.getSubjectList = async (req, res, next) => {
   if (isNaN(page)) {
     return res.sendStatus(400); //Bad request
   }
+
   if (keyword) {
     //검색어가 있는 경우
     result = await model.subjects

@@ -26,7 +26,7 @@ router.post('/subject/qna/:id', subjectController.writeQnA);
 
 router.get('/subject/syllabus', loginController.CheckLogin);
 
-router.get('/mypage/information', loginController.CheckLogin);
+router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);
 router.post('/mypage/information/update', myPageController.updateUser);
 
