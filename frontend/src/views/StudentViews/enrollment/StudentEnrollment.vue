@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { loginCheck, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";

@@ -24,8 +24,7 @@
   text-align: left;
   padding: 25px 20px 20px 30px;
 }
-#content {
-}
+
 #pagination {
   color: var(--main-color);
   align-self: center;

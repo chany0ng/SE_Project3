@@ -200,10 +200,8 @@ function redirection() {
 }
 
 // 비밀번호 동일 여부 확인
-const password = ref("");
-const passwordCheck = ref("");
 const sameCheck = () => {
-  if (password.value !== passwordCheck.value) return false;
+  if (formData.password !== formData.passwordCheck) return false;
   else return true;
 };
 
