@@ -29,7 +29,7 @@
                 id="userName"
                 name="userName"
                 disabled
-                v-model="userData[0].name"
+                v-model="userData.name"
               />
             </div>
             <div class="flex-container">
@@ -40,7 +40,7 @@
                 id="userNumber"
                 name="userNumber"
                 disabled
-                v-model="userData[0].student_id"
+                v-model="userData.student_id"
               />
             </div>
             <div class="flex-container">
@@ -51,7 +51,6 @@
                 id="password"
                 name="password"
                 placeholder="비밀번호 수정을 원할때만 입력하세요"
-                required
                 v-model="formData.password"
               />
             </div>
@@ -63,7 +62,6 @@
                 id="userPwCheck"
                 name="passwordCheck"
                 placeholder="비밀번호 수정을 원할때만 입력하세요"
-                required
                 v-model="formData.passwordCheck"
               />
             </div>
@@ -74,7 +72,7 @@
                 name="question"
                 id="userPwQ"
                 disabled
-                v-model="userData[0].pw_question"
+                v-model="userData.pw_question"
               >
                 <option value="">선택해주세요</option>
                 <option value="졸업한 초등학교 이름">
@@ -92,7 +90,7 @@
                 name="answer"
                 placeholder="비밀번호 찾기 질문 답변"
                 disabled
-                v-model="userData[0].pw_answer"
+                v-model="userData.pw_answer"
               />
             </div>
             <div class="flex-container">
@@ -104,7 +102,7 @@
                 name="birth"
                 placeholder="이름을 입력하세요"
                 disabled
-                v-model="userData[0].birth"
+                v-model="userData.birth"
               />
             </div>
             <div class="flex-container">
@@ -128,7 +126,7 @@
                 name="major"
                 placeholder="학과(학부)를 입력하세요"
                 disabled
-                v-model="userData[0].major"
+                v-model="userData.major"
               />
             </div>
             <div class="flex-container">
@@ -154,7 +152,7 @@
 
 <script setup>
 import { onMounted, computed, ref, reactive } from "vue";
-import { loginCheck, usePostAxios } from "@/composable";
+import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
 import Background from "@/components/Background.vue";
@@ -169,24 +167,34 @@ onMounted(async () => {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
+    const { getData } = useGetAxios("/api/student/mypage/information");
+    const response = await getData();
+    if (response.status === 200) {
+      userData = response.data;
+    } else if (response.status === 401) {
+      alert("로그아웃 상태입니다!");
+    } else {
+      alert("유저 정보가 없습니다!");
+    }
+    formData.phoneNumber = userData.phone_number;
+    formData.email = userData.email;
     isRendered.value = true;
   }
 });
 const isRendered = ref(false);
-const userData = computed(() => store.getters["userInfo/getUser"]);
-
+let userData = reactive({});
 const formRef = ref(null);
 const formData = reactive({
   userType: "student",
   password: "",
   passwordCheck: "",
-  phoneNumber: 0 + userData.value[0].phone_number,
-  email: userData.value[0].email,
+  phoneNumber: "",
+  email: "",
 });
 
 // submit전에 해야하는 동작
 const submitHandler = async () => {
-  const bothCheck = intCheck(userData.value[0].phone_number);
+  const bothCheck = intCheck(userData.phone_number);
   if (!sameCheck()) {
     alert("비밀번호 동일 여부를 확인해주세요!");
   } else if (!bothCheck) {
@@ -195,8 +203,7 @@ const submitHandler = async () => {
     const response = await infoUpdate();
     if (response === true) {
       alert("내 정보 수정 완료!");
-      setVuex();
-      store.dispatch("userInfo/setUser", userData);
+      // store.dispatch("userInfo/setUser", userData);
       redirection();
     } else {
       alert("내 정보 수정 에러!");
@@ -206,6 +213,7 @@ const submitHandler = async () => {
 
 // 서버한테 수정 가능한지 요청.
 async function infoUpdate() {
+  setPw();
   const { postData } = usePostAxios(
     "/api/student/mypage/information/update",
     formData
@@ -215,17 +223,12 @@ async function infoUpdate() {
   else return false;
 }
 // 새로 바꾼 내 정보를 vuex userData에 집어넣기
-function setVuex() {
+function setPw() {
   // 비밀번호를 바꾸지 않을 때
   if (formData.password === "" && formData.passwordCheck === "") {
-    userData.value[0].phone_number = formData.phoneNumber;
-    userData.value[0].email = formData.email;
-  }
-  // 비밀번호를 바꿀 때
-  else {
-    userData.value[0].pw = formData.password;
-    userData.value[0].phone_number = formData.phoneNumber;
-    userData.value[0].email = formData.email;
+    formData.password = userData.pw;
+  } else if (formData.password === "" || formData.passwordCheck === "") {
+    alert("새로운 비밀번호를 확인해주세요!");
   }
 }
 // submit 후 학생메인으로 리다이렉트
