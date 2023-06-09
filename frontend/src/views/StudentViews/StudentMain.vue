@@ -13,7 +13,7 @@
           </tr>
         </thead>
         <tbody class="table-group-divider">
-          <tr v-for="(course, index) of subjectData" :key="index">
+          <tr v-for="(course, index) of filteredCourses" :key="index">
             <th scope="row">
               {{ course.subject.subject_name }}
               <button
@@ -330,7 +330,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, computed, ref, reactive, watch } from "vue";
+import { onMounted, computed, ref, reactive, watch } from "vue";
 import { loginCheck, usePostAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
@@ -339,19 +339,26 @@ import store from "@/store";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기
-onBeforeMount(async () => {
+onMounted(async () => {
   const loggedIn = await loginCheck("/api/student");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
-    isRendered.value = true;
     getTime();
+    isRendered.value = true;
   }
 });
 const isRendered = ref(false);
-const userData = computed(() => store.getters["userInfo/getUser"]);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+// 선택된 학년/학기에 맞는 강좌들만 필터링
+const filteredCourses = computed(() => {
+  const year = yearSemester.value.split("/")[0];
+  const semester = yearSemester.value.split("/")[1];
+  return subjectData.value.filter((course) => {
+    return course.year == year && course.semester == semester;
+  });
+});
 const yearSemester = ref("2023/2"); // 초기 값 설정
 // 시간표 변수
 const timeTable = reactive({
@@ -367,7 +374,10 @@ const timeTable = reactive({
     시간: "",
     배경: "",
   },
-  월4: "",
+  월4: {
+    시간: "",
+    배경: "",
+  },
   월5: {
     시간: "",
     배경: "",
@@ -547,26 +557,37 @@ const timeTable = reactive({
 });
 const splitTime = ref([]);
 // 수강 과목 리스트가 변경될 때 마다 getTime함수 실행.
-watch(
-  subjectData,
-  () => {
-    getTime();
-  }
-  // { immediate: true }
-);
+watch(subjectData, () => {
+  getTime();
+});
+watch(filteredCourses, () => {
+  getTime();
+});
+watch(yearSemester, () => {
+  getTime();
+});
 // 강의 듣는 날짜와 시간 저장하는 함수
 function getTime() {
-  for (const arrayKey in subjectData.value) {
-    const currentArray = subjectData.value[arrayKey];
+  clearTable();
+  for (const arrayKey in filteredCourses.value) {
+    const currentArray = filteredCourses.value[arrayKey];
     const time = currentArray.subject.subject_time;
     const time2 = time.split("/");
-    // 각 강의 시간을 splitTime배열에 저장.
+    // 각 강의 시간을 배열에 저장.
     const color = getRandomColor();
     for (const item of time2) {
       splitTime.value.push(item);
       timeTable[item].시간 = currentArray.subject.subject_name;
       timeTable[item].배경 = color;
     }
+  }
+}
+
+// 시간표 비우는 함수
+function clearTable() {
+  for (const key in timeTable) {
+    timeTable[key].시간 = "";
+    timeTable[key].배경 = "";
   }
 }
 // 랜덤 컬러 받아오기
@@ -576,13 +597,13 @@ function getRandomColor() {
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 11)];
   }
-
   return color;
 }
 
-function deleteSubject(course) {
+// 수강 삭제 버튼 클릭 시 실행 함수
+async function deleteSubject(course) {
   const { postData } = usePostAxios("/api/student/enrollment/delete", course);
-  const response = postData();
+  const response = await postData();
   if (response.status === 200) {
     const mySubject = response.data;
     store.dispatch("subjectInfo/setSubject", mySubject);

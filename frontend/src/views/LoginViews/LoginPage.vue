@@ -124,8 +124,6 @@ async function loginSubmit() {
     const response = await postData();
     if (response.status == 200) {
       // 로그인 성공 시
-      // 로그인한 유저 정보 받기
-      const userData = response.data[0];
       // 수강중인 과목 정보 받기
       const subjectData = response.data[1];
       store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
