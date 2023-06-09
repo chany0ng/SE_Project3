@@ -23,9 +23,12 @@ router.get('/subject/download', subjectController.Download);
 
 router.get('/subject/qna', loginController.CheckLogin);
 router.get('/subject/qna/:id', subjectController.getQnAList);
-router.post('/subject/qna/:id', subjectController.writeQnA);
+router.post('/subject/qna/:id/write', subjectController.writeQnA);
+router.post('/subject/qna/:id/update', subjectController.updateQnA);
+router.post('/subject/qna/:id/delete', subjectController.deleteQnA);
 
 router.get('/subject/syllabus', loginController.CheckLogin);
+router.get('/subject/syllabus/:id', subjectController.getSyllabus);
 
 router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);

@@ -66,9 +66,11 @@ exports.Download = async(req, res, next) => {
 
 //묻고 답하기 조회 함수
 exports.getQnAList = async(req, res, next)  => {
+    let studentId = req.session.loginId;
     let subjectId = req.params.id;
     let qnas = await model.QnAs.findAll({
-        where: {subject_id: subjectId},
+        where: {subject_id: subjectId, student_id: studentId},
+        order: [["updatedAt", "DESC"]],
         include: {model: model.students}
     }).catch((err) => {
         console.log(err);
@@ -86,29 +88,41 @@ exports.writeQnA = async(req, res, next) => {
         subject_id: subjectId,
         QnA_title: req.body.title,
         QnA_description: req.body.description,
-        isDeleted: 0,
     }
     //묻고 답하기 작성
     let result = await model.QnAs.create(datas)
     .catch((err) => console.log(err));
 
-    if (result.length !== 0) {
+    if (result) {
         //작성 성공
-        let data = await model.QnAs.findAll({
-            where: {student_id: studentId, subject_id: subjectId },
-            include: {model: model.students}
-        }).catch((err) => console.log(err));
-        return res.status(200).send(data);
+        return res.sendStatus(200);
     } else {
         //작성 실패
         return res.sendStatus(400); //Bad request
     }
 };
 
+//묻고 답하기 수정 함수
+exports.updateQnA = async(req, res, next) => {
+    let id = req.body.QnA_id;
+    let datas = {
+        QnA_title: req.body.title,
+        QnA_description: req.body.description,
+    }
+    let result = await model.QnAs.update(datas, {where: {QnA_id: id}}).catch((err) => console.log(err));
+
+    if(result.length !== 0) {
+        //수정 성공
+        res.sendStatus(200);
+    } else {
+        //수정 실패
+        res.sendStatus(400);
+    }
+};
+
 //묻고 답하기 삭제 함수
 exports.deleteQnA = async(req, res, next) => {
     let id = req.body.QnA_id;
-    let subjectId = req.body.subject_id;
     let qna = await model.QnAs.findOne({where: {QnA_id: id}}).catch((err) => console.log(err));
 
     if(qna) {
@@ -122,4 +136,18 @@ exports.deleteQnA = async(req, res, next) => {
         //삭제할 Q&A 가져오기 실패
         return res.sendStatus(400);
     }
-}
+};
+
+//강의계획서 조회 함수
+exports.getSyllabus = async(req, res, next) => {
+    let subjectId = req.params.id;
+    let syllabus = await model.syllabus.findOne({where: {subject_id: subjectId}}).catch((err) => console.log(err));
+
+    if(syllabus) {
+        //강의계획서 조회 성공
+        return res.status(200).send(syllabus);
+    } else {
+        //강의계획서 조회 실패
+        return res.sendStatus(400);
+    }
+};
