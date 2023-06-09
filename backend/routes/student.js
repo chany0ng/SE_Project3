@@ -5,6 +5,7 @@ const loginController = require('../controllers/loginController');
 const myPageController = require('../controllers/myPageController');
 const enrollmentController = require('../controllers/enrollmentController');
 const subjectController = require('../controllers/subjectController');
+const studyingController = require('../controllers/studyingController');
 
 const upload = multer();
 
@@ -22,13 +23,16 @@ router.get('/subject/notice/view/:id', subjectController.getNotice);
 router.get('/subject/download', subjectController.Download);
 
 router.get('/subject/qna', loginController.CheckLogin);
-router.get('/subject/qna/:id', subjectController.getQnAList);
+router.get('/subject/qna/:id/:page', subjectController.getQnAList);
 router.post('/subject/qna/:id/write', subjectController.writeQnA);
 router.post('/subject/qna/:id/update', subjectController.updateQnA);
 router.post('/subject/qna/:id/delete', subjectController.deleteQnA);
 
 router.get('/subject/syllabus', loginController.CheckLogin);
 router.get('/subject/syllabus/:id', subjectController.getSyllabus);
+
+router.get('/studying/assignment', loginController.CheckLogin);
+router.get('/studying/assignment/:id', studyingController.getAssignmentList);
 
 router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);

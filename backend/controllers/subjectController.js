@@ -67,16 +67,24 @@ exports.Download = async(req, res, next) => {
 //묻고 답하기 조회 함수
 exports.getQnAList = async(req, res, next)  => {
     let studentId = req.session.loginId;
-    let subjectId = req.params.id;
+    let subjectId = 'H020-4-8995-01'//req.params.id;
+    let perPage = 10;
+    let page = req.params.page;
     let qnas = await model.QnAs.findAll({
         where: {subject_id: subjectId, student_id: studentId},
         order: [["updatedAt", "DESC"]],
+        limit: perPage,
+        offset: (page-1) * perPage,
         include: {model: model.students}
     }).catch((err) => {
         console.log(err);
         return res.sendStatus(400);     //Bad request
     });
-    return res.status(200).send(qnas);
+    //삭제되지 않은 묻고 답하기만 조회
+    let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
+    let count = data.length;
+    let data = [qnaList, count];
+    return res.status(200).send(data);
 }
 
 //묻고 답하기 작성 함수

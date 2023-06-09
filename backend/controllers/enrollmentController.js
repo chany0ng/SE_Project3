@@ -14,7 +14,8 @@ exports.enrollment = async (req, res, next) => {
       where: { student_id: studentId, subject_id: subjectId },
     })
     .catch((err) => console.log(err));
-
+  
+  
   if (check) {
     //이미 수강한 과목
     return res.sendStatus(401);
