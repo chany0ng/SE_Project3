@@ -602,14 +602,17 @@ function getRandomColor() {
 
 // 수강 삭제 버튼 클릭 시 실행 함수
 async function deleteSubject(course) {
-  const { postData } = usePostAxios("/api/student/enrollment/delete", course);
-  const response = await postData();
-  if (response.status === 200) {
-    const mySubject = response.data;
-    store.dispatch("subjectInfo/setSubject", mySubject);
-    alert("과목이 삭제되었습니다");
-  } else {
-    alert("과목 삭제 실패!");
+  const apply = confirm("과목을 삭제하시겠습니까?");
+  if (apply) {
+    const { postData } = usePostAxios("/api/student/enrollment/delete", course);
+    const response = await postData();
+    if (response.status === 200) {
+      const mySubject = response.data;
+      store.dispatch("subjectInfo/setSubject", mySubject);
+      alert("과목이 삭제되었습니다");
+    } else {
+      alert("과목 삭제 에러!");
+    }
   }
 }
 </script>

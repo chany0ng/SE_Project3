@@ -27,9 +27,14 @@ const routes = [
       import("../views/StudentViews/management/StudentAnnoucement"),
   },
   {
-    path: "/student/subject/qna",
+    path: "/student/subject/qna/:id/:page",
     name: "강의 묻고 답하기",
     component: () => import("../views/StudentViews/management/StudentQnA"),
+  },
+  {
+    path: "/student/subject/qna/:id/write",
+    name: "Write Post",
+    component: () => import("../views/StudentViews/management/QnAWrite"),
   },
   {
     path: "/student/subject/syllabus",
