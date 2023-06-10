@@ -31,6 +31,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    assign_register_file: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+          model: 'files',
+          key: 'file_id'
+      }
+    },
     assign_due_date: {
         type: DataTypes.DATE,
         allowNull: false
@@ -52,6 +60,11 @@ module.exports = (sequelize, DataTypes) => {
     assign_register.belongsTo(models.subjects, {
       foreignKey: 'subject_id',
       targetKey: 'subject_id'
+    });
+
+    assign_register.belongsTo(models.files, {
+      foreignKey: 'notice_file',
+      targetKey: 'file_id'
     });
     // associations can be defined here
   };

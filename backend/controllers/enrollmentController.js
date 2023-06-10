@@ -5,73 +5,87 @@ const Op = sequelize.Op;
 
 //수강 신청 함수
 exports.enrollment = async (req, res, next) => {
-  let subjectId = req.body.subject_id;
-  let studentId = req.session.loginId;
+    let subjectId = req.body.subject_id;
+    let studentId = req.session.loginId;
+    let subjectName = req.body.subject_name;
 
-  //이미 수강한 과목인지 확인
-  let check = await model.enrollments
+    //이미 수강한 과목인지 확인 (동일한 이름)
+    let check_enrollments = await model.enrollments.findAll({
+        where: {student_id: studentId},
+        include: {model: model.subjects}
+    }).catch((err) => console.log(err));
+
+
+    for(let check_enrollment of check_enrollments) {
+        if(check_enrollment.subject.subject_name === subjectName) {
+          //이미 수강한 과목
+          return res.sendStatus(401);
+        }
+    }
+
+    //이미 수강한 과목인지 확인 (동일한 과목번호)
+    let check = await model.enrollments
     .findOne({
       where: { student_id: studentId, subject_id: subjectId },
     })
     .catch((err) => console.log(err));
-  
-  
-  if (check) {
-    //이미 수강한 과목
-    return res.sendStatus(401);
-  } else {
-    //처음 수강하는 과목
-    //신청한 과목 시간 가져오기
-    let subjectTime = req.body.subject_time;
 
-    //학생이 수강 중인 과목의 시간 정보 가져오기
-    let enrollments = await model.enrollments
-      .findAll({
-        where: { student_id: studentId, year: 2023, semester: 2},
-        include: model.subjects,
-      })
-      .catch((err) => console.log(err));
+    if (check) {
+      //이미 수강한 과목
+      return res.sendStatus(401);
+    } else {
+      //처음 수강하는 과목
+      //신청한 과목 시간 가져오기
+      let subjectTime = req.body.subject_time;
 
-    //신청한 과목 시간과 기존의 시간표와 겹치는지 확인
-    for (let enrollment of enrollments) {
-      let enrollmentTime = enrollment.subject.subject_time;
-      if (checkTime(enrollmentTime, subjectTime) === true) {
-        //수강 신청 실패 (시간 겹침)
+      //학생이 수강 중인 과목의 시간 정보 가져오기
+      let enrollments = await model.enrollments
+        .findAll({
+          where: { student_id: studentId, year: 2023, semester: 2},
+          include: model.subjects,
+        })
+        .catch((err) => console.log(err));
+
+      //신청한 과목 시간과 기존의 시간표와 겹치는지 확인
+      for (let enrollment of enrollments) {
+        let enrollmentTime = enrollment.subject.subject_time;
+        if (checkTime(enrollmentTime, subjectTime) === true) {
+          //수강 신청 실패 (시간 겹침)
+          return res.sendStatus(400);
+        }
+      }
+
+      let datas = {
+        subject_id: subjectId,
+        student_id: studentId,
+        year: 2023,
+        semester: 2,
+      };
+      //수강 테이블에 정보 입력
+      let result = await model.enrollments
+        .create(datas)
+        .catch((err) => console.log(err));
+
+      if (result.length !== 0) {
+        //수강 신청 성공
+        //로그인 유저의 변경된 수강 정보
+        let data = await model.enrollments
+          .findAll({
+            where: { student_id: studentId },
+            include: [
+              {
+                model: model.subjects,
+                include: { model: model.professors },
+              },
+            ],
+          })
+          .catch((err) => console.log(err));
+        return res.status(200).send(data);
+      } else {
+        //수강 신청 실패
         return res.sendStatus(400);
       }
     }
-
-    let datas = {
-      subject_id: subjectId,
-      student_id: studentId,
-      year: 2023,
-      semester: 2,
-    };
-    //수강 테이블에 정보 입력
-    let result = await model.enrollments
-      .create(datas)
-      .catch((err) => console.log(err));
-
-    if (result.length !== 0) {
-      //수강 신청 성공
-      //로그인 유저의 변경된 수강 정보
-      let data = await model.enrollments
-        .findAll({
-          where: { student_id: studentId },
-          include: [
-            {
-              model: model.subjects,
-              include: { model: model.professors },
-            },
-          ],
-        })
-        .catch((err) => console.log(err));
-      return res.status(200).send(data);
-    } else {
-      //수강 신청 실패
-      return res.sendStatus(400);
-    }
-  }
 };
 
 //수강 삭제 함수

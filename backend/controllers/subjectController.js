@@ -6,14 +6,23 @@ const { Readable } = require('stream');
 //과목에 해당하는 공지사항 리스트 주는 함수
 exports.getNoticeList = async(req, res, next) => {
     let subjectId = req.params.id;
+    let page = req.params.page;
+    let perPage = 10;
     let notices = await model.notices.findAll({
         where: {subject_id: subjectId},
+        order: [["updatedAt", "DESC"]],
+        limit: perPage,
+        offset: (page-1) * perPage,
         include: {model: model.professors}
     }).catch((err) => {
         console.log(err);
         return res.sendStatus(400);     //Bad request
     });
-    return res.status(200).send(notices);
+    //삭제되지 않은 공지사항만 조회
+    let noticeList = notices.filter((notice) => notice.isDeleted === 0);
+    let count = noticeList.length;
+    let data = [noticeList, count];
+    return res.status(200).send(data);
 };
 
 //공지사항 조회 함수
@@ -50,8 +59,8 @@ exports.writeNotice = async(req, res, next) => {
 
 //다운로드 함수
 exports.Download = async(req, res, next) => {
-    let id = 1;
-    let file = await model.files.findOne({where: {file_id: id}}).catch((err) => console.log(err));
+    let fileId = req.params.id;
+    let file = await model.files.findOne({where: {file_id: fileId}}).catch((err) => console.log(err));
     
     res.setHeader('Content-Type', file.file_mimetype);
     res.setHeader('Content-Disposition', `attachment; filename="${file.file_name}"`);
@@ -67,7 +76,7 @@ exports.Download = async(req, res, next) => {
 //묻고 답하기 조회 함수
 exports.getQnAList = async(req, res, next)  => {
     let studentId = req.session.loginId;
-    let subjectId = 'H020-4-8995-01'//req.params.id;
+    let subjectId = req.params.id;
     let perPage = 10;
     let page = req.params.page;
     let qnas = await model.QnAs.findAll({
@@ -82,7 +91,7 @@ exports.getQnAList = async(req, res, next)  => {
     });
     //삭제되지 않은 묻고 답하기만 조회
     let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-    let count = data.length;
+    let count = qnaList.length;
     let data = [qnaList, count];
     return res.status(200).send(data);
 }

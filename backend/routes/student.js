@@ -17,10 +17,10 @@ router.post('/enrollment', enrollmentController.enrollment);
 router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 
 router.get('/subject/notice', loginController.CheckLogin);
-router.get('/subject/notice/:id', subjectController.getNoticeList);
+router.get('/subject/notice/:id/:page', subjectController.getNoticeList);
 router.get('/subject/notice/view/:id', subjectController.getNotice);
 //router.post('/subject/notice/write', upload.single('upload'), (req, res) => {subjectController.writeNotice(req, res)});
-router.get('/subject/download', subjectController.Download);
+router.get('/subject/download/:id', subjectController.Download);
 
 router.get('/subject/qna', loginController.CheckLogin);
 router.get('/subject/qna/:id/:page', subjectController.getQnAList);
@@ -32,7 +32,7 @@ router.get('/subject/syllabus', loginController.CheckLogin);
 router.get('/subject/syllabus/:id', subjectController.getSyllabus);
 
 router.get('/studying/assignment', loginController.CheckLogin);
-router.get('/studying/assignment/:id', studyingController.getAssignmentList);
+router.get('/studying/assignment/:id/:page', studyingController.getAssignmentList);
 
 router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);
