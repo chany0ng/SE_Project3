@@ -5,35 +5,37 @@
       <template v-slot:title>
         <h4>강의묻고 답하기</h4>
         <select id="select" v-model="selectedSubject">
-          <option
-            v-for="(subject, index) of subjectData"
-            :key="index"
-            @click="pickSubject(subject.subject.subject_id)"
-          >
+          <option v-for="(subject, index) of subjectData" :key="index">
             {{ subject.subject.subject_name }}
           </option>
         </select>
-        <button @click="writeQnA">글쓰기</button>
+        <button id="writeBtn">
+          <router-link :to="`/student/subject/qna/${subjectId}/write`"
+            >글 등록</router-link
+          >
+        </button>
       </template>
       <template v-slot:content>
         <div>
           <table>
             <thead>
-              <th scope="col">번호</th>
+              <th scope="col" style="width: 10%">번호</th>
               <th scope="col">제목</th>
               <th scope="col">작성자</th>
               <th scope="col">작성일</th>
             </thead>
             <tbody>
-              <tr
-                v-for="(qna, index) of qnaList"
-                :key="index"
-                @click="clickQnA(qna)"
-              >
+              <tr v-for="(qna, index) of qnaList" :key="index">
                 <td>{{ qnaList.length - index }}</td>
-                <td>{{ qna.QnA_title }}</td>
-                <td>{{ qna.subject_id.name }}</td>
-                <td>{{ qna.updatedAt }}</td>
+                <td>
+                  <router-link
+                    :to="`/student/subject/qna/${subjectId}/${qna.QnA_id}/read`"
+                  >
+                    {{ qna.QnA_title }}</router-link
+                  >
+                </td>
+                <td>{{ qna.student.name }}</td>
+                <td>{{ qna.createdAt }}</td>
               </tr>
             </tbody>
           </table>
@@ -52,7 +54,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive } from "vue";
+import { onMounted, computed, ref, watch } from "vue";
 import { loginCheck, useGetAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -76,44 +78,47 @@ onMounted(async () => {
 const router = useRouter();
 const isRendered = ref(false);
 const currentPath = ref("/student/subject/qna");
-const subjectId = ref(subjectData.value[0].subject_id);
 const qnaList = ref();
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-
+const subjectId = ref(subjectData.value[0].subject_id);
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
   qnaList.value = newList;
+  store.dispatch("qnaInfo/setQna", qnaList.value);
 };
+const selectedSubject = ref(subjectData.value[0].subject.subject_name);
 
-// 글쓰기 버튼 클릭 실행 함수
-function writeQnA() {
-  router.push(`/student/subject/qna/${subjectId.value}/write`);
-}
-// 서버한테 QnA 게시물 등록 요청
-async function getQnaList() {
-  const { getData } = useGetAxios("/api/student/subject/qna/:id");
-  const response = await getData();
-  if (response.status == 200) {
-    alert("좋아");
-  } else {
-    alert("나빠");
+// 과목 선택 시 실행되는 함수
+watch(selectedSubject, (newValue) => {
+  if (newValue) {
+    // Access the selected subject's subject_id
+    const selectedSubjectId = subjectData.value.find(
+      (subject) => subject.subject.subject_name === newValue
+    )?.subject.subject_id;
+    if (selectedSubjectId) {
+      subjectId.value = selectedSubjectId;
+    }
   }
-}
-
-// 옵션에서 과목 선택했을 때 실행되는 함수
-function pickSubject(id) {
-  subjectId.value = id;
-  alert("pick!");
-}
+});
 </script>
 
 <style scoped>
+#writeBtn {
+  float: right;
+  border: 1px solid var(--main2-color);
+  background-color: var(--main3-color);
+}
+a {
+  text-decoration: none;
+  color: var(--main-color);
+}
 li {
   list-style: none;
 }
 table {
   width: 100%;
   border: 2px solid var(--main2-color);
+  table-layout: fixed;
 }
 thead {
   font-size: smaller;
@@ -132,6 +137,9 @@ th,
 thead,
 tr {
   padding: 7px;
+}
+h4 {
+  margin-bottom: 10px;
 }
 NoserachPagination {
   display: flex;

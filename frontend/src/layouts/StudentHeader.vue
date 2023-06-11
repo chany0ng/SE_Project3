@@ -22,7 +22,8 @@
               >
             </li>
             <li>
-              <router-link to="/student/subject/qna"
+              <router-link
+                :to="`/student/subject/qna/${subjectData[0].subject_id}/1`"
                 >강의 묻고 답하기</router-link
               >
             </li>
@@ -73,11 +74,13 @@
 </template>
 
 <script setup>
-import { defineExpose } from "vue";
+import { defineExpose, computed, onMounted } from "vue";
 import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
 import store from "@/store";
 const router = useRouter();
+
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 
 // 로그아웃 버튼 클릭 시 실행 함수
 async function confirmLogout() {
@@ -96,6 +99,7 @@ const logout = () => {
   // Clear user information from the Vuex store
   store.dispatch("userInfo/setUser", null);
   store.dispatch("subjectInfo/setSubject", null);
+  store.dispatch("qnaInfo/setQna", null);
   localStorage.removeItem("vuex");
 };
 defineExpose({ router });

@@ -35,14 +35,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits, toRef } from "vue";
+import { ref, onMounted, defineProps, defineEmits, toRef, watch } from "vue";
 import { useGetAxios } from "@/composable";
+import { useRouter } from "vue-router";
 const currentPage = ref(1);
 const perPage = 10; // Number of courses per page
 const lists = ref([]);
 const totalPages = ref(0);
 const totalLists = ref(0);
-
+const router = useRouter();
 // 부모로 부터 받은 경로 설정
 const props = defineProps({
   path: String,
@@ -56,6 +57,15 @@ const subjectId = toRef(props, "subject_id");
 const serverPath = "/api" + currentPath.value;
 // 부모에게 보낼 게시물 리스트 정보
 const emits = defineEmits(["update-lists"]);
+
+watch(subjectId, async (newId) => {
+  if (newId) {
+    subjectId.value = newId;
+    await getLists();
+    calculateTotalPages(totalLists.value); // 게시물 총 개수 / 10 = page개수
+    router.push(`/student/subject/qna/${subjectId.value}/1`);
+  }
+});
 
 // 페이지 로드될 때, 초기 실행 함수
 onMounted(async () => {
