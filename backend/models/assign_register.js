@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     assign_register.belongsTo(models.files, {
-      foreignKey: 'notice_file',
+      foreignKey: 'assign_register_file',
       targetKey: 'file_id'
     });
     // associations can be defined here

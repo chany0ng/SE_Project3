@@ -33,6 +33,7 @@ router.get('/subject/syllabus/:id', subjectController.getSyllabus);
 
 router.get('/studying/assignment', loginController.CheckLogin);
 router.get('/studying/assignment/:id/:page', studyingController.getAssignmentList);
+router.post('/studying/assignment/:id', upload.single('upload'), (req, res) => {studyingController.submitAssignment(req, res)});
 
 router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);

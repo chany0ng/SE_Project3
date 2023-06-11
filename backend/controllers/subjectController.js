@@ -10,7 +10,7 @@ exports.getNoticeList = async(req, res, next) => {
     let perPage = 10;
     let notices = await model.notices.findAll({
         where: {subject_id: subjectId},
-        order: [["updatedAt", "DESC"]],
+        order: [["createdAt", "DESC"]],
         limit: perPage,
         offset: (page-1) * perPage,
         include: {model: model.professors}
@@ -81,13 +81,13 @@ exports.getQnAList = async(req, res, next)  => {
     let page = req.params.page;
     let qnas = await model.QnAs.findAll({
         where: {subject_id: subjectId, student_id: studentId},
-        order: [["updatedAt", "DESC"]],
+        order: [["createdAt", "DESC"]],
         limit: perPage,
         offset: (page-1) * perPage,
         include: {model: model.students}
     }).catch((err) => {
         console.log(err);
-        return res.sendStatus(400);     //Bad request
+        return res.sendStatus(400);      //Bad request
     });
     //삭제되지 않은 묻고 답하기만 조회
     let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
