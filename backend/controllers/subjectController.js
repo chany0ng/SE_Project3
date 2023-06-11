@@ -20,7 +20,9 @@ exports.getNoticeList = async(req, res, next) => {
     });
     //삭제되지 않은 공지사항만 조회
     let noticeList = notices.filter((notice) => notice.isDeleted === 0);
-    let count = noticeList.length;
+    let count = await model.notices.findAll({
+        where: {subject_id: subjectId}
+    }).catch((err) => console.log(err));
     let data = [noticeList, count];
     return res.status(200).send(data);
 };
@@ -91,7 +93,9 @@ exports.getQnAList = async(req, res, next)  => {
     });
     //삭제되지 않은 묻고 답하기만 조회
     let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-    let count = qnaList.length;
+    let count = await model.QnAs.findAll({
+        where: {subject_id: studentId, student_id: studentId}
+    }).catch((err) => console.log(err));
     let data = [qnaList, count];
     return res.status(200).send(data);
 }

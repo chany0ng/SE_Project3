@@ -22,7 +22,6 @@ exports.getAssignmentList = async(req, res, next) => {
     });
     //삭제되지 않은 과제 리스트만 조회
     let assignmentList = assignments.filter((assignment) => assignment.isDeleted === 0);
-    let count = assignmentList.length;
 
     let assign_submit_List = [];
     //사용자의 과제 제출 여부 확인
@@ -42,6 +41,9 @@ exports.getAssignmentList = async(req, res, next) => {
             }
         }
     }
+    let count = await model.assign_register.findAll({
+        where: {subject_id: studentId}
+    }).catch((err) => console.log(err));
   
     let data = [assign_submit_List, count];
     return res.status(200).send(data);
