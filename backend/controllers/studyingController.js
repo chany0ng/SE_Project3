@@ -42,7 +42,7 @@ exports.getAssignmentList = async(req, res, next) => {
         }
     }
     let count = await model.assign_register.findAll({
-        where: {subject_id: studentId}
+        where: {subject_id: subjectId}
     }).catch((err) => console.log(err));
   
     let data = [assign_submit_List, count];
