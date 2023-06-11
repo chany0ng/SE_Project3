@@ -10,7 +10,7 @@ exports.getNoticeList = async(req, res, next) => {
     let perPage = 10;
     let notices = await model.notices.findAll({
         where: {subject_id: subjectId},
-        order: [["updatedAt", "DESC"]],
+        order: [["createdAt", "DESC"]],
         limit: perPage,
         offset: (page-1) * perPage,
         include: {model: model.professors}
@@ -20,7 +20,9 @@ exports.getNoticeList = async(req, res, next) => {
     });
     //삭제되지 않은 공지사항만 조회
     let noticeList = notices.filter((notice) => notice.isDeleted === 0);
-    let count = noticeList.length;
+    let count = await model.notices.findAll({
+        where: {subject_id: subjectId}
+    }).catch((err) => console.log(err));
     let data = [noticeList, count];
     return res.status(200).send(data);
 };
@@ -81,17 +83,19 @@ exports.getQnAList = async(req, res, next)  => {
     let page = req.params.page;
     let qnas = await model.QnAs.findAll({
         where: {subject_id: subjectId, student_id: studentId},
-        order: [["updatedAt", "DESC"]],
+        order: [["createdAt", "DESC"]],
         limit: perPage,
         offset: (page-1) * perPage,
         include: {model: model.students}
     }).catch((err) => {
         console.log(err);
-        return res.sendStatus(400);     //Bad request
+        return res.sendStatus(400);      //Bad request
     });
     //삭제되지 않은 묻고 답하기만 조회
     let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-    let count = qnaList.length;
+    let count = await model.QnAs.findAll({
+        where: {subject_id: studentId, student_id: studentId}
+    }).catch((err) => console.log(err));
     let data = [qnaList, count];
     return res.status(200).send(data);
 }
@@ -130,10 +134,10 @@ exports.updateQnA = async(req, res, next) => {
 
     if(result.length !== 0) {
         //수정 성공
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } else {
         //수정 실패
-        res.sendStatus(400);
+        return res.sendStatus(400);
     }
 };
 

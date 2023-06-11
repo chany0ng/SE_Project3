@@ -32,7 +32,10 @@ router.get('/subject/syllabus', loginController.CheckLogin);
 router.get('/subject/syllabus/:id', subjectController.getSyllabus);
 
 router.get('/studying/assignment', loginController.CheckLogin);
-router.get('/studying/assignment/:id/:page', studyingController.getAssignmentList);
+router.get('/studying/assignment/:subject_id/:page', studyingController.getAssignmentList);
+router.post('/studying/assignment/:assign_id', upload.single('upload'), (req, res) => {studyingController.submitAssignment(req, res)});
+router.post('/studying/assignment/:submit_id/update', upload.single('upload'), (req, res) => {studyingController.updateAssignment(req, res)});
+router.post('/studying/assignment/:submit_id/delete', studyingController.deleteAssignment);
 
 router.get('/mypage/information',myPageController.getUserInfo);
 router.post('/mypage/information', myPageController.CheckPW);
