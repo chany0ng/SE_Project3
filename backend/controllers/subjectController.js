@@ -130,10 +130,10 @@ exports.updateQnA = async(req, res, next) => {
 
     if(result.length !== 0) {
         //수정 성공
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } else {
         //수정 실패
-        res.sendStatus(400);
+        return res.sendStatus(400);
     }
 };
 
