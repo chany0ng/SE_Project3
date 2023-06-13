@@ -7,6 +7,9 @@
       </template>
       <template v-slot:content>
         <div id="form-container">
+          <button type="button" id="deleteBtn" @click.prevent="deleteQnA">
+            삭제
+          </button>
           <div id="title-container">
             <div style="font-size: larger">
               {{ selectedPost.QnA_title }}
@@ -16,6 +19,37 @@
           </div>
           <div id="content-container">
             {{ selectedPost.QnA_description }}
+          </div>
+        </div>
+      </template>
+      <template v-slot:pagination>
+        <div id="comment-container">
+          <div id="exist-comment">
+            <!-- <div v-for="comment in comments" :key="comment.id">
+              <h3>{{ comment.name }}</h3>
+              <p>{{ comment.content }}</p>
+              <hr />
+            </div> -->
+            <div id="comment">
+              <span style="width: 10%">박찬용</span>
+              <span>
+                >Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                Perspiciatis aliquid magni quas repellat nisi unde, incidunt
+                inventore necessitatibus praesentium ad repellendus error
+                maxime, modi in, nemo dignissimos amet ipsum velit.</span
+              >
+            </div>
+          </div>
+          <div id="new-comment">
+            <form id="commentForm" method="post" action="">
+              <textarea
+                id="commentInput"
+                placeholder="댓글을 작성하세요"
+                v-model="newComment"
+                required
+              ></textarea>
+              <button type="submit" id="submitBtn">등록</button>
+            </form>
           </div>
         </div>
       </template>
@@ -32,8 +66,6 @@ import StudentHeader from "@/layouts/StudentHeader.vue";
 import Background from "@/components/Background.vue";
 import store from "@/store";
 import { useRouter, useRoute } from "vue-router";
-import NoserachPagination from "@/components/Noserach-Pagination.vue";
-NoserachPagination;
 
 //로그인 유무 받아오기
 onMounted(async () => {
@@ -49,7 +81,9 @@ onMounted(async () => {
 
 const router = useRouter();
 const isRendered = ref(false);
-
+// 댓글 관련 변수
+const comments = ref([]);
+const newComment = ref("");
 // url에 포함된 params를 읽어오기
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
@@ -62,13 +96,71 @@ function getPost(number) {
   const post = qnaList.value.find((qna) => qna.QnA_id == number);
   return post;
 }
+
+// 게시물 삭제 버튼 함수
+async function deleteQnA() {
+  const qnaId = { QnA_id: null };
+  qnaId.QnA_id = postId.value;
+  const { postData } = usePostAxios(
+    `/api/student/subject/qna/${subjectId.value}/delete`,
+    qnaId
+  );
+  const response = await postData();
+  if (response.status === 200) {
+    const answer = confirm("게시물을 삭제하겠습니까?");
+    if (answer) alert("게시물이 삭제되었습니다!");
+
+    router.push(`/student/subject/qna/${subjectId.value}/1`);
+  } else {
+    alert("게시물 삭제 에러!");
+  }
+}
 </script>
 
 <style scoped>
-#writeBtn {
+#deleteBtn {
   border: 1px solid var(--main2-color);
   background-color: var(--main3-color);
   color: var(--main-color);
+  width: 5%;
+  align-self: end;
+  margin: 5px;
+}
+#submitBtn {
+  float: right;
+  border: 1px solid var(--main2-color);
+  background-color: var(--main3-color);
+  color: var(--main-color);
+}
+#submitBtn {
+  width: 10%;
+}
+#comment-container {
+  width: 100%;
+  padding: 10px;
+}
+#comment {
+  border: 0.5px solid black;
+  border-collapse: collapse;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+#comment span {
+  border-collapse: collapse;
+  margin: 0;
+  font-size: medium;
+  color: black;
+}
+#commentForm {
+  display: flex;
+  justify-content: center;
+}
+textarea {
+  width: 40vw;
+  border: 1px solid var(--main2-color);
+  padding: 5px;
+  margin-right: 3px;
 }
 a {
   text-decoration: none;
