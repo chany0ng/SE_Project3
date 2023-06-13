@@ -93,9 +93,10 @@ exports.getQnAList = async(req, res, next)  => {
     });
     //삭제되지 않은 묻고 답하기만 조회
     let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-    let count = await model.QnAs.findAll({
+    let result = await model.QnAs.findAll({
         where: {subject_id: subjectId, student_id: studentId}
     }).catch((err) => console.log(err));
+    let count = result.length;
     let data = [qnaList, count];
     return res.status(200).send(data);
 }
