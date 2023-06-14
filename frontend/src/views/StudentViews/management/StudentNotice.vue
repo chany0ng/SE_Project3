@@ -9,11 +9,11 @@
             {{ subject.subject.subject_name }}
           </option>
         </select>
-        <button id="writeBtn">
+        <!-- <button id="writeBtn">
           <router-link :to="`/student/subject/qna/${subjectId}/write`"
             >글 등록</router-link
           >
-        </button>
+        </button> -->
       </template>
       <template v-slot:content>
         <div>
@@ -23,19 +23,21 @@
               <th scope="col">제목</th>
               <th scope="col">작성자</th>
               <th scope="col">작성일</th>
+              <th scope="col">조회수</th>
             </thead>
             <tbody>
-              <tr v-for="(qna, index) of qnaList" :key="index">
-                <td>{{ qnaList.length - index }}</td>
+              <tr v-for="(notice, index) of noticeList" :key="index">
+                <td>{{ noticeList.length - index }}</td>
                 <td>
                   <router-link
-                    :to="`/student/subject/qna/${subjectId}/${qna.QnA_id}/read`"
+                    :to="`/student/subject/notice/${subjectId}/${notice.notice_id}/read`"
                   >
-                    {{ qna.QnA_title }}</router-link
+                    {{ notice.QnA_title }}</router-link
                   >
                 </td>
-                <td>{{ qna.student.name }}</td>
-                <td>{{ qna.createdAt }}</td>
+                <td>{{ notice.student.name }}</td>
+                <td>{{ notice.createdAt }}</td>
+                <td>{{ notice.notice_views }}</td>
               </tr>
             </tbody>
           </table>
@@ -66,7 +68,7 @@ NoserachPagination;
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("/api/student/subject/qna");
+  const loggedIn = await loginCheck("/api/student/subject/notice");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
@@ -77,14 +79,15 @@ onMounted(async () => {
 
 const router = useRouter();
 const isRendered = ref(false);
-const currentPath = ref("/student/subject/qna");
-const qnaList = ref();
+const currentPath = ref("/student/subject/notice");
+const noticeList = ref();
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 const subjectId = ref(subjectData.value[0].subject_id);
+
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  qnaList.value = newList;
-  store.dispatch("qnaInfo/setQna", qnaList.value);
+  noticeList.value = newList;
+  store.dispatch("noticeInfo/setNotice", noticeList.value);
 };
 const selectedSubject = ref(subjectData.value[0].subject.subject_name);
 

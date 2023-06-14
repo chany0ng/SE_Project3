@@ -21,7 +21,7 @@ const routes = [
     component: () => import("../views/LoginViews/NewJoin"),
   },
   {
-    path: "/student/subject/notice/:id/page",
+    path: "/student/subject/notice/:id/:page",
     name: "공지사항 조회",
     component: () => import("../views/StudentViews/management/StudentNotice"),
   },

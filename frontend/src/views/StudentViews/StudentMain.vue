@@ -24,6 +24,7 @@
                   border-style: none;
                 "
                 @click="deleteSubject(course)"
+                v-if="isShowBtn"
               >
                 X
               </button>
@@ -41,7 +42,7 @@
       <option value="2022/1">2022학년도 1학기</option>
       <option value="2021/2">2021학년도 2학기</option>
       <option value="2021/1">2021학년도 1학기</option>
-      <option value="2020/1">2020학년도 2학기</option>
+      <option value="2020/2">2020학년도 2학기</option>
       <option value="2020/1">2020학년도 1학기</option>
     </select>
 
@@ -91,9 +92,6 @@
         </tr>
         <tr>
           <td>2교시</td>
-          <!-- <td v-for="(course, index) of subjectData" :key="index">
-            {{ course.subject.subject_name }}
-          </td> -->
           <td
             ref="월2"
             v-text="timeTable.월2.시간"
@@ -351,6 +349,7 @@ onMounted(async () => {
 });
 const isRendered = ref(false);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+
 // 선택된 학년/학기에 맞는 강좌들만 필터링
 const filteredCourses = computed(() => {
   const year = yearSemester.value.split("/")[0];
@@ -360,6 +359,15 @@ const filteredCourses = computed(() => {
   });
 });
 const yearSemester = ref("2023/2"); // 초기 값 설정
+const isShowBtn = ref(true);
+// 2023/2 에서만 과목삭제 가능
+watch(yearSemester, (newValue) => {
+  if (newValue === "2023/2") {
+    isShowBtn.value = true;
+  } else {
+    isShowBtn.value = false;
+  }
+});
 // 시간표 변수
 const timeTable = reactive({
   월1: {
@@ -573,16 +581,31 @@ function getTime() {
     const currentArray = filteredCourses.value[arrayKey];
     const time = currentArray.subject.subject_time;
     const time2 = time.split("/");
+    const resultTime = seperateTime(time2);
     // 각 강의 시간을 배열에 저장.
     const color = getRandomColor();
-    for (const item of time2) {
+    for (const item of resultTime) {
       splitTime.value.push(item);
       timeTable[item].시간 = currentArray.subject.subject_name;
       timeTable[item].배경 = color;
     }
   }
 }
-
+// 날짜 쉼표 기준으로 나누기
+function seperateTime(split_existingTime) {
+  //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+  for (let i = 0; i < split_existingTime.length; i++) {
+    let day = split_existingTime[i][0];
+    for (let j = 0; j < split_existingTime[i].length; j++) {
+      if (!isNaN(split_existingTime[i][j])) {
+        //숫자인 경우
+        const existing_time = [];
+        existing_time.push(day + split_existingTime[i][j]);
+        return existing_time;
+      }
+    }
+  }
+}
 // 시간표 비우는 함수
 function clearTable() {
   for (const key in timeTable) {

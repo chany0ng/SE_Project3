@@ -3,53 +3,21 @@
     <StudentHeader />
     <Background>
       <template v-slot:title>
-        <h4>강의묻고 답하기</h4>
+        <h4>강의 공지사항</h4>
       </template>
       <template v-slot:content>
         <div id="form-container">
-          <button type="button" id="deleteBtn" @click.prevent="deleteQnA">
-            삭제
-          </button>
           <div id="title-container">
             <div style="font-size: larger">
               {{ selectedPost.QnA_title }}
             </div>
             <span>작성자: {{ selectedPost.student.name }}</span>
+            <span>조회수: {{ selectedPost.notice_views + 1 }}</span>
             <span>등록일: {{ selectedPost.createdAt }}</span>
           </div>
+          <div id="content-container">file: {{ selectedPost.notice_file }}</div>
           <div id="content-container">
-            {{ selectedPost.QnA_description }}
-          </div>
-        </div>
-      </template>
-      <template v-slot:pagination>
-        <div id="comment-container">
-          <div id="exist-comment">
-            <!-- <div v-for="comment in comments" :key="comment.id">
-              <h3>{{ comment.name }}</h3>
-              <p>{{ comment.content }}</p>
-              <hr />
-            </div> -->
-            <div id="comment">
-              <span style="width: 10%">박찬용</span>
-              <span>
-                >Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                Perspiciatis aliquid magni quas repellat nisi unde, incidunt
-                inventore necessitatibus praesentium ad repellendus error
-                maxime, modi in, nemo dignissimos amet ipsum velit.</span
-              >
-            </div>
-          </div>
-          <div id="new-comment">
-            <form id="commentForm" method="post" action="">
-              <textarea
-                id="commentInput"
-                placeholder="댓글을 작성하세요"
-                v-model="newComment"
-                required
-              ></textarea>
-              <button type="submit" id="submitBtn">등록</button>
-            </form>
+            {{ selectedPost.notice_description }}
           </div>
         </div>
       </template>
@@ -74,46 +42,32 @@ onMounted(async () => {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
-    selectedPost.value = getPost(postId.value);
+    const { getData } = useGetAxios(`/subject/notice/view/${postId.value}`);
+    const response = await getData();
+    if (response.status === 200) {
+      selectedPost.value = getPost(postId.value);
+    } else {
+      alert("게시물 조회 에러!");
+      router.push(`/student/subject/notice/${subjectId.value}/1`);
+    }
     isRendered.value = true;
   }
 });
 
 const router = useRouter();
 const isRendered = ref(false);
-// 댓글 관련 변수
-const comments = ref([]);
-const newComment = ref("");
+
 // url에 포함된 params를 읽어오기
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
 const postId = computed(() => route.params.number);
 const selectedPost = ref();
 
-// QnA_id에 해당하는 게시글 객체 얻기
+// notice_id에 해당하는 게시글 객체 얻기
 function getPost(number) {
-  const qnaList = computed(() => store.getters["qnaInfo/getQna"]);
-  const post = qnaList.value.find((qna) => qna.QnA_id == number);
+  const noticeList = computed(() => store.getters["noticeInfo/getNotice"]);
+  const post = noticeList.value.find((notice) => notice.notice_id == number);
   return post;
-}
-
-// 게시물 삭제 버튼 함수
-async function deleteQnA() {
-  const qnaId = { QnA_id: null };
-  qnaId.QnA_id = postId.value;
-  const { postData } = usePostAxios(
-    `/api/student/subject/qna/${subjectId.value}/delete`,
-    qnaId
-  );
-  const response = await postData();
-  if (response.status === 200) {
-    const answer = confirm("게시물을 삭제하겠습니까?");
-    if (answer) alert("게시물이 삭제되었습니다!");
-
-    router.push(`/student/subject/qna/${subjectId.value}/1`);
-  } else {
-    alert("게시물 삭제 에러!");
-  }
 }
 </script>
 
