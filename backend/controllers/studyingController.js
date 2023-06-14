@@ -76,7 +76,7 @@ exports.submitAssignment = async(req, res, next) => {
         submit_title: req.body.title,
         submit_description: req.body.description,
         submit_file: fileId === "" ? null : fileId
-    }
+    };
 
     let result = await model.assign_submit.create(datas).catch((err) => {
         console.log(err);

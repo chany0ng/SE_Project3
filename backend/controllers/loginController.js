@@ -20,21 +20,27 @@ exports.Login = async (req, res, next) => {
   if (type === "student") {
     //학생인 경우
     user = await model.students
-      .findAll({ where: { student_id: id, pw: pw } })
+      .findOne({ where: { student_id: id, pw: pw } })
       .catch((err) => console.log(err));
+    if(user) {
+        req.session.loginId = id;
+        req.session.userType = type;
+        return res.sendStatus(200);
+    } else {
+        return res.sendStatus(401);
+    }
   } else if (type === "professor") {
-    //교수인 경우
-    user = await model.professors
-      .findAll({ where: { professor_id: id, pw: pw } })
-      .catch((err) => console.log(err));
-  }
-
-  if (user.length !== 0) {
-    //로그인 성공
-    return res.sendStatus(200);
-  } else {
-    //로그인 실패
-    return res.sendStatus(401); //Unauthorized
+      //교수인 경우
+      user = await model.professors
+        .findAll({ where: { professor_id: id, pw: pw } })
+        .catch((err) => console.log(err));
+      if(user) {
+          req.session.loginId = id;
+          req.session.userType = type;
+          return res.sendStatus(201);
+      } else {
+          return res.sendStatus(401);
+      }
   }
 };
 
@@ -76,7 +82,7 @@ exports.getStudentPage = async(req, res, next) => {
               where: {subject_id: enrollment.subject_id}
           }).catch((err) => console.log(err));
 
-
+          //미제출 과제 개수
           for(let assignment of assignments) {
               let submit_check = await model.assign_submit.findOne({
                   where: {assign_id: assignment.register_id}
@@ -89,7 +95,6 @@ exports.getStudentPage = async(req, res, next) => {
           }
           data.push({...enrollment.get(), notice_count: notice_count, not_submit_count: not_submit_count});
       }
-      console.log(data);
       return res.status(200).send(data);
     } else {
       //로그아웃 상태

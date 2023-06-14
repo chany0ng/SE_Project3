@@ -50,17 +50,37 @@ exports.getNotice = async(req, res, next) => {
 
 //공지사항 작성 함수
 exports.writeNotice = async(req, res, next) => {
-    let filename = req.files[0].originalname;
-    let filedata = req.files[0].buffer;
-    let mimetype = req.files[0].mimetype;
+    let fileId = '';
+    //업로드 파일이 있을 경우
+    if(req.file) {
+        let filedata = {
+            file_name: req.file.originalname,
+            file_content: req.file.buffer,
+            file_mimetype: req.file.mimetype
+        }
 
-    let datas = {
-        file_name: filename,
-        file_content: filedata,
-        file_mimetype: mimetype
+        let file = await model.files.create(filedata).catch((err) => {
+            console.log(err);
+            return res.sendStatus(400);
+        });
+
+        fileId = file.file_id;
     }
 
-    let result = await model.files.create(datas).catch((err) => console.log(err));
+    let datas = {
+        professor_id: req.session.loginId,
+        subject_id: req.body.subject_id,
+        notice_title: req.body.title,
+        notice_description: req.body.description,
+        notice_file: fildId === ''? null: fileId,
+    };
+
+    let result = await model.notices.create(datas).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);
+    });
+
+    return res.sendStatus(200);
 };
 
 //다운로드 함수
@@ -79,7 +99,7 @@ exports.Download = async(req, res, next) => {
     
 };
 
-//묻고 답하기 조회 함수
+//묻고 답하기 목록 함수
 exports.getQnAList = async(req, res, next)  => {
     let studentId = req.session.loginId;
     let subjectId = req.params.id;
@@ -103,6 +123,23 @@ exports.getQnAList = async(req, res, next)  => {
     let count = result.length;
     let data = [qnaList, count];
     return res.status(200).send(data);
+}
+
+//묻고 답하기 글 조회 함수
+exports.getQnA = async(req, res, next) => {
+    let qnaId = req.params.id;
+    let qna = await model.QnAs.findOne({where: {QnA_id: qnaId}}).catch((err) => console.log(err));
+    if(qna) {
+        let comments = await model.comments.findAll({
+            where: {qna_id: qnaId},
+            include: [{model: model.students}, {model: model.professors}]
+        }).catch((err) => console.log(err));
+
+        let data = [qna, comments];
+        return res.status(200).send(data);
+    } else {
+        return res.sendStatus(400);
+    }
 }
 
 //묻고 답하기 작성 함수
@@ -176,4 +213,64 @@ exports.getSyllabus = async(req, res, next) => {
         //강의계획서 조회 실패
         return res.sendStatus(400);
     }
+};
+
+//강의계획서 작성 함수
+exports.writeSyllabus = async(req, res, next) => {
+    let datas = {
+        professor_id: req.session.loginId,
+        subject_id: req.body.subject_id,
+        syllabus_outline: req.body.outline,
+        syllabus_purpose: req.body.purpose,
+        syllabus_details: req.body.details
+    };
+
+    let result = await model.syllabus.create(datas).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);
+    });
+    return res.sendStatus(200);
+};
+
+//강의계획서 수정 함수
+exports.updateSyllabus = async(req, res, next) => {
+    let datas = {
+        syllabus_outline: req.body.outline,
+        syllabus_purpose: req.body.purpose,
+        syllabus_details: req.body.details
+    };
+
+    let result = await model.syllabus.update(datas, {
+        where: {syllabus_id: req.body.syllabus_id}
+    }).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);
+    });
+
+    return res.sendStatus(200);
+}
+
+//댓글 작성 함수
+exports.writeComment = async(req, res, next) => {
+    let qnaId = req.params.id;
+    let type = req.sessions.userType;
+    let datas = '';
+    if(type === 'student'){
+        datas = {
+            qna_id: qnaId,
+            student_id: req.sessions.loginId,
+            description: req.body.description
+        }
+    } else if (type === 'professor') {
+        datas = {
+            qna_id: qnaId,
+            professor_id: req.session.loginId,
+            description: req.body.description
+        }
+    }
+    let result = await model.comments.create(datas).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);
+    });
+    return res.sendStatus(200);
 };

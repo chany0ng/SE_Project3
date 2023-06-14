@@ -19,14 +19,15 @@ router.post('/enrollment/delete', enrollmentController.deleteEnrollment);
 router.get('/subject/notice', loginController.CheckLogin);
 router.get('/subject/notice/:id/:page', subjectController.getNoticeList);
 router.get('/subject/notice_view/:id', subjectController.getNotice);
-//router.post('/subject/notice/write', upload.single('upload'), (req, res) => {subjectController.writeNotice(req, res)});
 router.get('/subject/download/:id', subjectController.Download);
 
 router.get('/subject/qna', loginController.CheckLogin);
 router.get('/subject/qna/:id/:page', subjectController.getQnAList);
+router.get('/subject/qna_view/:id', subjectController.getQnA);
 router.post('/subject/qna/:id/write', subjectController.writeQnA);
 router.post('/subject/qna/:id/update', subjectController.updateQnA);
 router.post('/subject/qna/:id/delete', subjectController.deleteQnA);
+router.post('/subject/qna/:id/comment', subjectController.writeComment);
 
 router.get('/subject/syllabus', loginController.CheckLogin);
 router.get('/subject/syllabus/:id', subjectController.getSyllabus);
