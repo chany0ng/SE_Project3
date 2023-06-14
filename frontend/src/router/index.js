@@ -21,10 +21,14 @@ const routes = [
     component: () => import("../views/LoginViews/NewJoin"),
   },
   {
-    path: "/student/subject/annoucement",
+    path: "/student/subject/notice/:id/:page",
     name: "공지사항 조회",
-    component: () =>
-      import("../views/StudentViews/management/StudentAnnoucement"),
+    component: () => import("../views/StudentViews/management/StudentNotice"),
+  },
+  {
+    path: "/student/subject/notice/:id/:number/read",
+    name: "공지사항 상세 페이지",
+    component: () => import("../views/StudentViews/management/NoticeRead"),
   },
   {
     path: "/student/subject/qna/:id/:page",
@@ -33,12 +37,12 @@ const routes = [
   },
   {
     path: "/student/subject/qna/:id/write",
-    name: "Write Post",
+    name: "강의 묻고 답하기 작성",
     component: () => import("../views/StudentViews/management/QnAWrite"),
   },
   {
     path: "/student/subject/qna/:id/:number/read",
-    name: "Read Post",
+    name: "강의 묻고 답하기 상세 페이지",
     component: () => import("../views/StudentViews/management/QnARead"),
   },
   {

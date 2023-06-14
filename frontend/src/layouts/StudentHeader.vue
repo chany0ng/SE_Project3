@@ -12,7 +12,8 @@
           <button>수강 관리</button>
           <ul>
             <li>
-              <router-link to="/student/subject/annoucement"
+              <router-link
+                :to="`/student/subject/notice/${subjectData[0].subject_id}/1`"
                 >공지사항 조회</router-link
               >
             </li>

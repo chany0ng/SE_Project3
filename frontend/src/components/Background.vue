@@ -44,6 +44,7 @@
 .inner-background {
   background-color: var(--main4-color);
   width: 90%;
+  min-height: 50vh;
   display: flex;
   flex-direction: column;
   align-self: center;
