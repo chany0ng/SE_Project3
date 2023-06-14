@@ -219,7 +219,7 @@ exports.getSyllabus = async(req, res, next) => {
 exports.writeSyllabus = async(req, res, next) => {
     let datas = {
         professor_id: req.session.loginId,
-        subject_id: req.body.subject_id,
+        subject_id: req.params.subject_id,
         syllabus_outline: req.body.outline,
         syllabus_purpose: req.body.purpose,
         syllabus_details: req.body.details
@@ -241,7 +241,7 @@ exports.updateSyllabus = async(req, res, next) => {
     };
 
     let result = await model.syllabus.update(datas, {
-        where: {syllabus_id: req.body.syllabus_id}
+        where: {syllabus_id: req.params.syllabus_id}
     }).catch((err) => {
         console.log(err);
         return res.sendStatus(400);

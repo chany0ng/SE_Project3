@@ -11,7 +11,16 @@ const upload = multer();
 
 router.get('/', )
 
+router.get('/studying/grade/:subject_id', )
+
+
 router.post('/subject/notice/write', upload.single('upload'), (req, res) => {subjectController.writeNotice(req, res)});
 
 router.post('/subject/syllabus/:subject_id/write', subjectController.writeSyllabus);
 router.post('/subject/syllabus/:syllabus_id/update', subjectController.updateSyllabus);
+
+router.get('/mypage/information', myPageController.getUserInfo);
+router.post('/mypage/information/update', myPageController.updateUser);
+
+
+module.exports = router;
