@@ -21,13 +21,12 @@ const routes = [
     component: () => import("../views/LoginViews/NewJoin"),
   },
   {
-    path: "/student/subject/announcement/:id/page",
+    path: "/student/subject/notice/:id/page",
     name: "공지사항 조회",
-    component: () =>
-      import("../views/StudentViews/management/StudentAnnouncement"),
+    component: () => import("../views/StudentViews/management/StudentNotice"),
   },
   {
-    path: "/student/subject/announcement/:id/:number/read",
+    path: "/student/subject/notice/:id/:number/read",
     name: "공지사항 상세 페이지",
     component: () => import("../views/StudentViews/management/NoticeRead"),
   },
