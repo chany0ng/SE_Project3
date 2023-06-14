@@ -9,7 +9,7 @@ const studyingController = require("../controllers/studyingController");
 
 const upload = multer();
 
-router.get("/", loginController.CheckLogin);
+router.get("/", loginController.getStudentPage);
 
 router.get("/enrollment", loginController.CheckLogin);
 router.get("/enrollment/:page/:keyword?", enrollmentController.getSubjectList);

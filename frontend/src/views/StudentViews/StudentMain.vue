@@ -605,6 +605,7 @@ function getTime() {
 }
 // 날짜 쉼표 기준으로 나누기
 function seperateTime(split_existingTime) {
+  const existing_time = [];
   //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
   const existing_time = [];
   for (let i = 0; i < split_existingTime.length; i++) {

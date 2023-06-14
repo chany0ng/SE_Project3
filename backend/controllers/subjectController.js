@@ -24,6 +24,7 @@ exports.getNoticeList = async (req, res, next) => {
   let result = await model.notices
     .findAll({
       where: { subject_id: subjectId },
+      include: { model: model.professors },
     })
     .catch((err) => console.log(err));
   let count = result.length;
@@ -47,6 +48,7 @@ exports.getNotice = async (req, res, next) => {
     notice.notice_views += 1;
     await notice.save();
     let data = notice;
+    console.log(data);
     return res.status(200).send(data);
   } else {
     //공지사항 조회 오류
