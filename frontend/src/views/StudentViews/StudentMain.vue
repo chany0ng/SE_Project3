@@ -593,18 +593,18 @@ function getTime() {
 }
 // 날짜 쉼표 기준으로 나누기
 function seperateTime(split_existingTime) {
+  const existing_time = [];
   //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
   for (let i = 0; i < split_existingTime.length; i++) {
     let day = split_existingTime[i][0];
     for (let j = 0; j < split_existingTime[i].length; j++) {
       if (!isNaN(split_existingTime[i][j])) {
         //숫자인 경우
-        const existing_time = [];
         existing_time.push(day + split_existingTime[i][j]);
-        return existing_time;
       }
     }
   }
+  return existing_time;
 }
 // 시간표 비우는 함수
 function clearTable() {

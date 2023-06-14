@@ -140,3 +140,159 @@ exports.deleteAssignment = async(req, res, next) => {
     }
 
 };
+
+//성적 조회 함수
+exports.viewGrade = async(req, res, next) => {
+    if(req.session.loginId) {
+        let total_grade = 0;
+        //해당 유저가 수강한 모든 수강 목록
+        let enrollments = await model.enrollments.findAll({
+            where: {student_id: req.session.loginId},
+            include: {model: model.subjects}
+        }).catch((err) => console.log(err));
+
+        //현재까지의 총 수강 학점 계산
+        for(let enrollment of enrollments) {
+            //2023학년 2학기 신청 과목은 제외
+            if(enrollment.year === 2023 && enrollment.semester === 2) {
+                continue;
+            } else {
+                total_grade += enrollment.subject.subject_grade;
+            }
+        };
+        //학기 당 평균 평점(총 평점, 전공 평점, 전공 외 평점) 계산
+        let averageGrade = calculateGrade(enrollments);
+        let data = [enrollments, averageGrade, total_grade];
+        return res.status(200).send(data);
+    } else {
+        //로그인 돼 있지 않음.
+        return res.sendStatus(401);
+    }
+};
+//학기당 학점 계산하는 함수
+function calculateGrade(enrollments) {
+    let grades = [];
+    let year_semesters = [];
+    //학생이 수강한 연도와 학기 확인
+    for (let enrollment of enrollments) {
+        if(!year_semesters.includes(enrollment.year + '-' + enrollment.semester)) {
+            year_semesters.push(enrollment.year + '-' + enrollment.semester)
+        }
+    };
+    //해당하는 학기에 대한 성적 계산
+    for(let year_semester of year_semesters) {
+        let year = year_semester.split('-')[0];
+        let semester = year_semester.split('-')[1];
+        let total_grade = 0;
+        let weight_grade = 0;
+        let major_grade = 0;
+        let non_major_grade = 0;
+        let total_major_grade = 0;
+        let total_non_major_grade = 0;
+        //연도, 학기 기준으로 배열 필터링
+        let filteredEnrollments = enrollments.filter((enrollment) => 
+            enrollment.year == year && enrollment.semester == semester
+        );
+        //한 학기의 평균 과목 학점 계산 (총 평점, 전공 평점, 전공 외 평점)
+        for (let filteredEnrollment of filteredEnrollments) {
+            if(filteredEnrollment.grade) {
+                total_grade += filteredEnrollment.subject.subject_grade;
+                if(filteredEnrollment.grade === 'A+') {
+                    weight_grade += 4.5 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 4.5 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 4.5 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'A0') {
+                    weight_grade += 4.0 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 4.0 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 4.0 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'B+') {
+                    weight_grade += 3.5 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 3.5 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 3.5 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'B0') {
+                    weight_grade += 3.0 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 3.0 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 3.0 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'C+') {
+                    weight_grade += 2.5 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 2.5 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 2.5 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'C0') {
+                    weight_grade += 2.0 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 2.0 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 2.0 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'D+') {
+                    weight_grade += 1.5 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 1.5 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 1.5 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'D0') {
+                    weight_grade += 1.0 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 1.0 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 1.0 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } else if(filteredEnrollment.grade === 'F') {
+                    weight_grade += 0 * filteredEnrollment.subject.subject_grade;
+                    if(filteredEnrollment.subject.subject_type[0] === '전') {
+                        total_major_grade += filteredEnrollment.subject.subject_grade;
+                        major_grade += 0 * filteredEnrollment.subject.subject_grade;
+                    } else {
+                        total_non_major_grade += filteredEnrollment.subject.subject_grade;
+                        non_major_grade += 0 *  filteredEnrollment.subject.subject_grade;
+                    }
+                } 
+            }
+        };
+        //총 학점, 전공 학점, 비전공 학점 계산
+        let total_calculatedGrade = (weight_grade / total_grade).toFixed(2);
+        let major_calculatedGrade = (major_grade / total_major_grade).toFixed(2);
+        let non_major_calculatedGrade = (non_major_grade / total_non_major_grade).toFixed(2);
+        let gradeInfo = {
+            year: year,
+            semester: semester,
+            total_grade: total_calculatedGrade,
+            major_grade: major_calculatedGrade,
+            non_major_grade: non_major_calculatedGrade
+        };
+        grades.push(gradeInfo);
+    };
+    return grades;
+};

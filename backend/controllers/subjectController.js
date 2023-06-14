@@ -21,7 +21,8 @@ exports.getNoticeList = async(req, res, next) => {
     //삭제되지 않은 공지사항만 조회
     let noticeList = notices.filter((notice) => notice.isDeleted === 0);
     let result = await model.notices.findAll({
-        where: {subject_id: subjectId}
+        where: {subject_id: subjectId},
+        include: {model: model.professors}
     }).catch((err) => console.log(err));
     let count = result.length;
     let data = [noticeList, count];
@@ -38,7 +39,9 @@ exports.getNotice = async(req, res, next) => {
         //조회 수 1 증가
         notice.notice_views += 1;
         await notice.save();
-        return res.status(200).send(notice);
+        let data = notice;
+        console.log(data);
+        return res.status(200).send(data);
     } else {
         //공지사항 조회 오류
         return res.sendStatus(400);     //Bad request

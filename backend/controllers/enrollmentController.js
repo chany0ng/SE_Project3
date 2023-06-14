@@ -144,7 +144,7 @@ exports.getSubjectList = async (req, res, next) => {
             [Op.like]: "%" + keyword + "%",
           },
         },
-        order: [["subject_name", "ASC"]],
+        order: [["subject_id", "ASC"]],
         limit: perPage,
         offset: (page - 1) * perPage,
         include: { model: model.professors },
@@ -156,7 +156,7 @@ exports.getSubjectList = async (req, res, next) => {
     //과목이름 오름차순 정렬
     result = await model.subjects
       .findAll({
-        order: [["subject_name", "ASC"]],
+        order: [["subject_id", "ASC"]],
         limit: perPage,
         offset: (page - 1) * perPage,
         include: { model: model.professors },
