@@ -3,7 +3,7 @@
     <StudentHeader />
     <Background>
       <template v-slot:title>
-        <h4>강의 공지사항</h4>
+        <h4>과제 제출</h4>
         <select id="select" v-model="yearSemester" style="margin-right: 10px">
           <option value="2023/2">2023학년도 2학기</option>
           <option value="2023/1" selected>2023학년도 1학기</option>
@@ -27,22 +27,22 @@
               <th scope="col" style="width: 10%">번호</th>
               <th scope="col">제목</th>
               <th scope="col">작성자</th>
-              <th scope="col">작성일</th>
-              <th scope="col">조회수</th>
+              <th scope="col">제출기한</th>
+              <th scope="col">상태</th>
             </thead>
             <tbody>
-              <tr v-for="(notice, index) of noticeList" :key="index">
-                <td>{{ noticeList.length - index }}</td>
+              <tr v-for="(assignment, index) of assignmentList" :key="index">
+                <td>{{ assignmentList.length - index }}</td>
                 <td>
                   <router-link
-                    :to="`/student/subject/notice/${subjectId}/${notice.notice_id}/read`"
+                    :to="`/student/studying/assignment/${subjectId}/${assignmentList.register_id}/read`"
                   >
-                    {{ notice.notice_title }}</router-link
+                    {{ assignment.assign_title }}</router-link
                   >
                 </td>
-                <td>{{ notice.professor.name }}</td>
-                <td>{{ notice.createdAt }}</td>
-                <td>{{ notice.notice_views }}</td>
+                <td>{{ assignment.professor.name }}</td>
+                <td>{{ assignment.assign_due_date }}</td>
+                <td>{{ assignment.submit ? "제출" : "미제출" }}</td>
               </tr>
             </tbody>
           </table>
@@ -73,7 +73,7 @@ NoserachPagination;
 
 //로그인 유무 받아오기
 onBeforeMount(async () => {
-  const loggedIn = await loginCheck("/api/student/subject/notice");
+  const loggedIn = await loginCheck("/api/student/studying/assignment");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
@@ -85,8 +85,8 @@ onBeforeMount(async () => {
 
 const router = useRouter();
 const isRendered = ref(false);
-const currentPath = ref("/student/subject/notice");
-const noticeList = ref();
+const currentPath = ref("/student/studying/assignment");
+const assignmentList = ref();
 // 학기 선택
 const yearSemester = ref("2023/1"); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
@@ -97,8 +97,8 @@ const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  noticeList.value = newList;
-  store.dispatch("noticeInfo/setNotice", noticeList.value);
+  assignmentList.value = newList;
+  store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
 };
 // 옵션으로 선택한 과목
 const selectedSubject = ref();

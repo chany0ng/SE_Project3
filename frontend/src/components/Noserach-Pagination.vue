@@ -35,7 +35,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits, toRef, watch } from "vue";
+import {
+  ref,
+  onBeforeMount,
+  defineProps,
+  defineEmits,
+  toRef,
+  watch,
+} from "vue";
 import { useGetAxios } from "@/composable";
 import { useRouter } from "vue-router";
 const currentPage = ref(1);
@@ -63,12 +70,12 @@ watch(subjectId, async (newId) => {
     subjectId.value = newId;
     await getLists();
     calculateTotalPages(totalLists.value); // 게시물 총 개수 / 10 = page개수
-    router.push(`/student/subject/qna/${subjectId.value}/1`);
+    router.push(`${currentPath.value}/${subjectId.value}/1`);
   }
 });
 
 // 페이지 로드될 때, 초기 실행 함수
-onMounted(async () => {
+onBeforeMount(async () => {
   // 초기 게시물 목록과 페이지 개수 설정
   await getLists();
   calculateTotalPages(totalLists.value); // 게시물 총 개수 / 10 = page개수

@@ -34,17 +34,13 @@
           <button>학습 지원실</button>
           <ul>
             <li>
-              <router-link to="/student/studying/assignment"
+              <router-link
+                :to="`/student/studying/assignment/${subjectData[0].subject_id}/1`"
                 >과제 제출</router-link
               >
             </li>
             <li>
               <router-link to="/student/studying/grade">성적 조회</router-link>
-            </li>
-            <li>
-              <router-link to="/student/studying/performance"
-                >석차 조회</router-link
-              >
             </li>
           </ul>
         </li>

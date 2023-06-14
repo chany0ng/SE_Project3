@@ -9,17 +9,22 @@
         <div id="form-container">
           <div id="title-container">
             <div style="font-size: larger">
-              {{ selectedPost.QnA_title }}
+              {{ selectedPost.notice_title }}
             </div>
-            <span>작성자: {{ selectedPost.student.name }}</span>
-            <span>조회수: {{ selectedPost.notice_views + 1 }}</span>
+            <span>작성자: {{ selectedPost.professor.name }}</span>
+            <span>조회수: {{ selectedPost.notice_views }}</span>
             <span>등록일: {{ selectedPost.createdAt }}</span>
           </div>
-          <div id="content-container">file: {{ selectedPost.notice_file }}</div>
+          <div id="file-container">file: {{ selectedPost.notice_file }}</div>
           <div id="content-container">
             {{ selectedPost.notice_description }}
           </div>
         </div>
+        <button id="returnBtn">
+          <router-link :to="`/student/subject/notice/${subjectId}/1`"
+            >목록으로</router-link
+          >
+        </button>
       </template>
     </Background>
     <MainFooter />
@@ -37,15 +42,18 @@ import { useRouter, useRoute } from "vue-router";
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("/api/student/subject/qna");
+  const loggedIn = await loginCheck("/api/student/subject/notice");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
-    const { getData } = useGetAxios(`/subject/notice/view/${postId.value}`);
+    const { getData } = useGetAxios(
+      `/api/student/subject/notice_view/${postId.value}`
+    );
     const response = await getData();
     if (response.status === 200) {
-      selectedPost.value = getPost(postId.value);
+      // selectedPost.value = getPost(postId.value);
+      selectedPost.value = response.data;
     } else {
       alert("게시물 조회 에러!");
       router.push(`/student/subject/notice/${subjectId.value}/1`);
@@ -120,6 +128,11 @@ a {
   text-decoration: none;
   color: var(--main-color);
 }
+#returnBtn {
+  float: right;
+  border: 1px solid var(--main2-color);
+  background-color: var(--main3-color);
+}
 #form-container {
   display: flex;
   flex-direction: column;
@@ -139,6 +152,11 @@ a {
   line-height: 1.8rem;
   border-bottom: 1px solid black;
   padding: 10px;
+}
+#file-container {
+  text-align: left;
+  border-bottom: 1px solid black;
+  padding: 5px;
 }
 span {
   font-size: small;
