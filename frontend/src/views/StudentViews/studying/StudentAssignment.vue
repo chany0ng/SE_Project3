@@ -5,8 +5,8 @@
       <template v-slot:title>
         <h4>과제 제출</h4>
         <select id="select" v-model="yearSemester" style="margin-right: 10px">
-          <option value="2023/2">2023학년도 2학기</option>
-          <option value="2023/1" selected>2023학년도 1학기</option>
+          <option value="2023/2" selected>2023학년도 2학기</option>
+          <option value="2023/1">2023학년도 1학기</option>
           <option value="2022/2">2022학년도 2학기</option>
           <option value="2022/1">2022학년도 1학기</option>
           <option value="2021/2">2021학년도 2학기</option>
@@ -35,13 +35,13 @@
                 <td>{{ assignmentList.length - index }}</td>
                 <td>
                   <router-link
-                    :to="`/student/studying/assignment/${subjectId}/${assignmentList.register_id}/read`"
+                    :to="`/student/studying/assignment/${subjectId}/${assignment.register_id}/read`"
                   >
                     {{ assignment.assign_title }}</router-link
                   >
                 </td>
                 <td>{{ assignment.professor.name }}</td>
-                <td>{{ assignment.assign_due_date }}</td>
+                <td>{{ formatDate(assignment.assign_due_date) }}</td>
                 <td>{{ assignment.submit ? "제출" : "미제출" }}</td>
               </tr>
             </tbody>
@@ -88,7 +88,7 @@ const isRendered = ref(false);
 const currentPath = ref("/student/studying/assignment");
 const assignmentList = ref();
 // 학기 선택
-const yearSemester = ref("2023/1"); // 초기 값 설정
+const yearSemester = ref("2023/2"); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
@@ -97,9 +97,12 @@ const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  assignmentList.value = newList;
+  const updatedList = newList.slice(0, newList.length - 1);
+  assignmentList.value = updatedList;
   store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
+  const lastElement = newList[newList.length - 1];
 };
+
 // 옵션으로 선택한 과목
 const selectedSubject = ref();
 
@@ -137,6 +140,11 @@ watch(selectedSubject, (newValue) => {
     }
   }
 });
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

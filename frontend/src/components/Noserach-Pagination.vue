@@ -84,6 +84,7 @@ onBeforeMount(async () => {
 // 페이지에 해당하는 강의목록 받아오기
 const getLists = async () => {
   // 페이지별 get요청
+
   const { getData } = useGetAxios(
     `${serverPath}/${subjectId.value}/${currentPage.value}`
   );
@@ -92,8 +93,10 @@ const getLists = async () => {
   if (response.status === 200) {
     lists.value = response.data[0];
     // 부모에게 게시물 리스트 전송
-    emits("update-lists", lists.value);
     totalLists.value = response.data[1];
+    const objCount = { count: totalLists.value };
+    lists.value.push(objCount);
+    emits("update-lists", lists.value);
   } else {
     alert("일치하는 검색결과가 없습니다!");
   }

@@ -30,7 +30,7 @@
               </button>
             </th>
             <td>
-              제출하지 않은 과제 {{ course.not_submit_count }}가 존재합니다!
+              제출하지 않은 과제 {{ course.not_submit_count }}개가 존재합니다!
             </td>
             <td>공지사항 {{ course.notice_count }}개가 존재합니다!</td>
           </tr>
@@ -365,7 +365,7 @@ const filteredCourses = computed(() => {
     return course.year == year && course.semester == semester;
   });
 });
-const yearSemester = ref("2023/1"); // 초기 값 설정
+const yearSemester = ref("2023/2"); // 초기 값 설정
 const isShowBtn = ref(true);
 // 2023/2 에서만 과목삭제 가능
 watch(yearSemester, (newValue) => {

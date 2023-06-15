@@ -36,7 +36,7 @@
             </thead>
             <tbody>
               <tr v-for="(qna, index) of qnaList" :key="index">
-                <td>{{ qnaList.length - index }}</td>
+                <td>{{ indexNumber - index }}</td>
                 <td>
                   <router-link
                     :to="`/student/subject/qna/${subjectId}/${qna.QnA_id}/read`"
@@ -91,16 +91,19 @@ const isRendered = ref(false);
 const currentPath = ref("/student/subject/qna");
 const qnaList = ref();
 // 학기 선택
-const yearSemester = ref("2023/1"); // 초기 값 설정
+const yearSemester = ref("2023/2"); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
+let indexNumber;
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  qnaList.value = newList;
+  const updatedList = newList.slice(0, newList.length - 1);
+  qnaList.value = updatedList;
   store.dispatch("qnaInfo/setQna", qnaList.value);
+  indexNumber = newList[newList.length - 1];
 };
 // 옵션으로 선택한 과목
 const selectedSubject = ref();

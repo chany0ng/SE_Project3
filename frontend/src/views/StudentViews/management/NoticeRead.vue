@@ -53,7 +53,6 @@ onMounted(async () => {
     const response = await getData();
     if (response.status === 200) {
       // selectedPost.value = getPost(postId.value);
-      console.log(response.data);
       selectedPost.value = response.data;
     } else {
       alert("게시물 조회 에러!");

@@ -33,7 +33,7 @@
             <div id="comment">
               <span style="width: 10%">박찬용</span>
               <span>
-                >Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
                 Perspiciatis aliquid magni quas repellat nisi unde, incidunt
                 inventore necessitatibus praesentium ad repellendus error
                 maxime, modi in, nemo dignissimos amet ipsum velit.</span
@@ -106,18 +106,19 @@ function getPost(number) {
 async function deleteQnA() {
   const qnaId = { QnA_id: null };
   qnaId.QnA_id = postId.value;
-  const { postData } = usePostAxios(
-    `/api/student/subject/qna/${subjectId.value}/delete`,
-    qnaId
-  );
-  const response = await postData();
-  if (response.status === 200) {
-    const answer = confirm("게시물을 삭제하겠습니까?");
-    if (answer) alert("게시물이 삭제되었습니다!");
-
-    router.push(`/student/subject/qna/${subjectId.value}/1`);
-  } else {
-    alert("게시물 삭제 에러!");
+  const answer = confirm("게시물을 삭제하겠습니까?");
+  if (answer) {
+    const { postData } = usePostAxios(
+      `/api/student/subject/qna/${subjectId.value}/delete`,
+      qnaId
+    );
+    const response = await postData();
+    if (response.status === 200) {
+      alert("게시물이 삭제되었습니다!");
+      router.push(`/student/subject/qna/${subjectId.value}/1`);
+    } else {
+      alert("게시물 삭제 에러!");
+    }
   }
 }
 // createdAt 출력 변경

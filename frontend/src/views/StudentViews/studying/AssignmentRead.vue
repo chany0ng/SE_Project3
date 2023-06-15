@@ -7,21 +7,53 @@
       </template>
       <template v-slot:content>
         <div id="form-container">
-          <div id="title-container">
+          <p style="color: var(--main-color)">출제 과제 정보</p>
+          <div class="title-container">
             <div style="font-size: larger">
-              {{ selectedPost.notice_title }}
+              {{ selectedPost.assign_title }}
             </div>
             <span>작성자: {{ selectedPost.professor.name }}</span>
-            <span>조회수: {{ selectedPost.notice_views }}</span>
-            <span>등록일: {{ selectedPost.createdAt }}</span>
+            <!-- <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span> -->
+            <span>마감일: {{ selectedPost.assign_due_date }}</span>
+            <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
-          <div id="file-container">file: {{ selectedPost.notice_file }}</div>
+          <div id="file-container">
+            file: {{ selectedPost.assign_register_file }}
+          </div>
           <div id="content-container">
-            {{ selectedPost.notice_description }}
+            {{ selectedPost.assign_description }}
           </div>
         </div>
+        <div class="form-container">
+          <form @submit.prevent="submitHandler" method="post" ref="formRef">
+            <p style="color: var(--main-color)">과제 제출란</p>
+            <div class="mb-3 input-container">
+              <label class="form-label">과제 제목</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="제목을 입력하세요"
+                required
+              />
+            </div>
+            <hr />
+            <div class="mb-3 input-container">
+              <label class="form-label">파일 제출</label>
+              <input type="file" class="form-control" />
+            </div>
+            <div class="mb-3 input-container">
+              <label class="form-label">과제 내용</label>
+              <textarea class="form-control" rows="10" required></textarea>
+            </div>
+            <button type="submit" id="writeBtn">
+              <router-link :to="`/student/studying/assignment/${subjectId}/1`"
+                >제출</router-link
+              >
+            </button>
+          </form>
+        </div>
         <button id="returnBtn">
-          <router-link :to="`/student/subject/notice/${subjectId}/1`"
+          <router-link :to="`/student/studying/assignment/${subjectId}/1`"
             >목록으로</router-link
           >
         </button>
@@ -42,22 +74,12 @@ import { useRouter, useRoute } from "vue-router";
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("/api/student/subject/notice");
+  const loggedIn = await loginCheck("/api/student/studying/assignment");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
-    const { getData } = useGetAxios(
-      `/api/student/subject/notice_view/${postId.value}`
-    );
-    const response = await getData();
-    if (response.status === 200) {
-      // selectedPost.value = getPost(postId.value);
-      selectedPost.value = response.data;
-    } else {
-      alert("게시물 조회 에러!");
-      router.push(`/student/subject/notice/${subjectId.value}/1`);
-    }
+    selectedPost.value = getPost(postId.value);
     isRendered.value = true;
   }
 });
@@ -70,16 +92,51 @@ const route = useRoute();
 const subjectId = computed(() => route.params.id);
 const postId = computed(() => route.params.number);
 const selectedPost = ref();
+// 선택된 게시물의 assign_id
+const register_id = computed(() => selectedPost.value.register_id);
+// 과제제출 시 필요한 입력 값
+const writeData = reactive({
+  title: "",
+  description: "",
+});
 
-// notice_id에 해당하는 게시글 객체 얻기
+// 과제 제출하기 함수
+const submitHandler = async () => {
+  const { postData } = usePostAxios(
+    `/api/student/studying/assignment/${register_id.value}`,
+    writeData
+  );
+  const response = await postData();
+  if (response.status === 200) {
+    router.push(`/student/studying/assignment/${subjectId.value}/1`);
+  } else {
+    alert("게시물 등록 에러!");
+  }
+};
+// register_id에 해당하는 게시글 객체 얻기
 function getPost(number) {
-  const noticeList = computed(() => store.getters["noticeInfo/getNotice"]);
-  const post = noticeList.value.find((notice) => notice.notice_id == number);
+  const assignmentList = computed(
+    () => store.getters["assignmentInfo/getAssignment"]
+  );
+  const post = assignmentList.value.find(
+    (assignment) => assignment.register_id == number
+  );
   return post;
 }
+
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>
+#writeBtn {
+  float: right;
+  border: 1px solid var(--main2-color);
+  background-color: var(--main3-color);
+}
 #deleteBtn {
   border: 1px solid var(--main2-color);
   background-color: var(--main3-color);
@@ -138,7 +195,7 @@ a {
   flex-direction: column;
   padding: 10px;
 }
-#title-container {
+.title-container {
   background-color: var(--main3-color);
   text-align: left;
   font-weight: bold;
