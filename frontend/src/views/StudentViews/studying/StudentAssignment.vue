@@ -99,8 +99,9 @@ const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  assignmentList.value = newList;
+  assignmentList.value = newList[0];
   store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
+  console.log(assignmentList.value);
 };
 
 // 옵션으로 선택한 과목

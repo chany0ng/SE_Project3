@@ -25,15 +25,19 @@
             <span>마감일: {{ formatDate(selectedPost.assign_due_date) }}</span>
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
-          <div id="file-container">
+          <div id="file-container" @click="fileClick(selectedPost.file_id)">
             파일: {{ selectedPost.filename }}
           </div>
           <div id="content-container">
             {{ selectedPost.assign_description }}
           </div>
         </div>
-        <div class="form-container">
-          <form @submit.prevent="submitHandler" method="post" enctype="multipart/form-data">
+        <div class="form-container" v-if="!isSubmit">
+          <form
+            @submit.prevent="submitHandler"
+            method="post"
+            enctype="multipart/form-data"
+          >
             <p
               style="
                 color: var(--main-color);
@@ -56,11 +60,7 @@
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
-              <input
-                type="file"
-                class="form-control"
-                ref="fileInput"
-              />
+              <input type="file" class="form-control" ref="fileInput" />
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
@@ -80,6 +80,7 @@
             >
           </button>
         </div>
+        <div v-if="isSubmit">제출했다 이씨발롬아</div>
       </template>
     </Background>
     <MainFooter />
@@ -87,7 +88,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive, } from "vue";
+import { onMounted, computed, ref, reactive, watch } from "vue";
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -95,6 +96,7 @@ import Background from "@/components/Background.vue";
 import store from "@/store";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
+
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/student/studying/assignment");
@@ -103,6 +105,8 @@ onMounted(async () => {
     router.push("/login");
   } else {
     selectedPost.value = getPost(postId.value);
+    // register_id.value = selectedPost.value.register_id;
+    // console.log(selectedPost.value);
     isRendered.value = true;
   }
 });
@@ -114,7 +118,12 @@ const fileInput = ref(null);
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
 const postId = computed(() => route.params.number);
-const selectedPost = ref(getPost(postId.value));
+// const selectedPost = store.getters["assignmentInfo/getAssignment"].find(obj => obj.register_id === postId.value);
+const selectedPost = computed(() => {
+  return store.getters["assignmentInfo/getAssignment"].find(
+    (obj) => obj.register_id === postId.value
+  );
+});
 // 선택된 게시물의 assign_id
 const register_id = computed(() => selectedPost.value.register_id);
 
@@ -124,14 +133,23 @@ const writeData = reactive({
   description: "",
 });
 
+// 제출을 했는가 여부 판단하는 변수
+const isSubmit = ref();
+console.log("제출햇는가: ", isSubmit);
+console.log("제출햇는가: ", isSubmit.value);
+
 const submitHandler = async () => {
   const formData = new FormData();
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
   if (fileInput.value.files.length > 0) {
-    formData.append("file", fileInput.value.files[0], encodeURIComponent(fileInput.value.files[0].name));
+    formData.append(
+      "file",
+      fileInput.value.files[0],
+      encodeURIComponent(fileInput.value.files[0].name)
+    );
   }
- 
+
   const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
     formData,
@@ -157,6 +175,11 @@ function getPost(number) {
     (assignment) => assignment.register_id == number
   );
   return post;
+}
+
+async function fileClick(fileId) {
+  const { getData } = useGetAxios(`/api/student/subject/download/${fileId}`);
+  const response = await getData();
 }
 
 // createdAt 출력 변경
