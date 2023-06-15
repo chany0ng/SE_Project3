@@ -94,8 +94,6 @@ const getLists = async () => {
     lists.value = response.data[0];
     // 부모에게 게시물 리스트 전송
     totalLists.value = response.data[1];
-    const objCount = { count: totalLists.value };
-    lists.value.push(objCount);
     emits("update-lists", lists.value);
   } else {
     alert("일치하는 검색결과가 없습니다!");

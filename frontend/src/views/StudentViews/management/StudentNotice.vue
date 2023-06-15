@@ -102,10 +102,8 @@ const subjectId = ref();
 // };
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  const updatedList = newList.slice(0, newList.length - 1);
-  noticeList.value = updatedList;
+  noticeList.value = newList;
   store.dispatch("noticeInfo/setNotice", noticeList.value);
-  const lastElement = newList[newList.length - 1];
 };
 // 옵션으로 선택한 과목
 const selectedSubject = ref();

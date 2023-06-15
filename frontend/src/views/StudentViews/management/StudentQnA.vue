@@ -100,10 +100,8 @@ const subjectId = ref();
 let indexNumber;
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  const updatedList = newList.slice(0, newList.length - 1);
-  qnaList.value = updatedList;
+  qnaList.value = newList;
   store.dispatch("qnaInfo/setQna", qnaList.value);
-  indexNumber = newList[newList.length - 1];
 };
 // 옵션으로 선택한 과목
 const selectedSubject = ref();

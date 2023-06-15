@@ -88,9 +88,10 @@ const isRendered = ref(false);
 const currentPath = ref("/student/studying/assignment");
 const assignmentList = ref();
 // 학기 선택
-// const yearSemester = ref("2023/1"); // 초기 값 설정
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-const yearSemester = ref(`${subjectData.value[0].year}/${subjectData.value[0].semester}`); // 초기 값 설정
+const yearSemester = ref(
+  `${subjectData.value[0].year}/${subjectData.value[0].semester}`
+); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
@@ -98,10 +99,8 @@ const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  const updatedList = newList.slice(0, newList.length - 1);
-  assignmentList.value = updatedList;
+  assignmentList.value = newList;
   store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
-  const lastElement = newList[newList.length - 1];
 };
 
 // 옵션으로 선택한 과목

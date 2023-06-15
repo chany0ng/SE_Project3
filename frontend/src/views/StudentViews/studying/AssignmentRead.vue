@@ -33,7 +33,12 @@
           </div>
         </div>
         <div class="form-container">
-          <form  @submit.prevent="submitHandler" method="post">
+          <form
+            :action="`/api/student/studying/assignment/${register_id.value}`"
+            method="post"
+            enctype="multipart/form-data"
+            @submit.prevent="submitHandler"
+          >
             <p
               style="
                 color: var(--main-color);
@@ -47,6 +52,7 @@
               <label class="form-label">과제 제목</label>
               <input
                 type="text"
+                name="title"
                 class="form-control"
                 v-model="writeData.title"
                 placeholder="제목을 입력하세요"
@@ -55,7 +61,7 @@
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
-              <input type="file" class="form-control" ref="fileInput" />
+              <input type="file" name="upload" class="form-control" />
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
@@ -63,12 +69,11 @@
                 class="form-control"
                 rows="10"
                 required
+                name="description"
                 v-model="writeData.description"
               ></textarea>
             </div>
-            <button type="submit" id="writeBtn">
-              제출
-            </button>
+            <button type="submit" id="writeBtn">제출</button>
           </form>
           <button type="button" id="returnBtn">
             <router-link :to="`/student/studying/assignment/${subjectId}/1`"
@@ -110,37 +115,21 @@ const isRendered = ref(false);
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
 const postId = computed(() => route.params.number);
-const selectedPost = ref();
+const selectedPost = ref(getPost(postId.value));
 // 선택된 게시물의 assign_id
 const register_id = computed(() => selectedPost.value.register_id);
+console.log(`/api/student/studying/assignment/${register_id.value}`);
 // 과제제출 시 필요한 입력 값
 const writeData = reactive({
   title: "",
   description: "",
 });
-// 파일 선택 변수
-const fileInputRef = ref(null);
+
 // 과제 제출하기 함수
-
-const submitHandler = async () => {
-  console.log(writeData.description);
-  console.log(writeData.title);
-  const formData = new FormData();
-  formData.append("title", writeData.title);
-  formData.append("description", writeData.description);
-  formData.append("file", fileInputRef.value.files[0]);
-  const { postData } = usePostAxios(
-    `/api/student/studying/assignment/${register_id.value}`,
-
-    formData
-  );
-  console.log("과제 제출 데이터: ", formData);
-  const response = await postData();
-  if (response.status === 200) {
-    router.push(`/student/studying/assignment/${subjectId.value}/1`);
-  } else {
-    alert("게시물 등록 에러!");
-  }
+const submitHandler = () => {
+  console.log("submit핸들러 함수 호출");
+  console.log(writeData);
+  router.push(`/student/studying/assignment/${subjectId.value}/1`);
 };
 // register_id에 해당하는 게시글 객체 얻기
 function getPost(number) {

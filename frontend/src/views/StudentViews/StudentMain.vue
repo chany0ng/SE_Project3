@@ -2,7 +2,6 @@
   <router-view></router-view>
   <main v-if="isRendered">
     <StudentHeader />
-    <!-- <Asidebar /> -->
     <div id="list-table">
       <table class="table table-sm table-hover" style="font-size: small">
         <thead style="font-size: 1.1rem">
@@ -364,8 +363,8 @@ const filteredCourses = computed(() => {
     return course.year == year && course.semester == semester;
   });
 });
-const yearSemester = ref("2023/2"); // 초기 값 설정
-const isShowBtn = ref(true);
+const yearSemester = ref("2023/1"); // 초기 값 설정
+const isShowBtn = ref(false);
 // 2023/2 에서만 과목삭제 가능
 watch(yearSemester, (newValue) => {
   if (newValue === "2023/2") {
