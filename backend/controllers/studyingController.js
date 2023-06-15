@@ -18,8 +18,7 @@ exports.getAssignmentList = async (req, res, next) => {
       include: [
         { model: model.subjects },
         { model: model.professors },
-        { model: model.files },
-      ],
+      ]
     })
     .catch((err) => {
       console.log(err);
@@ -32,18 +31,33 @@ exports.getAssignmentList = async (req, res, next) => {
   let assign_submit_List = [];
   //사용자의 과제 제출 여부 확인
   for (let assignment of assignmentList) {
+    if(assignment.assign_register_file) {
+        let fileId = assignment.assign_register_file;
+        let file = await model.files.findOne({where: {file_id: fileId}}).catch((err) => console.log(err));
+        let filename = file.file_name;
+        assignment.file_id = fileId;
+        assignment.filename = filename;
+    }
     let registerId = assignment.register_id;
     let submits = await model.assign_submit
       .findAll({
-        where: { student_id: studentId, assign_id: registerId },
-        include: { model: model.files },
+        where: { student_id: studentId, assign_id: registerId }
       }).catch((err) => console.log(err));
     //과제 제출 여부가 포함된 새로운 배열 생성
     if (submits.length !== 0) {
       //과제 삭제 여부 확인 
       for (let submit of submits) {
         if (submit.isDeleted === 0) {
-          assign_submit_List.push({...assignment.get(), submit: submit.get(),});
+            if(submit.submit_file) {
+                let fileId = submit.submit_file;
+                let file = await model.files.findOne({
+                    where: {file_id: fileId}
+                }).catch((err) => console.log(err));
+                let filename = file.file_name;
+                submit.file_id = fileId;
+                submit.filename = filename;
+            }
+            assign_submit_List.push({...assignment.get(), submit: submit.get(),});
         }
       }
     } else {
