@@ -87,7 +87,7 @@ exports.getAssignmentList = async (req, res, next) => {
 exports.submitAssignment = async (req, res, next) => {
     let assignId = req.params.assign_id;
     let fileId = "";
-
+    console.log(assignId);
     //업로드 파일이 있을 경우
     if (req.file) {
         let filedata = {

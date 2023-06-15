@@ -1,6 +1,7 @@
 const express = require("express");
 const model = require("../models");
 const { Readable } = require("stream");
+const fs = require('fs');
 
 //과목에 해당하는 공지사항 리스트 주는 함수
 exports.getNoticeList = async (req, res, next) => {
@@ -93,22 +94,23 @@ exports.writeNotice = async (req, res, next) => {
 
 //다운로드 함수
 exports.Download = async (req, res, next) => {
-  let fileId = req.params.id;
-  let file = await model.files
-    .findOne({ where: { file_id: fileId } })
-    .catch((err) => console.log(err));
+    let fileId = req.params.id;
+    console.log(fileId);
+    let file = await model.files
+        .findOne({ where: { file_id: fileId } })
+        .catch((err) => console.log(err));
 
-  res.setHeader("Content-Type", file.file_mimetype);
-  res.setHeader(
-    "Content-Disposition",
-    `attachment; filename="${file.file_name}"`
-  );
-
-  // 파일을 스트림 형태로 응답한다.
-  const fileStream = new Readable();
-  fileStream.push(file.file_content);
-  fileStream.push(null);
-  fileStream.pipe(res);
+    res.setHeader("Content-Type", file.file_mimetype);
+    res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${file.file_name}"`
+    );
+    console.log(file.file_content);
+    // 파일을 스트림 형태로 응답한다.
+    const fileStream = new Readable();
+    fileStream.push(file.file_content);
+    fileStream.push(null);
+    fileStream.pipe(res);
 };
 
 //묻고 답하기 목록 함수

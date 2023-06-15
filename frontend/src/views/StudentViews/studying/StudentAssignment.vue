@@ -35,13 +35,13 @@
                 <td>{{ assignmentList.length - index }}</td>
                 <td>
                   <router-link
-                    :to="`/student/studying/assignment/${subjectId}/${assignment.register_id}/read`"
+                    :to="`/student/studying/assignment/${subjectId}/${assignment[0].register_id}/read`"
                   >
-                    {{ assignment.assign_title }}</router-link
+                    {{ assignment[0].assign_title }}</router-link
                   >
                 </td>
-                <td>{{ assignment.professor.name }}</td>
-                <td>{{ formatDate(assignment.assign_due_date) }}</td>
+                <td>{{ assignment[0].professor.name }}</td>
+                <td>{{ formatDate(assignment[0].assign_due_date) }}</td>
                 <td>{{ assignment.submit ? "제출" : "미제출" }}</td>
               </tr>
             </tbody>
@@ -99,9 +99,8 @@ const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  assignmentList.value = newList[0];
+  assignmentList.value = newList;
   store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
-  console.log(assignmentList.value);
 };
 
 // 옵션으로 선택한 과목
