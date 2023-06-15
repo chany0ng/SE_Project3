@@ -88,10 +88,11 @@ const isRendered = ref(false);
 const currentPath = ref("/student/studying/assignment");
 const assignmentList = ref();
 // 학기 선택
-const yearSemester = ref("2023/2"); // 초기 값 설정
+// const yearSemester = ref("2023/1"); // 초기 값 설정
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+const yearSemester = ref(`${subjectData.value[0].year}/${subjectData.value[0].semester}`); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
-const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
 

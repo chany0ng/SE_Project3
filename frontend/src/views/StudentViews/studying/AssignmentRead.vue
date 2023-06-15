@@ -33,7 +33,7 @@
           </div>
         </div>
         <div class="form-container">
-          <form method="post" @submit.prevent="submitHandler">
+          <form  @submit.prevent="submitHandler" method="post">
             <p
               style="
                 color: var(--main-color);
@@ -67,9 +67,7 @@
               ></textarea>
             </div>
             <button type="submit" id="writeBtn">
-              <router-link :to="`/student/studying/assignment/${subjectId}/1`"
-                >제출</router-link
-              >
+              제출
             </button>
           </form>
           <button type="button" id="returnBtn">
@@ -125,13 +123,15 @@ const fileInputRef = ref(null);
 // 과제 제출하기 함수
 
 const submitHandler = async () => {
-  console.log(writeData.value);
+  console.log(writeData.description);
+  console.log(writeData.title);
   const formData = new FormData();
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
-  // formData.append("file", fileInputRef.value.files[0]);
+  formData.append("file", fileInputRef.value.files[0]);
   const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
+
     formData
   );
   console.log("과제 제출 데이터: ", formData);

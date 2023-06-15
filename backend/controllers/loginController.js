@@ -130,6 +130,7 @@ exports.getStudentPage = async(req, res, next) => {
           }
           data.push({...enrollment.get(), notice_count: notice_count, not_submit_count: not_submit_count});
       }
+      console.log(data);
       return res.status(200).send(data);
     } else {
       //로그아웃 상태

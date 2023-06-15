@@ -345,7 +345,7 @@ onBeforeMount(async () => {
   const response = await getData();
   if (response.status === 200) {
     subjectData.value = response.data;
-    store.dispatch("subjectInfo/setSubject", subjectData.value); // 과목정보
+    store.dispatch("subjectInfo/setSubject", response.data); // 과목정보
 
     getTime();
     isRendered.value = true;
@@ -356,7 +356,6 @@ onBeforeMount(async () => {
 });
 const isRendered = ref(false);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-
 // 선택된 학년/학기에 맞는 강좌들만 필터링
 const filteredCourses = computed(() => {
   const year = yearSemester.value.split("/")[0];

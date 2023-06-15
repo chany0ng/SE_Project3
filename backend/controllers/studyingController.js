@@ -64,47 +64,46 @@ exports.getAssignmentList = async (req, res, next) => {
     .catch((err) => console.log(err));
   let count = result.length;
   let data = [assign_submit_List, count];
-  console.log(data);
   // console.log(assignmentList);
   return res.status(200).send(data);
 };
 
 //과제 제출 함수
 exports.submitAssignment = async (req, res, next) => {
-  let assignId = req.params.assign_id;
-  let fileId = "";
+    let assignId = req.params.assign_id;
+    let fileId = "";
+    console.log(assignId);
+    //업로드 파일이 있을 경우
+    if (req.file) {
+        let filedata = {
+        file_name: req.file.originalname,
+        file_content: req.file.buffer,
+        file_mimetype: req.file.mimetype,
+        };
 
-  //업로드 파일이 있을 경우
-  if (req.file) {
-    let filedata = {
-      file_name: req.file.originalname,
-      file_content: req.file.buffer,
-      file_mimetype: req.file.mimetype,
+        let file = await model.files.create(filedata).catch((err) => {
+        console.log(err);
+        //파일 업로드 오류
+        return res.sendStatus(400);
+        });
+        fileId = file.file_id;
+    }
+
+    let datas = {
+        student_id: req.session.loginId,
+        assign_id: assignId,
+        submit_title: req.body.title,
+        submit_description: req.body.description,
+        submit_file: fileId === "" ? null : fileId,
     };
 
-    let file = await model.files.create(filedata).catch((err) => {
-      console.log(err);
-      //파일 업로드 오류
-      return res.sendStatus(400);
+    let result = await model.assign_submit.create(datas).catch((err) => {
+        console.log(err);
+        //과제 제출 등록 오류
+        return res.sendStatus(400);
     });
-    fileId = file.file_id;
-  }
-
-  let datas = {
-    student_id: req.session.loginId,
-    assign_id: assignId,
-    submit_title: req.body.title,
-    submit_description: req.body.description,
-    submit_file: fileId === "" ? null : fileId,
-  };
-
-  let result = await model.assign_submit.create(datas).catch((err) => {
-    console.log(err);
-    //과제 제출 등록 오류
-    return res.sendStatus(400);
-  });
-  //과제 제출 성공
-  return res.sendStatus(200);
+    //과제 제출 성공
+    return res.sendStatus(200);
 };
 
 //제출한 과제 수정 함수
