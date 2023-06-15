@@ -338,25 +338,19 @@ import store from "@/store";
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("/api/student");
-  if (loggedIn === false) {
-    alert("로그인 해야합니다!");
-    router.push("/login");
-  } else {
-    // 학생페이지로 get요청해서 데이터를 받아야 한다.
-    const { getData } = useGetAxios("/api/student/");
-    const response = await getData();
-    if (response.status === 200) {
-      subjectData.value = response.data;
-      console.log("받아온 정보:", subjectData.value);
-      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+  // 학생페이지로 get요청해서 데이터를 받아야 한다.
+  const { getData } = useGetAxios("/api/student/");
+  const response = await getData();
+  if (response.status === 200) {
+    subjectData.value = response.data;
+    console.log("받아온 정보:", subjectData.value);
+    store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
 
-      getTime();
-      isRendered.value = true;
-    } else {
-      alert("메인페이지 접근 에러!");
-      router.push("/login");
-    }
+    getTime();
+    isRendered.value = true;
+  } else {
+    alert("로그인을 먼저 해야합니다!");
+    router.push("/login");
   }
 });
 const isRendered = ref(false);
