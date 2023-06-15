@@ -9,7 +9,7 @@ const subjectInfo = {
   plugins: [persistedState],
   // store.state로 접근, 직접 수정 x, mutations를 이용
   state: {
-    subject: {},
+    subject: null,
   },
   // store.getters로 접근
   getters: {

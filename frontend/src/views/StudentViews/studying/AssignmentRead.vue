@@ -7,43 +7,64 @@
       </template>
       <template v-slot:content>
         <div id="form-container">
-          <p style="color: var(--main-color)">출제 과제 정보</p>
+          <p
+            style="
+              color: var(--main-color);
+              font-size: large;
+              font-weight: bold;
+            "
+          >
+            출제 과제 정보
+          </p>
           <div class="title-container">
             <div style="font-size: larger">
               {{ selectedPost.assign_title }}
             </div>
             <span>작성자: {{ selectedPost.professor.name }}</span>
-            <!-- <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span> -->
-            <span>마감일: {{ selectedPost.assign_due_date }}</span>
+            <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
+            <span>마감일: {{ formatDate(selectedPost.assign_due_date) }}</span>
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
           <div id="file-container">
-            file: {{ selectedPost.assign_register_file }}
+            파일: {{ selectedPost.assign_register_file }}
           </div>
           <div id="content-container">
             {{ selectedPost.assign_description }}
           </div>
         </div>
         <div class="form-container">
-          <form @submit.prevent="submitHandler" method="post" ref="formRef">
-            <p style="color: var(--main-color)">과제 제출란</p>
+          <form method="post" @submit.prevent="submitHandler">
+            <p
+              style="
+                color: var(--main-color);
+                font-size: large;
+                font-weight: bold;
+              "
+            >
+              과제 제출란
+            </p>
             <div class="mb-3 input-container">
               <label class="form-label">과제 제목</label>
               <input
                 type="text"
                 class="form-control"
+                v-model="writeData.title"
                 placeholder="제목을 입력하세요"
                 required
               />
             </div>
-            <hr />
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
-              <input type="file" class="form-control" />
+              <input type="file" class="form-control" ref="fileInput" />
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
-              <textarea class="form-control" rows="10" required></textarea>
+              <textarea
+                class="form-control"
+                rows="10"
+                required
+                v-model="writeData.description"
+              ></textarea>
             </div>
             <button type="submit" id="writeBtn">
               <router-link :to="`/student/studying/assignment/${subjectId}/1`"
@@ -51,12 +72,12 @@
               >
             </button>
           </form>
+          <button type="button" id="returnBtn">
+            <router-link :to="`/student/studying/assignment/${subjectId}/1`"
+              >목록으로</router-link
+            >
+          </button>
         </div>
-        <button id="returnBtn">
-          <router-link :to="`/student/studying/assignment/${subjectId}/1`"
-            >목록으로</router-link
-          >
-        </button>
       </template>
     </Background>
     <MainFooter />
@@ -99,13 +120,21 @@ const writeData = reactive({
   title: "",
   description: "",
 });
-
+// 파일 선택 변수
+const fileInputRef = ref(null);
 // 과제 제출하기 함수
+
 const submitHandler = async () => {
+  console.log(writeData.value);
+  const formData = new FormData();
+  formData.append("title", writeData.title);
+  formData.append("description", writeData.description);
+  // formData.append("file", fileInputRef.value.files[0]);
   const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
-    writeData
+    formData
   );
+  console.log("과제 제출 데이터: ", formData);
   const response = await postData();
   if (response.status === 200) {
     router.push(`/student/studying/assignment/${subjectId.value}/1`);
@@ -171,15 +200,17 @@ const formatDate = (createdAt) => {
   font-size: medium;
   color: black;
 }
+button {
+  margin: 5px;
+}
 #commentForm {
   display: flex;
   justify-content: center;
 }
 textarea {
-  width: 40vw;
+  width: 100%;
   border: 1px solid var(--main2-color);
   padding: 5px;
-  margin-right: 3px;
 }
 a {
   text-decoration: none;
@@ -189,6 +220,9 @@ a {
   float: right;
   border: 1px solid var(--main2-color);
   background-color: var(--main3-color);
+}
+.form-control {
+  border: 1px solid var(--main2-color);
 }
 #form-container {
   display: flex;

@@ -18,7 +18,8 @@
               >
             </li>
             <li>
-              <router-link to="/student/subject/syllabus"
+              <router-link
+                :to="`/student/subject/syllabus/${subjectData[0].subject_id}`"
                 >강의계획서 조회</router-link
               >
             </li>
@@ -95,8 +96,10 @@ async function confirmLogout() {
 const logout = () => {
   // Clear user information from the Vuex store
   store.dispatch("userInfo/setUser", null);
-  store.dispatch("subjectInfo/setSubject", null);
+  // store.dispatch("subjectInfo/setSubject", null);
   store.dispatch("qnaInfo/setQna", null);
+  store.dispatch("noticeInfo/setNotice", null);
+  store.dispatch("assignmentInfo/setAssignment", null);
   localStorage.removeItem("vuex");
 };
 defineExpose({ router });

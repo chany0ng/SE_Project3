@@ -46,7 +46,7 @@ const routes = [
     component: () => import("../views/StudentViews/management/QnARead"),
   },
   {
-    path: "/student/subject/syllabus",
+    path: "/student/subject/syllabus/:id",
     name: "강의 계획서 조회",
     component: () => import("../views/StudentViews/management/StudentSyllabus"),
   },

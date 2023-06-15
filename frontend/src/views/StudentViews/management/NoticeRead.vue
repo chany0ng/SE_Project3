@@ -15,7 +15,7 @@
             <span>조회수: {{ selectedPost.notice_views }}</span>
             <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
           </div>
-          <div id="file-container">file: {{ selectedPost.notice_file }}</div>
+          <div id="file-container">파일: {{ selectedPost.notice_file }}</div>
           <div id="content-container">
             {{ selectedPost.notice_description }}
           </div>

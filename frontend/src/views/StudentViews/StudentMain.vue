@@ -330,7 +330,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive, watch } from "vue";
+import { onBeforeMount, computed, ref, reactive, watch } from "vue";
 import { loginCheck, usePostAxios, useGetAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
@@ -339,13 +339,13 @@ import store from "@/store";
 // import Asidebar from "../../layouts/AsideBar.vue";
 
 //로그인 유무 받아오기
-onMounted(async () => {
+onBeforeMount(async () => {
   // 학생페이지로 get요청해서 데이터를 받아야 한다.
   const { getData } = useGetAxios("/api/student/");
   const response = await getData();
   if (response.status === 200) {
     subjectData.value = response.data;
-    store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+    store.dispatch("subjectInfo/setSubject", subjectData.value); // 과목정보
 
     getTime();
     isRendered.value = true;
@@ -575,9 +575,9 @@ const splitTime = ref([]);
 watch(subjectData, () => {
   getTime();
 });
-// watch(filteredCourses, () => {
-//   getTime();
-// });
+watch(filteredCourses, () => {
+  getTime();
+});
 watch(yearSemester, () => {
   getTime();
 });
