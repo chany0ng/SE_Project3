@@ -67,15 +67,24 @@ exports.Login = async (req, res, next) => {
     } else if (type === "professor") {
         //교수인 경우
         user = await model.professors
-          .findAll({ where: { professor_id: id, pw: pw } })
+          .findOne({ where: { professor_id: id, pw: pw } })
           .catch((err) => console.log(err));
         if(user) {
             req.session.loginId = id;
             req.session.userType = type;
-            return res.sendStatus(201);
+            let subjects = await model.subjects.findAll({
+              where: {professor_id: id}
+            }).catch((err) => console.log(err));
+
+            let data = [user, subjects];
+            return res.status(201).send(data)
         } else {
             return res.sendStatus(401);
         }
+    } else if(type === "admin") {
+          user = await model.admins.findOne({
+              where: {admin_id: id, pw: pw}
+          }).catch((err) => console.log(err));
     }
 };
 
@@ -92,6 +101,7 @@ exports.Logout = async (req, res, next) => {
   });
 };
 
+//학생 메인 페이지 접속 시 필요한 정보 주는 함수
 exports.getStudentPage = async(req, res, next) => {
     let data = [];
     if (req.session.loginId) {
@@ -130,7 +140,6 @@ exports.getStudentPage = async(req, res, next) => {
           }
           data.push({...enrollment.get(), notice_count: notice_count, not_submit_count: not_submit_count});
       }
-      console.log(data);
       return res.status(200).send(data);
     } else {
       //로그아웃 상태

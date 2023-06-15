@@ -1,20 +1,6 @@
 const express = require('express');
 const model = require('../models');
 
-//비밀번호 체크 함수
-exports.CheckPW = async(req, res, next) => {
-    let id = req.session.loginId;
-    let pw = req.body.password;
-    //비밀번호 체크
-    let pw_check = await model.students.findAll({ where: { student_id: id, pw:pw } }).catch((err) => console.log(err));
-    if (pw_check.length !== 0) {        
-        //비밀번호 일치
-        return res.sendStatus(200);
-    } else {
-        //비밀번호 불일치
-        return res.sendStatus(401);       //Unauthorized     
-    }
-};
 
 //유저 정보 주는 함수
 exports.getUserInfo = async(req, res, next) => {
@@ -69,4 +55,14 @@ exports.updateUser = async(req, res, next) => {
         //수정 실패
         return res.sendStatus(400);        //Bad request
     }
+};
+
+//친구 목록 조회 함수
+exports.getFriendList = async(req, res, next) => {
+    let studentId = req.session.loginId;
+    let friends = await model.friends.findAll({
+        where: {student_id: studentId}
+    }).catch((err) => console.log(err));
+    
+
 };

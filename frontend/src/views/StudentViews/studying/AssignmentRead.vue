@@ -26,14 +26,14 @@
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
           <div id="file-container">
-            파일: {{ selectedPost.assign_register_file }}
+            파일: {{ selectedPost.assign_register_file.file_name }}
           </div>
           <div id="content-container">
             {{ selectedPost.assign_description }}
           </div>
         </div>
         <div class="form-container">
-          <form @submit.prevent="submitHandler" method="post">
+          <form @submit.prevent="submitHandler" method="post" enctype="multipart/form-data">
             <p
               style="
                 color: var(--main-color);
@@ -58,7 +58,6 @@
               <label class="form-label">파일 제출</label>
               <input
                 type="file"
-                name="upload"
                 class="form-control"
                 ref="fileInput"
               />
@@ -88,7 +87,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive } from "vue";
+import { onMounted, computed, ref, reactive, } from "vue";
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -126,19 +125,15 @@ const writeData = reactive({
   description: "",
 });
 
-// 과제 제출하기 함수
 const submitHandler = async () => {
   const formData = new FormData();
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
   if (fileInput.value.files.length > 0) {
-    formData.append("file", fileInput.value.files[0]);
+    formData.append("file", fileInput.value.files[0], encodeURIComponent(fileInput.value.files[0].name));
   }
-  // const { postData } = usePostAxios(
-  //   `/api/student/studying/assignment/${register_id.value}`,
-  //   formData
-  // );
-  const response = await axios.post(
+ 
+  const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
     formData,
     {
