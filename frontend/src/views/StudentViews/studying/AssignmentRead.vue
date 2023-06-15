@@ -33,12 +33,7 @@
           </div>
         </div>
         <div class="form-container">
-          <form
-            :action="`/api/student/studying/assignment/${register_id.value}`"
-            method="post"
-            enctype="multipart/form-data"
-            @submit.prevent="submitHandler"
-          >
+          <form @submit.prevent="submitHandler" method="post">
             <p
               style="
                 color: var(--main-color);
@@ -61,7 +56,12 @@
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
-              <input type="file" name="upload" class="form-control" />
+              <input
+                type="file"
+                name="upload"
+                class="form-control"
+                ref="fileInput"
+              />
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
@@ -104,13 +104,14 @@ onMounted(async () => {
     router.push("/login");
   } else {
     selectedPost.value = getPost(postId.value);
+    register_id.value = selectedPost.value.register_id;
     isRendered.value = true;
   }
 });
 
 const router = useRouter();
 const isRendered = ref(false);
-
+const fileInput = ref(null);
 // url에 포함된 params를 읽어오기
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
@@ -126,10 +127,28 @@ const writeData = reactive({
 });
 
 // 과제 제출하기 함수
-const submitHandler = () => {
-  console.log("submit핸들러 함수 호출");
-  console.log(writeData);
-  router.push(`/student/studying/assignment/${subjectId.value}/1`);
+// const submitHandler = () => {
+//   console.log("submit핸들러 함수 호출");
+//   console.log(writeData);
+//   router.push(`/student/studying/assignment/${subjectId.value}/1`);
+// };
+const submitHandler = async () => {
+  const formData = new FormData();
+  formData.append("title", writeData.title);
+  formData.append("description", writeData.description);
+  formData.append("file", fileInput.value.files[0]);
+  const { postData } = usePostAxios(
+    `/api/student/studying/assignment/${register_id.value}`,
+    formData
+  );
+  console.log("과제 제출 데이터: ", formData);
+  const response = await postData();
+  if (response.status === 200) {
+    console.log("서버와 데이터교환 성공");
+    router.push(`/student/studying/assignment/${subjectId.value}/1`);
+  } else {
+    alert("게시물 등록 에러!");
+  }
 };
 // register_id에 해당하는 게시글 객체 얻기
 function getPost(number) {

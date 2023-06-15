@@ -90,11 +90,13 @@ const router = useRouter();
 const isRendered = ref(false);
 const currentPath = ref("/student/subject/qna");
 const qnaList = ref();
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 // 학기 선택
-const yearSemester = ref("2023/2"); // 초기 값 설정
+const yearSemester = ref(
+  `${subjectData.value[0].year}/${subjectData.value[0].semester}`
+);
 const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
-const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
 let indexNumber;

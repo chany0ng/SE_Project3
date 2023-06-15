@@ -1,79 +1,141 @@
 <template>
-  <div class=".container">
-    <h1>강의계획서 조회</h1>
-    <table class="tg">
-      <thead>
-        <tr>
-          <th class="tg-c3ow">교과목명</th>
-          <th class="tg-c3ow">산학협력캡스톤설계1</th>
-          <th class="tg-c3ow">교과목 개요</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th class="tg-c3ow">학정번호</th>
-          <td class="tg-c3ow">H020-0846-01</td>
-          <td class="tg-c3ow" rowspan="3">
-            종합설계과목인 본 과목에서는 설계의 전 주기 과정을 배우며 프로젝트의
-            완성과 함께 <br />공학인증에 필요한 모든 학습성과를 총점검한다.
-            공학설계입문에서 배운 프로젝트 추진법과 <br />동일한 방법으로
-            작품활동을 추진하나 지도교수 연구실에서의 밀착 지도를 받는 점에서
-            차이를 보인다.<br />
-            프로젝트 계획발표회, 프로젝트 결과발표회는 모든 학생이 참석하여 공동
-            진행하며 이를 통하여 <br />각종 학습성과를 평가하고 지도한다. 또한,
-            프로젝트 개발 전반에 대한 포트폴리오를 제작하여 보관하고
-            <br />자료화한다. 이러한 프로젝트 결과물을 활용하여 논문제출,
-            특허출원 및 소프트웨어 등록 그리고 <br />기술사업화(창업)에
-            연계하도록 지도한다.
-          </td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">강의구성</th>
-          <td class="tg-c3ow">이론학점(3), 실험학점(0), 설계학점(0)</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">강의시간</th>
-          <td class="tg-c3ow">월 5교시(새빛205), 수 6교시(새빛205)</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">담당교수</th>
-          <td class="tg-c3ow">이기훈</td>
-          <td class="tg-c3ow">학습목표 및 학습방법</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">연락처</th>
-          <td class="tg-c3ow">02-940-8674</td>
-          <td class="tg-c3ow" rowspan="5">
-            컴퓨터공학도로 갖추어야 할 실무 설계능력과 최신 공학지식을 활용하며
-            이전 과정에서 배운 설계기술을<br />
-            총합하여 프로젝트 수행을 경험한다. 또한 그 결과물을 구체적으로
-            활용하여 논문을 발표하거나 특허를 <br />출원하고 소프트웨어를
-            등록하고 더욱 나아가 기술사업화(창업)등을 통한 실용화 유도를
-            목적으로 한다.
-          </td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">학점/시간</th>
-          <td class="tg-c3ow">3/3</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">이수구분</th>
-          <td class="tg-c3ow">전선</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">수강인원</th>
-          <td class="tg-c3ow">50명</td>
-        </tr>
-        <tr>
-          <th class="tg-c3ow">이메일</th>
-          <td class="tg-c3ow">hklee@kw.ac.kr</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class=".container" v-if="isRendered">
+    <StudentHeader />
+    <Background>
+      <template v-slot:title>
+        <h4>강의 계획서 조회</h4>
+        <select id="select" v-model="yearSemester" style="margin-right: 10px">
+          <option value="2023/2">2023학년도 2학기</option>
+          <option value="2023/1" selected>2023학년도 1학기</option>
+          <option value="2022/2">2022학년도 2학기</option>
+          <option value="2022/1">2022학년도 1학기</option>
+          <option value="2021/2">2021학년도 2학기</option>
+          <option value="2021/1">2021학년도 1학기</option>
+          <option value="2020/2">2020학년도 2학기</option>
+          <option value="2020/1">2020학년도 1학기</option>
+        </select>
+        <select class="select" v-model="selectedSubject">
+          <option v-for="(subject, index) of filteredSubject" :key="index">
+            {{ subject.subject.subject_name }}
+          </option>
+        </select>
+        <button id="writeBtn">
+          <router-link :to="`/student/subject/qna/${subjectId}/write`"
+            >글 등록</router-link
+          >
+        </button>
+      </template>
+      <template v-slot:content>
+        <table class="tg">
+          <thead>
+            <tr>
+              <th class="tg-c3ow">교과목명</th>
+              <th class="tg-c3ow">산학협력캡스톤설계1</th>
+              <th class="tg-c3ow">교과목 개요</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="tg-c3ow">학정번호</th>
+              <td class="tg-c3ow">H020-0846-01</td>
+              <td class="tg-c3ow" rowspan="3">
+                종합설계과목인 본 과목에서는 설계의 전 주기 과정을 배우며
+                프로젝트의 완성과 함께 <br />공학인증에 필요한 모든 학습성과를
+                총점검한다. 공학설계입문에서 배운 프로젝트 추진법과 <br />동일한
+                방법으로 작품활동을 추진하나 지도교수 연구실에서의 밀착 지도를
+                받는 점에서 차이를 보인다.<br />
+                프로젝트 계획발표회, 프로젝트 결과발표회는 모든 학생이 참석하여
+                공동 진행하며 이를 통하여 <br />각종 학습성과를 평가하고
+                지도한다. 또한, 프로젝트 개발 전반에 대한 포트폴리오를 제작하여
+                보관하고 <br />자료화한다. 이러한 프로젝트 결과물을 활용하여
+                논문제출, 특허출원 및 소프트웨어 등록 그리고
+                <br />기술사업화(창업)에 연계하도록 지도한다.
+              </td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">강의구성</th>
+              <td class="tg-c3ow">이론학점(3), 실험학점(0), 설계학점(0)</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">강의시간</th>
+              <td class="tg-c3ow">월 5교시(새빛205), 수 6교시(새빛205)</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">담당교수</th>
+              <td class="tg-c3ow">이기훈</td>
+              <td class="tg-c3ow">학습목표 및 학습방법</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">연락처</th>
+              <td class="tg-c3ow">02-940-8674</td>
+              <td class="tg-c3ow" rowspan="5">
+                컴퓨터공학도로 갖추어야 할 실무 설계능력과 최신 공학지식을
+                활용하며 이전 과정에서 배운 설계기술을<br />
+                총합하여 프로젝트 수행을 경험한다. 또한 그 결과물을 구체적으로
+                활용하여 논문을 발표하거나 특허를 <br />출원하고 소프트웨어를
+                등록하고 더욱 나아가 기술사업화(창업)등을 통한 실용화 유도를
+                목적으로 한다.
+              </td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">학점/시간</th>
+              <td class="tg-c3ow">3/3</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">이수구분</th>
+              <td class="tg-c3ow">전선</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">수강인원</th>
+              <td class="tg-c3ow">50명</td>
+            </tr>
+            <tr>
+              <th class="tg-c3ow">이메일</th>
+              <td class="tg-c3ow">hklee@kw.ac.kr</td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
+    </Background>
+    <MainFooter />
   </div>
 </template>
 
-<script></script>
+<script setup>
+import { onMounted, computed, ref, watch, onBeforeMount } from "vue";
+import { loginCheck, useGetAxios } from "@/composable";
+import MainFooter from "@/layouts/MainFooter.vue";
+import StudentHeader from "@/layouts/StudentHeader.vue";
+import Background from "@/components/Background.vue";
+import store from "@/store";
+import { useRouter } from "vue-router";
+import NoserachPagination from "@/components/Noserach-Pagination.vue";
+NoserachPagination;
+
+//로그인 유무 받아오기
+onBeforeMount(async () => {
+  const loggedIn = await loginCheck("/api/student/subject/qna");
+  if (loggedIn === false) {
+    alert("로그인 해야합니다!");
+    router.push("/login");
+  } else {
+    isRendered.value = true;
+  }
+});
+
+const router = useRouter();
+const isRendered = ref(false);
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+const yearSemester = ref(
+  `${subjectData.value[0].year}/${subjectData.value[0].semester}`
+);
+const year = yearSemester.value.split("/")[0];
+const semester = yearSemester.value.split("/")[1];
+const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
+const subjectId = ref();
+// 옵션으로 선택한 과목
+const selectedSubject = ref();
+</script>
 
 <style scoped>
 .container {
