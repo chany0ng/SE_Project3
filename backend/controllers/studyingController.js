@@ -169,6 +169,12 @@ exports.viewGrade = async(req, res, next) => {
         return res.sendStatus(401);
     }
 };
+
+//성적 입력 페이지 들어갔을 때 학생 조회 함수
+exports.getStudentList = async(req, res, next) => {
+    let subjectId = req.params.subject_id;
+};
+
 //학기당 학점 계산하는 함수
 function calculateGrade(enrollments) {
     let grades = [];

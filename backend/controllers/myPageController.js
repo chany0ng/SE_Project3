@@ -47,16 +47,21 @@ exports.getUserInfo = async(req, res, next) => {
         return res.sendStatus(401);
     }
 }
+
 //내 정보 수정 함수
 exports.updateUser = async(req, res, next) => {
     let id = req.session.loginId;
+    let result = '';
     let datas = {
         pw: req.body.password,
         email: req.body.email,
         phone_number: req.body.phoneNumber
     };
-    
-    let result = await model.students.update(datas, {where: {student_id: id}}).catch((err) => console.log(err));
+    if(req.session.type === 'student'){
+        result = await model.students.update(datas, {where: {student_id: id}}).catch((err) => console.log(err));
+    } else if(req.session.type === 'professor') {
+        result = await model.professors.update(datas, {where: {professor_id: id}}).catch((err) => console.log(err));
+    }
 
     if(result.length !== 0) {
         //수정 성공
