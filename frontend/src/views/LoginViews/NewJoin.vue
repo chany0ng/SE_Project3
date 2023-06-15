@@ -12,13 +12,12 @@
             id="userType"
             v-model="formData.userType"
           >
-            <option value="">선택해주세요</option>
             <option value="student">학생</option>
             <option value="professor">교수</option>
             <option value="admin">관리자</option>
           </select>
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userNumber">이름</label>
           <input
             type="text"
@@ -66,7 +65,19 @@
             v-model="formData.passwordCheck"
           />
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="isAdmin">
+          <label for="adminNumber">관리자 인증번호</label>
+          <input
+            type="text"
+            class="form-control"
+            id="adminNumber"
+            name="adminNumber"
+            placeholder="관리자 전용번호를 입력하세요"
+            required
+            v-model="formData.adminNumber"
+          />
+        </div>
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userPwQ">비밀번호 찾기 질문</label>
           <select
             class="form-select"
@@ -80,7 +91,7 @@
             <option value="졸업한 중학교 이름">졸업한 중학교 이름</option>
           </select>
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userPwA">비밀번호 찾기 답변</label>
           <input
             type="text"
@@ -92,7 +103,7 @@
             v-model="formData.answer"
           />
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userBirth">생년월일</label>
           <input
             type="date"
@@ -116,7 +127,7 @@
             v-model="formData.phoneNumber"
           />
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userMajor">학과</label>
           <input
             type="text"
@@ -140,7 +151,7 @@
             v-model="formData.room"
           />
         </div>
-        <div class="flex-container">
+        <div class="flex-container" v-show="!isAdmin">
           <label for="userEmail">이메일</label>
           <input
             type="email"
@@ -166,11 +177,12 @@ import { useRouter } from "vue-router";
 
 const formRef = ref(null);
 const formData = reactive({
-  userType: "",
+  userType: "student",
   userName: "",
   userNumber: "",
   password: "",
   passwordCheck: "",
+  adminNumber: "",
   question: "",
   answer: "",
   birth: "",
@@ -180,17 +192,22 @@ const formData = reactive({
   email: "",
 });
 // 교수 선택시 -> 연구실 입력
+const isStudent = ref(true);
 const isProfessor = ref(false);
+const isAdmin = ref(false);
 watch(formData, () => {
-  console.log(formData.userType);
-  console.log(isProfessor.value);
   if (formData.userType === "professor") {
     isProfessor.value = true;
+    isStudent.value = true;
+    isAdmin.value = false;
+  } else if (formData.userType === "admin") {
+    isAdmin.value = true;
+    isProfessor.value = false;
+    isStudent.value = false;
   } else {
+    isAdmin.value = false;
     isProfessor.value = false;
   }
-  console.log(formData.userType);
-  console.log(isProfessor.value);
 });
 // submit 후 홈으로 리다이렉트
 const router = useRouter();
@@ -226,6 +243,10 @@ const submitHandler = async () => {
     alert("비밀번호 동일 여부를 확인해주세요!");
   } else if (!bothCheck) {
     alert("학번과 전화번호에는 숫자만 입력가능합니다!");
+  } else if (isAdmin.value) {
+    if (formData.adminNumber != 1111) {
+      alert("관리자 인증번호가 일치하지 않습니다!");
+    }
   } else {
     const response = await duplicationCheck();
     if (response === true) {

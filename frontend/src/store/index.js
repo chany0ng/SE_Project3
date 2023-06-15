@@ -18,7 +18,7 @@ const store = createStore({
   plugins: [
     createPersistedState({
       //주목! : 여기에 쓴 모듈만 저장됩니다.
-      paths: ["subjectInfo", "qnaInfo", "noticeInfo", "assignmentInfo"],
+      paths: ["subjectInfo", "qnaInfo", "assignmentInfo"],
     }),
   ],
 });

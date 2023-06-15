@@ -99,7 +99,7 @@ const year = yearSemester.value.split("/")[0];
 const semester = yearSemester.value.split("/")[1];
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
-let indexNumber;
+
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
   qnaList.value = newList;

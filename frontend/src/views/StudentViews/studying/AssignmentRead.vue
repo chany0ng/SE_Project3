@@ -95,7 +95,7 @@ import StudentHeader from "@/layouts/StudentHeader.vue";
 import Background from "@/components/Background.vue";
 import store from "@/store";
 import { useRouter, useRoute } from "vue-router";
-
+import axios from "axios";
 //로그인 유무 받아오기
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/student/studying/assignment");
@@ -119,7 +119,7 @@ const postId = computed(() => route.params.number);
 const selectedPost = ref(getPost(postId.value));
 // 선택된 게시물의 assign_id
 const register_id = computed(() => selectedPost.value.register_id);
-console.log(`/api/student/studying/assignment/${register_id.value}`);
+
 // 과제제출 시 필요한 입력 값
 const writeData = reactive({
   title: "",
@@ -127,24 +127,28 @@ const writeData = reactive({
 });
 
 // 과제 제출하기 함수
-// const submitHandler = () => {
-//   console.log("submit핸들러 함수 호출");
-//   console.log(writeData);
-//   router.push(`/student/studying/assignment/${subjectId.value}/1`);
-// };
 const submitHandler = async () => {
   const formData = new FormData();
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
-  formData.append("file", fileInput.value.files[0]);
-  const { postData } = usePostAxios(
+  if (fileInput.value.files.length > 0) {
+    formData.append("file", fileInput.value.files[0]);
+  }
+  // const { postData } = usePostAxios(
+  //   `/api/student/studying/assignment/${register_id.value}`,
+  //   formData
+  // );
+  const response = await axios.post(
     `/api/student/studying/assignment/${register_id.value}`,
-    formData
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
-  console.log("과제 제출 데이터: ", formData);
-  const response = await postData();
+  // const response = await postData();
   if (response.status === 200) {
-    console.log("서버와 데이터교환 성공");
     router.push(`/student/studying/assignment/${subjectId.value}/1`);
   } else {
     alert("게시물 등록 에러!");

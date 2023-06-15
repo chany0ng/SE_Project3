@@ -98,14 +98,9 @@ const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
-// const updateLists = (newList) => {
-//   noticeList.value = newList;
-//   store.dispatch("noticeInfo/setNotice", noticeList.value);
-// };
-// updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
   noticeList.value = newList;
-  store.dispatch("noticeInfo/setNotice", noticeList.value);
+  // store.dispatch("noticeInfo/setNotice", noticeList.value);
 };
 // 옵션으로 선택한 과목
 const selectedSubject = ref();
