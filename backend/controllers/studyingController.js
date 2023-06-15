@@ -31,12 +31,16 @@ exports.getAssignmentList = async (req, res, next) => {
   let assign_submit_List = [];
   //사용자의 과제 제출 여부 확인
   for (let assignment of assignmentList) {
+    let file_assignment = [];
     if(assignment.assign_register_file) {
         let fileId = assignment.assign_register_file;
         let file = await model.files.findOne({where: {file_id: fileId}}).catch((err) => console.log(err));
         let filename = file.file_name;
         assignment.file_id = fileId;
         assignment.filename = filename;
+        file_assignment.push({...assignment.get(), file_id: fileId, filename: filename});
+    } else {
+        file_assignment.push(assignment.get());
     }
     let registerId = assignment.register_id;
     let submits = await model.assign_submit
@@ -47,6 +51,7 @@ exports.getAssignmentList = async (req, res, next) => {
     if (submits.length !== 0) {
       //과제 삭제 여부 확인 
       for (let submit of submits) {
+        let file_submit = [];
         if (submit.isDeleted === 0) {
             if(submit.submit_file) {
                 let fileId = submit.submit_file;
@@ -56,14 +61,18 @@ exports.getAssignmentList = async (req, res, next) => {
                 let filename = file.file_name;
                 submit.file_id = fileId;
                 submit.filename = filename;
+                file_submit.push({...submit.get(), file_id: fileId, filename: filename});
+            } else {
+                file_submit.push(submit.get());
             }
-            assign_submit_List.push({...assignment.get(), submit: submit.get(),});
+            assign_submit_List.push({...file_assignment, submit: file_submit});
         }
       }
     } else {
-      assign_submit_List.push(assignment.get());
+      assign_submit_List.push(file_assignment.get());
     }
   }
+  console.log(assign_submit_List);
   let result = await model.assign_register
     .findAll({
       where: { subject_id: subjectId },

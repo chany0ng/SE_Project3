@@ -26,7 +26,7 @@
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
           <div id="file-container">
-            파일: {{ selectedPost.assign_register_file.file_name }}
+            파일: {{ selectedPost.filename }}
           </div>
           <div id="content-container">
             {{ selectedPost.assign_description }}
@@ -103,7 +103,6 @@ onMounted(async () => {
     router.push("/login");
   } else {
     selectedPost.value = getPost(postId.value);
-    register_id.value = selectedPost.value.register_id;
     isRendered.value = true;
   }
 });
@@ -142,7 +141,7 @@ const submitHandler = async () => {
       },
     }
   );
-  // const response = await postData();
+  const response = await postData();
   if (response.status === 200) {
     router.push(`/student/studying/assignment/${subjectId.value}/1`);
   } else {
