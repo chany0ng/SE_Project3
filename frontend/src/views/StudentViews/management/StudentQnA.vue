@@ -45,7 +45,7 @@
                   >
                 </td>
                 <td>{{ qna.student.name }}</td>
-                <td>{{ qna.createdAt }}</td>
+                <td>{{ formatDate(qna.createdAt) }}</td>
               </tr>
             </tbody>
           </table>
@@ -140,6 +140,12 @@ watch(selectedSubject, (newValue) => {
     }
   }
 });
+
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

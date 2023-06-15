@@ -15,7 +15,7 @@
               {{ selectedPost.QnA_title }}
             </div>
             <span>작성자: {{ selectedPost.student.name }}</span>
-            <span>등록일: {{ selectedPost.createdAt }}</span>
+            <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
           </div>
           <div id="content-container">
             {{ selectedPost.QnA_description }}
@@ -120,6 +120,11 @@ async function deleteQnA() {
     alert("게시물 삭제 에러!");
   }
 }
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

@@ -13,7 +13,7 @@
             </div>
             <span>작성자: {{ selectedPost.professor.name }}</span>
             <span>조회수: {{ selectedPost.notice_views }}</span>
-            <span>등록일: {{ selectedPost.createdAt }}</span>
+            <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
           </div>
           <div id="file-container">file: {{ selectedPost.notice_file }}</div>
           <div id="content-container">
@@ -53,6 +53,7 @@ onMounted(async () => {
     const response = await getData();
     if (response.status === 200) {
       // selectedPost.value = getPost(postId.value);
+      console.log(response.data);
       selectedPost.value = response.data;
     } else {
       alert("게시물 조회 에러!");
@@ -77,6 +78,11 @@ function getPost(number) {
   const post = noticeList.value.find((notice) => notice.notice_id == number);
   return post;
 }
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

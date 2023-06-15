@@ -41,7 +41,7 @@
                   >
                 </td>
                 <td>{{ notice.professor.name }}</td>
-                <td>{{ notice.createdAt }}</td>
+                <td>{{ formatDate(notice.createdAt) }}</td>
                 <td>{{ notice.notice_views }}</td>
               </tr>
             </tbody>
@@ -137,6 +137,11 @@ watch(selectedSubject, (newValue) => {
     }
   }
 });
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

@@ -124,6 +124,8 @@ async function loginSubmit() {
     const response = await postData();
     if (response.status == 200) {
       // 로그인 성공 시
+      const subjectData = response.data;
+      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
       redirection();
     } else {
       loginData.userType = "";

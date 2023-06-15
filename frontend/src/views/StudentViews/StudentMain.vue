@@ -29,8 +29,10 @@
                 X
               </button>
             </th>
-            <td>새로운 과제가 없습니다!</td>
-            <td>새로운 공지사항이 없습니다!</td>
+            <td>
+              제출하지 않은 과제 {{ course.not_submit_count }}가 존재합니다!
+            </td>
+            <td>공지사항 {{ course.notice_count }}개가 존재합니다!</td>
           </tr>
         </tbody>
       </table>
@@ -343,7 +345,6 @@ onMounted(async () => {
   const response = await getData();
   if (response.status === 200) {
     subjectData.value = response.data;
-    console.log("받아온 정보:", subjectData.value);
     store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
 
     getTime();
@@ -368,7 +369,7 @@ const yearSemester = ref("2023/1"); // 초기 값 설정
 const isShowBtn = ref(true);
 // 2023/2 에서만 과목삭제 가능
 watch(yearSemester, (newValue) => {
-  if (newValue === "2023/1") {
+  if (newValue === "2023/2") {
     isShowBtn.value = true;
   } else {
     isShowBtn.value = false;
@@ -574,9 +575,9 @@ const splitTime = ref([]);
 watch(subjectData, () => {
   getTime();
 });
-watch(filteredCourses, () => {
-  getTime();
-});
+// watch(filteredCourses, () => {
+//   getTime();
+// });
 watch(yearSemester, () => {
   getTime();
 });
@@ -599,7 +600,6 @@ function getTime() {
 }
 // 날짜 쉼표 기준으로 나누기
 function seperateTime(split_existingTime) {
-  const existing_time = [];
   //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
   const existing_time = [];
   for (let i = 0; i < split_existingTime.length; i++) {
