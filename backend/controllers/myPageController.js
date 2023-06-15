@@ -19,7 +19,7 @@ exports.CheckPW = async(req, res, next) => {
 //유저 정보 주는 함수
 exports.getUserInfo = async(req, res, next) => {
     let id = req.session.loginId;
-    let type = req.session.loginType;
+    let type = req.session.userType;
     let data = '';
     if(id) {
         //로그인 상태
@@ -35,7 +35,6 @@ exports.getUserInfo = async(req, res, next) => {
 
         if(data) {
             //유저 정보 전송
-            console.log(data);
             return res.status(200).send(data);
         } else {
             //유저 정보 없음
@@ -47,16 +46,21 @@ exports.getUserInfo = async(req, res, next) => {
         return res.sendStatus(401);
     }
 }
+
 //내 정보 수정 함수
 exports.updateUser = async(req, res, next) => {
     let id = req.session.loginId;
+    let result = '';
     let datas = {
         pw: req.body.password,
         email: req.body.email,
         phone_number: req.body.phoneNumber
     };
-    
-    let result = await model.students.update(datas, {where: {student_id: id}}).catch((err) => console.log(err));
+    if(req.session.userType === 'student'){
+        result = await model.students.update(datas, {where: {student_id: id}}).catch((err) => console.log(err));
+    } else if(req.session.userType === 'professor') {
+        result = await model.professors.update(datas, {where: {professor_id: id}}).catch((err) => console.log(err));
+    }
 
     if(result.length !== 0) {
         //수정 성공

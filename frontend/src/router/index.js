@@ -51,21 +51,19 @@ const routes = [
     component: () => import("../views/StudentViews/management/StudentSyllabus"),
   },
   {
-    path: "/student/studying/assignment",
+    path: "/student/studying/assignment/:id/:page",
     name: "과제 제출",
-    component: () =>
-      import("../views/StudentViews/supporting/StudentAssignment"),
+    component: () => import("../views/StudentViews/studying/StudentAssignment"),
+  },
+  {
+    path: "/student/studying/assignment/:id/:number/read",
+    name: "과제 상세 페이지",
+    component: () => import("../views/StudentViews/studying/AssignmentRead"),
   },
   {
     path: "/student/studying/grade",
     name: "성적 조회",
-    component: () => import("../views/StudentViews/supporting/StudentGrade"),
-  },
-  {
-    path: "/student/studying/performance",
-    name: "석차 조회",
-    component: () =>
-      import("../views/StudentViews/supporting/StudentPerformance"),
+    component: () => import("../views/StudentViews/studying/StudentGrade"),
   },
   {
     path: "/student/mypage/information",

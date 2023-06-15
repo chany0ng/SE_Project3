@@ -109,9 +109,9 @@ let setUserType = (type) => {
 
 // 입력 값 초기화 후 메인페이지 이동
 const router = useRouter();
-function redirection() {
+function redirection(path) {
   formRef.value.reset();
-  router.push("/student");
+  router.push(path);
 }
 
 // 로그인 양식 제출
@@ -124,10 +124,11 @@ async function loginSubmit() {
     const response = await postData();
     if (response.status == 200) {
       // 로그인 성공 시
-      // 수강중인 과목 정보 받기
-      const subjectData = response.data[1];
+      const subjectData = response.data;
       store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
-      redirection();
+      redirection("/student");
+    } else if (response.status == 201) {
+      redirection("/professor");
     } else {
       loginData.userType = "";
       loginButton.value.blur();

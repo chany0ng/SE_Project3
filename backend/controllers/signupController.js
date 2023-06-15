@@ -52,7 +52,10 @@ exports.Signup = async (req, res, next) => {
       };
       let result = await model.professors
         .create(datas)
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          return res.sendStatus(400);
+        });
       return res.sendStatus(200);
     } else {
       //중복된 학번 -> 회원가입 실패

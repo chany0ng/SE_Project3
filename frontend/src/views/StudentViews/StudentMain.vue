@@ -29,15 +29,17 @@
                 X
               </button>
             </th>
-            <td>새로운 과제가 없습니다!</td>
-            <td>새로운 공지사항이 없습니다!</td>
+            <td>
+              제출하지 않은 과제 {{ course.not_submit_count }}개가 존재합니다!
+            </td>
+            <td>공지사항 {{ course.notice_count }}개가 존재합니다!</td>
           </tr>
         </tbody>
       </table>
     </div>
     <select id="select" v-model="yearSemester" style="margin-top: 10px">
-      <option value="2023/2" selected>2023학년도 2학기</option>
-      <option value="2023/1">2023학년도 1학기</option>
+      <option value="2023/2">2023학년도 2학기</option>
+      <option value="2023/1" selected>2023학년도 1학기</option>
       <option value="2022/2">2022학년도 2학기</option>
       <option value="2022/1">2022학년도 1학기</option>
       <option value="2021/2">2021학년도 2학기</option>
@@ -329,7 +331,7 @@
 
 <script setup>
 import { onMounted, computed, ref, reactive, watch } from "vue";
-import { loginCheck, usePostAxios } from "@/composable";
+import { loginCheck, usePostAxios, useGetAxios } from "@/composable";
 import MainFooter from "../../layouts/MainFooter.vue";
 import StudentHeader from "../../layouts/StudentHeader.vue";
 import router from "@/router";
@@ -338,13 +340,18 @@ import store from "@/store";
 
 //로그인 유무 받아오기
 onMounted(async () => {
-  const loggedIn = await loginCheck("/api/student");
-  if (loggedIn === false) {
-    alert("로그인 해야합니다!");
-    router.push("/login");
-  } else {
+  // 학생페이지로 get요청해서 데이터를 받아야 한다.
+  const { getData } = useGetAxios("/api/student/");
+  const response = await getData();
+  if (response.status === 200) {
+    subjectData.value = response.data;
+    store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+
     getTime();
     isRendered.value = true;
+  } else {
+    alert("로그인을 먼저 해야합니다!");
+    router.push("/login");
   }
 });
 const isRendered = ref(false);
@@ -568,9 +575,9 @@ const splitTime = ref([]);
 watch(subjectData, () => {
   getTime();
 });
-watch(filteredCourses, () => {
-  getTime();
-});
+// watch(filteredCourses, () => {
+//   getTime();
+// });
 watch(yearSemester, () => {
   getTime();
 });
@@ -594,17 +601,17 @@ function getTime() {
 // 날짜 쉼표 기준으로 나누기
 function seperateTime(split_existingTime) {
   //ex) 월1,7,8 => 월1, 월7, 월8 로 변환하는 작업
+  const existing_time = [];
   for (let i = 0; i < split_existingTime.length; i++) {
     let day = split_existingTime[i][0];
     for (let j = 0; j < split_existingTime[i].length; j++) {
       if (!isNaN(split_existingTime[i][j])) {
         //숫자인 경우
-        const existing_time = [];
         existing_time.push(day + split_existingTime[i][j]);
-        return existing_time;
       }
     }
   }
+  return existing_time;
 }
 // 시간표 비우는 함수
 function clearTable() {

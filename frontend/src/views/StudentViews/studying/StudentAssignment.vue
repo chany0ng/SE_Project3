@@ -3,10 +3,10 @@
     <StudentHeader />
     <Background>
       <template v-slot:title>
-        <h4>강의묻고 답하기</h4>
+        <h4>과제 제출</h4>
         <select id="select" v-model="yearSemester" style="margin-right: 10px">
-          <option value="2023/2">2023학년도 2학기</option>
-          <option value="2023/1" selected>2023학년도 1학기</option>
+          <option value="2023/2" selected>2023학년도 2학기</option>
+          <option value="2023/1">2023학년도 1학기</option>
           <option value="2022/2">2022학년도 2학기</option>
           <option value="2022/1">2022학년도 1학기</option>
           <option value="2021/2">2021학년도 2학기</option>
@@ -19,11 +19,6 @@
             {{ subject.subject.subject_name }}
           </option>
         </select>
-        <button id="writeBtn">
-          <router-link :to="`/student/subject/qna/${subjectId}/write`"
-            >글 등록</router-link
-          >
-        </button>
       </template>
       <template v-slot:content>
         <div>
@@ -32,20 +27,22 @@
               <th scope="col" style="width: 10%">번호</th>
               <th scope="col">제목</th>
               <th scope="col">작성자</th>
-              <th scope="col">작성일</th>
+              <th scope="col">제출기한</th>
+              <th scope="col">상태</th>
             </thead>
             <tbody>
-              <tr v-for="(qna, index) of qnaList" :key="index">
-                <td>{{ indexNumber - index }}</td>
+              <tr v-for="(assignment, index) of assignmentList" :key="index">
+                <td>{{ assignmentList.length - index }}</td>
                 <td>
                   <router-link
-                    :to="`/student/subject/qna/${subjectId}/${qna.QnA_id}/read`"
+                    :to="`/student/studying/assignment/${subjectId}/${assignment.register_id}/read`"
                   >
-                    {{ qna.QnA_title }}</router-link
+                    {{ assignment.assign_title }}</router-link
                   >
                 </td>
-                <td>{{ qna.student.name }}</td>
-                <td>{{ formatDate(qna.createdAt) }}</td>
+                <td>{{ assignment.professor.name }}</td>
+                <td>{{ formatDate(assignment.assign_due_date) }}</td>
+                <td>{{ assignment.submit ? "제출" : "미제출" }}</td>
               </tr>
             </tbody>
           </table>
@@ -64,7 +61,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch, onBeforeMount } from "vue";
+import { onBeforeMount, computed, ref, watch } from "vue";
 import { loginCheck, useGetAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -76,7 +73,7 @@ NoserachPagination;
 
 //로그인 유무 받아오기
 onBeforeMount(async () => {
-  const loggedIn = await loginCheck("/api/student/subject/qna");
+  const loggedIn = await loginCheck("/api/student/studying/assignment");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
@@ -88,8 +85,8 @@ onBeforeMount(async () => {
 
 const router = useRouter();
 const isRendered = ref(false);
-const currentPath = ref("/student/subject/qna");
-const qnaList = ref();
+const currentPath = ref("/student/studying/assignment");
+const assignmentList = ref();
 // 학기 선택
 const yearSemester = ref("2023/2"); // 초기 값 설정
 const year = yearSemester.value.split("/")[0];
@@ -97,14 +94,15 @@ const semester = yearSemester.value.split("/")[1];
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const subjectId = ref();
-let indexNumber;
+
 // updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
   const updatedList = newList.slice(0, newList.length - 1);
-  qnaList.value = updatedList;
-  store.dispatch("qnaInfo/setQna", qnaList.value);
-  indexNumber = newList[newList.length - 1];
+  assignmentList.value = updatedList;
+  store.dispatch("assignmentInfo/setAssignment", assignmentList.value);
+  const lastElement = newList[newList.length - 1];
 };
+
 // 옵션으로 선택한 과목
 const selectedSubject = ref();
 
@@ -115,7 +113,6 @@ function getArray() {
   });
   selectedSubject.value = filteredSubject.value[0].subject.subject_name;
 }
-
 // 학기 선택하고, 그 학기의 과목배열 얻기
 watch(yearSemester, (newValue) => {
   const year = newValue.split("/")[0];
@@ -134,8 +131,8 @@ watch(yearSemester, (newValue) => {
 // 과목 선택 시 실행되는 함수
 watch(selectedSubject, (newValue) => {
   if (newValue) {
-    // 그 과목에 해당하는
-    const selectedSubjectId = filteredSubject.value.find(
+    // Access the selected subject's subject_id
+    const selectedSubjectId = subjectData.value.find(
       (subject) => subject.subject.subject_name === newValue
     )?.subject.subject_id;
     if (selectedSubjectId) {
@@ -143,7 +140,6 @@ watch(selectedSubject, (newValue) => {
     }
   }
 });
-
 // createdAt 출력 변경
 const formatDate = (createdAt) => {
   const dateObj = new Date(createdAt);

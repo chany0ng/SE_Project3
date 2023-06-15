@@ -81,6 +81,7 @@ ul {
   border: 2px solid var(--main-color);
   padding: 2px 5px;
   margin-top: 10px;
+  cursor: pointer;
 }
 nav li {
   margin-right: 3rem;
@@ -127,5 +128,6 @@ nav ul ul li a:hover {
   height: 30px;
   color: yello;
   font-weight: bold;
+  cursor: pointer;
 }
 </style>

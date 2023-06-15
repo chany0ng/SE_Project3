@@ -4,16 +4,21 @@
     <Background>
       <template v-slot:title>
         <h4>강의 공지사항</h4>
-        <select id="select" v-model="selectedSubject">
-          <option v-for="(subject, index) of subjectData" :key="index">
+        <select id="select" v-model="yearSemester" style="margin-right: 10px">
+          <option value="2023/2">2023학년도 2학기</option>
+          <option value="2023/1" selected>2023학년도 1학기</option>
+          <option value="2022/2">2022학년도 2학기</option>
+          <option value="2022/1">2022학년도 1학기</option>
+          <option value="2021/2">2021학년도 2학기</option>
+          <option value="2021/1">2021학년도 1학기</option>
+          <option value="2020/2">2020학년도 2학기</option>
+          <option value="2020/1">2020학년도 1학기</option>
+        </select>
+        <select class="select" v-model="selectedSubject">
+          <option v-for="(subject, index) of filteredSubject" :key="index">
             {{ subject.subject.subject_name }}
           </option>
         </select>
-        <!-- <button id="writeBtn">
-          <router-link :to="`/student/subject/qna/${subjectId}/write`"
-            >글 등록</router-link
-          >
-        </button> -->
       </template>
       <template v-slot:content>
         <div>
@@ -32,11 +37,11 @@
                   <router-link
                     :to="`/student/subject/notice/${subjectId}/${notice.notice_id}/read`"
                   >
-                    {{ notice.QnA_title }}</router-link
+                    {{ notice.notice_title }}</router-link
                   >
                 </td>
-                <td>{{ notice.student.name }}</td>
-                <td>{{ notice.createdAt }}</td>
+                <td>{{ notice.professor.name }}</td>
+                <td>{{ formatDate(notice.createdAt) }}</td>
                 <td>{{ notice.notice_views }}</td>
               </tr>
             </tbody>
@@ -56,7 +61,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from "vue";
+import { onBeforeMount, computed, ref, watch } from "vue";
 import { loginCheck, useGetAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -67,12 +72,13 @@ import NoserachPagination from "@/components/Noserach-Pagination.vue";
 NoserachPagination;
 
 //로그인 유무 받아오기
-onMounted(async () => {
+onBeforeMount(async () => {
   const loggedIn = await loginCheck("/api/student/subject/notice");
   if (loggedIn === false) {
     alert("로그인 해야합니다!");
     router.push("/login");
   } else {
+    getArray();
     isRendered.value = true;
   }
 });
@@ -81,15 +87,50 @@ const router = useRouter();
 const isRendered = ref(false);
 const currentPath = ref("/student/subject/notice");
 const noticeList = ref();
+// 학기 선택
+const yearSemester = ref("2023/2"); // 초기 값 설정
+const year = yearSemester.value.split("/")[0];
+const semester = yearSemester.value.split("/")[1];
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-const subjectId = ref(subjectData.value[0].subject_id);
+const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
+const subjectId = ref();
 
 // updateLists 이벤트 핸들러를 정의
+// const updateLists = (newList) => {
+//   noticeList.value = newList;
+//   store.dispatch("noticeInfo/setNotice", noticeList.value);
+// };
+// updateLists 이벤트 핸들러를 정의
 const updateLists = (newList) => {
-  noticeList.value = newList;
+  const updatedList = newList.slice(0, newList.length - 1);
+  noticeList.value = updatedList;
   store.dispatch("noticeInfo/setNotice", noticeList.value);
+  const lastElement = newList[newList.length - 1];
 };
-const selectedSubject = ref(subjectData.value[0].subject.subject_name);
+// 옵션으로 선택한 과목
+const selectedSubject = ref();
+
+// 그 학기에 해당하는 과목 배열 리턴해주는 함수
+function getArray() {
+  filteredSubject.value = subjectData.value.filter((course) => {
+    return course.year == year && course.semester == semester;
+  });
+  selectedSubject.value = filteredSubject.value[0].subject.subject_name;
+}
+// 학기 선택하고, 그 학기의 과목배열 얻기
+watch(yearSemester, (newValue) => {
+  const year = newValue.split("/")[0];
+  const semester = newValue.split("/")[1];
+  // 학기가 바뀌었을 때, 그 학기에 해당하는 과목만 subjectData에서 추출하고 filteredSubject에 저장.
+  if (newValue) {
+    filteredSubject.value = subjectData.value.filter((course) => {
+      return course.year == year && course.semester == semester;
+    });
+    selectedSubject.value = filteredSubject.value[0].subject.subject_name;
+  } else {
+    alert("학기 변경 에러!");
+  }
+});
 
 // 과목 선택 시 실행되는 함수
 watch(selectedSubject, (newValue) => {
@@ -103,6 +144,11 @@ watch(selectedSubject, (newValue) => {
     }
   }
 });
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>

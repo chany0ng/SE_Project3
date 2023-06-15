@@ -35,7 +35,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits, toRef, watch } from "vue";
+import {
+  ref,
+  onBeforeMount,
+  defineProps,
+  defineEmits,
+  toRef,
+  watch,
+} from "vue";
 import { useGetAxios } from "@/composable";
 import { useRouter } from "vue-router";
 const currentPage = ref(1);
@@ -63,12 +70,12 @@ watch(subjectId, async (newId) => {
     subjectId.value = newId;
     await getLists();
     calculateTotalPages(totalLists.value); // 게시물 총 개수 / 10 = page개수
-    router.push(`/student/subject/qna/${subjectId.value}/1`);
+    router.push(`${currentPath.value}/${subjectId.value}/1`);
   }
 });
 
 // 페이지 로드될 때, 초기 실행 함수
-onMounted(async () => {
+onBeforeMount(async () => {
   // 초기 게시물 목록과 페이지 개수 설정
   await getLists();
   calculateTotalPages(totalLists.value); // 게시물 총 개수 / 10 = page개수
@@ -77,6 +84,7 @@ onMounted(async () => {
 // 페이지에 해당하는 강의목록 받아오기
 const getLists = async () => {
   // 페이지별 get요청
+
   const { getData } = useGetAxios(
     `${serverPath}/${subjectId.value}/${currentPage.value}`
   );
@@ -85,8 +93,10 @@ const getLists = async () => {
   if (response.status === 200) {
     lists.value = response.data[0];
     // 부모에게 게시물 리스트 전송
-    emits("update-lists", lists.value);
     totalLists.value = response.data[1];
+    const objCount = { count: totalLists.value };
+    lists.value.push(objCount);
+    emits("update-lists", lists.value);
   } else {
     alert("일치하는 검색결과가 없습니다!");
   }

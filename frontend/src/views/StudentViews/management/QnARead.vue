@@ -15,7 +15,7 @@
               {{ selectedPost.QnA_title }}
             </div>
             <span>작성자: {{ selectedPost.student.name }}</span>
-            <span>등록일: {{ selectedPost.createdAt }}</span>
+            <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
           </div>
           <div id="content-container">
             {{ selectedPost.QnA_description }}
@@ -33,7 +33,7 @@
             <div id="comment">
               <span style="width: 10%">박찬용</span>
               <span>
-                >Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
                 Perspiciatis aliquid magni quas repellat nisi unde, incidunt
                 inventore necessitatibus praesentium ad repellendus error
                 maxime, modi in, nemo dignissimos amet ipsum velit.</span
@@ -52,6 +52,11 @@
             </form>
           </div>
         </div>
+        <button id="returnBtn">
+          <router-link :to="`/student/subject/qna/${subjectId}/1`"
+            >목록으로</router-link
+          >
+        </button>
       </template>
     </Background>
     <MainFooter />
@@ -101,20 +106,26 @@ function getPost(number) {
 async function deleteQnA() {
   const qnaId = { QnA_id: null };
   qnaId.QnA_id = postId.value;
-  const { postData } = usePostAxios(
-    `/api/student/subject/qna/${subjectId.value}/delete`,
-    qnaId
-  );
-  const response = await postData();
-  if (response.status === 200) {
-    const answer = confirm("게시물을 삭제하겠습니까?");
-    if (answer) alert("게시물이 삭제되었습니다!");
-
-    router.push(`/student/subject/qna/${subjectId.value}/1`);
-  } else {
-    alert("게시물 삭제 에러!");
+  const answer = confirm("게시물을 삭제하겠습니까?");
+  if (answer) {
+    const { postData } = usePostAxios(
+      `/api/student/subject/qna/${subjectId.value}/delete`,
+      qnaId
+    );
+    const response = await postData();
+    if (response.status === 200) {
+      alert("게시물이 삭제되었습니다!");
+      router.push(`/student/subject/qna/${subjectId.value}/1`);
+    } else {
+      alert("게시물 삭제 에러!");
+    }
   }
 }
+// createdAt 출력 변경
+const formatDate = (createdAt) => {
+  const dateObj = new Date(createdAt);
+  return dateObj.toLocaleString(); // Modify the format as desired
+};
 </script>
 
 <style scoped>
@@ -131,6 +142,11 @@ async function deleteQnA() {
   border: 1px solid var(--main2-color);
   background-color: var(--main3-color);
   color: var(--main-color);
+}
+#returnBtn {
+  float: right;
+  border: 1px solid var(--main2-color);
+  background-color: var(--main3-color);
 }
 #submitBtn {
   width: 10%;
