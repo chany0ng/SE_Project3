@@ -81,7 +81,6 @@ exports.getAssignmentList = async (req, res, next) => {
 exports.submitAssignment = async (req, res, next) => {
   let assignId = req.params.assign_id;
   let fileId = "";
-  console.log(assignId);
   //업로드 파일이 있을 경우
   if (req.file) {
     let filedata = {
@@ -384,9 +383,9 @@ function calculateGrade(enrollments) {
     let gradeInfo = {
       year: year,
       semester: semester,
-      total_grade: total_calculatedGrade,
-      major_grade: major_calculatedGrade,
-      non_major_grade: non_major_calculatedGrade,
+      total_grade: isNaN(total_calculatedGrade) ? '-': total_calculatedGrade,
+      major_grade: isNaN(major_calculatedGrade)? '-' : major_calculatedGrade,
+      non_major_grade: isNaN(non_major_calculatedGrade) ? '-': non_major_calculatedGrade,
     };
     grades.push(gradeInfo);
   }

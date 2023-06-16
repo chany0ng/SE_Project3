@@ -149,17 +149,19 @@ exports.getStudentPage = async (req, res, next) => {
         .catch((err) => console.log(err));
 
       //미제출 과제 개수
-      for (let assignment of assignments) {
-        let submit_check = await model.assign_submit
-          .findOne({
-            where: { assign_id: assignment.register_id },
-          })
-          .catch((err) => console.log(err));
+      if(assignments.length !== 0){
+        for (let assignment of assignments) {
+            let submit_check = await model.assign_submit
+              .findOne({
+                where: { assign_id: assignment.register_id },
+              })
+              .catch((err) => console.log(err));
 
-        if (!submit_check) {
-          //과제 안 낸 경우
-          not_submit_count += 1;
-        }
+            if (!submit_check) {
+              //과제 안 낸 경우
+              not_submit_count += 1;
+            }
+          }
       }
       data.push({
         ...enrollment.get(),
