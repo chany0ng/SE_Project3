@@ -94,10 +94,10 @@ const routes = [
     component: () => import("../views/ProfessorViews/ProfessorMain"),
   },
   {
-    path: "/professor/notice/write",
-    name: "교수 공지사항 등록",
+    path: "/professor/subject/notice/:id/:page",
+    name: "교수 공지사항 조회",
     component: () =>
-      import("../views/ProfessorViews/management/ProfessorNoticeUpload"),
+      import("../views/ProfessorViews/management/ProfessorNotice"),
   },
 ];
 

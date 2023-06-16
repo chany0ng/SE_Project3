@@ -142,8 +142,13 @@ async function loginSubmit() {
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/login");
   if (loggedIn === true) {
-    alert("로그인 되어있습니다!");
+    alert("학생 로그인 되어있습니다!");
     router.push("/student");
+  } else if (loggedIn === false) {
+    alert("교수 로그인 되어있습니다!");
+    router.push("/professor");
+  } else {
+    router.push("/login");
   }
 });
 </script>
