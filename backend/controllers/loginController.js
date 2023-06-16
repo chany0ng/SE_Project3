@@ -72,12 +72,7 @@ exports.Login = async (req, res, next) => {
         if(user) {
             req.session.loginId = id;
             req.session.userType = type;
-            let subjects = await model.subjects.findAll({
-              where: {professor_id: id}
-            }).catch((err) => console.log(err));
-
-            let data = [user, subjects];
-            return res.status(201).send(data)
+            return res.sendStatus(201);
         } else {
             return res.sendStatus(401);
         }
@@ -126,8 +121,6 @@ exports.getStudentPage = async(req, res, next) => {
               where: {subject_id: enrollment.subject_id}
           }).catch((err) => console.log(err));
           notice_count = notices.length;
-          
-
           let assignments = await model.assign_register.findAll({
               where: {subject_id: enrollment.subject_id}
           }).catch((err) => console.log(err));
@@ -151,3 +144,19 @@ exports.getStudentPage = async(req, res, next) => {
       return res.sendStatus(401); 
     }
 }; 
+
+exports.getProfessorPage = async (req, res, next) => {
+    if(req.session.loginId) {
+        let user = await model.professors.findOne({
+            where: {professor_id: req.session.loginId}
+        }).catch((err) => console.log(err));
+
+        let subjects = await model.subjects.findAll({
+            where: {subject_professor: req.session.loginId}
+        }).catch((err) => console.log(err));
+        let data = [user, subjects];
+        return res.status(200).send(data);
+    } else {
+        return res.sendStatus(400);  
+    }
+};
