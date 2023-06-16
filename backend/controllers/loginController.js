@@ -4,10 +4,13 @@ const model = require("../models");
 //로그인 체크 함수
 exports.CheckLogin = async (req, res, next) => {
   if (req.session.loginId) {
-    //로그인 상태
-    return res.sendStatus(200);
+      if(req.session.userType === 'student') {
+          return res.sendStatus(200);
+      } else if (req.session.userType === 'professor'){
+          return res.sendStatus(201);
+      }
   } else {
-    return res.sendStatus(401); //로그아웃 상태
+          return res.sendStatus(401); //로그아웃 상태
   }
 };
 //로그인 함수
@@ -100,6 +103,7 @@ exports.Login = async (req, res, next) => {
     } else {
       return res.sendStatus(400);
     }
+
   }
 };
 
@@ -149,17 +153,21 @@ exports.getStudentPage = async (req, res, next) => {
         .catch((err) => console.log(err));
 
       //미제출 과제 개수
-      for (let assignment of assignments) {
-        let submit_check = await model.assign_submit
-          .findOne({
-            where: { assign_id: assignment.register_id },
-          })
-          .catch((err) => console.log(err));
 
-        if (!submit_check) {
-          //과제 안 낸 경우
-          not_submit_count += 1;
-        }
+      if(assignments.length !== 0){
+        for (let assignment of assignments) {
+            let submit_check = await model.assign_submit
+              .findOne({
+                where: { assign_id: assignment.register_id },
+              })
+              .catch((err) => console.log(err));
+
+            if (!submit_check) {
+              //과제 안 낸 경우
+              not_submit_count += 1;
+            }
+          }
+
       }
       data.push({
         ...enrollment.get(),
