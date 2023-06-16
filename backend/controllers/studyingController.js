@@ -208,15 +208,15 @@ exports.viewGrade = async (req, res, next) => {
         let averageGrades = calculateGrade(enrollments);
         for (let averageGrade of averageGrades) {
             if(!isNaN(averageGrade.total_grade)) {
-                sum_total_grade += averageGrade.total_grade;
+                sum_total_grade += Number(averageGrade.total_grade);
                 total_count += 1;
             }
             if(!isNaN(averageGrade.major_grade)) {
-                sum_major_grade += averageGrade.major_grade;
+                sum_major_grade += Number(averageGrade.major_grade);
                 major_count += 1;
             }
             if(!isNaN(averageGrade.non_major_grade)) {
-                sum_non_major_grade += averageGrade.non_major_grade;
+                sum_non_major_grade += Number(averageGrade.non_major_grade);
                 non_major_count += 1;
             }
         }
