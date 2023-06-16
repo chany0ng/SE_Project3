@@ -22,6 +22,7 @@
             </div>
             <span>작성자: {{ selectedPost[0].professor.name }}</span>
             <span>등록일: {{ formatDate(selectedPost[0].createdAt) }}</span>
+
             <span
               >마감일: {{ formatDate(selectedPost[0].assign_due_date) }}</span
             >
@@ -34,17 +35,20 @@
             >
               {{ selectedPost[0].filename }}</a
             >
+
           </div>
           <div id="content-container">
             {{ selectedPost[0].assign_description }}
           </div>
         </div>
+
         <div class="form-container" v-if="!isSubmit">
           <form
             @submit.prevent="submitHandler"
             method="post"
             enctype="multipart/form-data"
           >
+
             <p
               style="
                 color: var(--main-color);
@@ -67,7 +71,9 @@
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
+
               <input type="file" class="form-control" ref="fileInput" />
+
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
@@ -87,6 +93,7 @@
             >
           </button>
         </div>
+
         <div v-if="isSubmit">
           <p
             style="
@@ -135,7 +142,9 @@
 </template>
 
 <script setup>
+
 import { onMounted, computed, ref, reactive, watch } from "vue";
+
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -172,6 +181,7 @@ const writeData = reactive({
   description: "",
 });
 
+
 // 과제 제출 여부
 const isSubmit = ref(false);
 const assignments = computed(() => {
@@ -189,12 +199,14 @@ const submitHandler = async () => {
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
   if (fileInput.value.files.length > 0) {
+
     formData.append(
       "file",
       fileInput.value.files[0],
       encodeURIComponent(fileInput.value.files[0].name)
     );
   }
+
 
   const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
@@ -273,11 +285,13 @@ const formatDate = (createdAt) => {
 button {
   margin: 5px;
 }
+
 tr,
 td {
   border: 1px solid black;
   height: 5vh;
 }
+
 #commentForm {
   display: flex;
   justify-content: center;

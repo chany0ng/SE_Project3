@@ -1,4 +1,5 @@
 <template>
+
   <div v-if="isRendered">
     <StudentHeader />
     <Background>
@@ -260,9 +261,5 @@ td {
   border-color: #000000;
   text-align: center;
   vertical-align: top;
-}
-
-canvas {
-  border: 1px solid #949494;
 }
 </style>

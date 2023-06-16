@@ -29,53 +29,40 @@ exports.getAssignmentList = async (req, res, next) => {
   //사용자의 과제 제출 여부 확인
   for (let assignment of assignmentList) {
     let file_assignment = [];
-    if (assignment.assign_register_file) {
-      let fileId = assignment.assign_register_file;
-      let file = await model.files
-        .findOne({ where: { file_id: fileId } })
-        .catch((err) => console.log(err));
-      let filename = file.file_name;
-      file_assignment.push({
-        ...assignment.get(),
-        file_id: fileId,
-        filename: filename,
-      });
+
+    if(assignment.assign_register_file) {
+        let fileId = assignment.assign_register_file;
+        let file = await model.files.findOne({where: {file_id: fileId}}).catch((err) => console.log(err));
+        let filename = file.file_name;
+        file_assignment.push({...assignment.get(), file_id: fileId, filename: filename});
     } else {
-      file_assignment.push(assignment.get());
+        file_assignment.push(assignment.get());
     }
     let registerId = assignment.register_id;
     let submits = await model.assign_submit
       .findAll({
-        where: { student_id: studentId, assign_id: registerId },
-      })
-      .catch((err) => console.log(err));
+        where: { student_id: studentId, assign_id: registerId }
+      }).catch((err) => console.log(err));
     //과제 제출 여부가 포함된 새로운 배열 생성
     if (submits.length !== 0) {
-      //과제 삭제 여부 확인
+      //과제 삭제 여부 확인 
       for (let submit of submits) {
         let file_submit = [];
         if (submit.isDeleted === 0) {
-          if (submit.submit_file) {
-            let fileId = submit.submit_file;
-            let file = await model.files
-              .findOne({
-                where: { file_id: fileId },
-              })
-              .catch((err) => console.log(err));
-            let filename = file.file_name;
-            file_submit.push({
-              ...submit.get(),
-              file_id: fileId,
-              filename: filename,
-            });
-          } else {
-            file_submit.push(submit.get());
-          }
-          assign_submit_List.push({ ...file_assignment, submit: file_submit });
+            if(submit.submit_file) {
+                let fileId = submit.submit_file;
+                let file = await model.files.findOne({
+                    where: {file_id: fileId}
+                }).catch((err) => console.log(err));
+                let filename = file.file_name;
+                file_submit.push({...submit.get(), file_id: fileId, filename: filename});
+            } else {
+                file_submit.push(submit.get());
+            }
+            assign_submit_List.push({...file_assignment, submit: file_submit});
         }
       }
     } else {
-      assign_submit_List.push(file_assignment);
       assign_submit_List.push(file_assignment);
     }
   }
@@ -130,129 +117,125 @@ exports.submitAssignment = async (req, res, next) => {
 
 //제출한 과제 수정 함수
 exports.updateAssignment = async (req, res, next) => {
-  let submitId = req.params.submit_id;
-  //업로드 파일이 있는 경우 파일 정보 업데이트
-  if (req.file) {
-    let filedata = {
-      file_name: req.file.originalname,
-      file_content: req.file.buffer,
-      file_mimetype: req.file.mimetype,
+    let submitId = req.params.submit_id;
+    //업로드 파일이 있는 경우 파일 정보 업데이트
+    if (req.file) {
+        let filedata = {
+            file_name: req.file.originalname,
+            file_content: req.file.buffer,
+            file_mimetype: req.file.mimetype,
+        };
+
+        let submit = await model.assign_submit
+        .findOne({ where: { submit_id: submitId } })
+        .catch((err) => {
+            console.log(err);
+            return res.sendStatus(400);
+        });
+        let fileId = submit.file_id;
+        let file = await model.files
+        .update(filedata, { where: { file_id: fileId } })
+        .catch((err) => console.log(err));
+    }
+
+    let datas = {
+        submit_title: req.body.submit_title,
+        submit_description: req.body.submit_description,
     };
 
-    let submit = await model.assign_submit
-      .findOne({ where: { submit_id: submitId } })
-      .catch((err) => {
-        console.log(err);
+    let result = await model.assign_submit
+        .update(datas, { where: { submit_id: submitId } })
+        .catch((err) => console.log(err));
+
+    if (result.length !== 0) {
+        //수정 성공
+        return res.sendStatus(200);
+    } else {
+        //수정 실패
         return res.sendStatus(400);
-      });
-    let fileId = submit.file_id;
-    let file = await model.files
-      .update(filedata, { where: { file_id: fileId } })
-      .catch((err) => console.log(err));
-  }
-
-  let datas = {
-    submit_title: req.body.submit_title,
-    submit_description: req.body.submit_description,
-  };
-
-  let result = await model.assign_submit
-    .update(datas, { where: { submit_id: submitId } })
-    .catch((err) => console.log(err));
-
-  if (result.length !== 0) {
-    //수정 성공
-    return res.sendStatus(200);
-  } else {
-    //수정 실패
-    return res.sendStatus(400);
-  }
+    }
 };
 
 //제출한 과제 삭제 함수
 exports.deleteAssignment = async (req, res, next) => {
-  let submitId = req.params.submit_id;
-  let submit = await model.assign_submit
-    .findOne({ where: { submit_id: submitId } })
-    .catch((err) => console.log(err));
+    let submitId = req.params.submit_id;
+    let submit = await model.assign_submit
+        .findOne({ where: { submit_id: submitId } })
+        .catch((err) => console.log(err));
 
-  if (submit) {
-    //삭제할 과제 가져오기 성공
-    submit.isDeleted = 1;
-    await submit.save();
-    return res.sendStatus(200);
-  } else {
-    //삭제 실패
-    return res.sendStatus(400);
-  }
-};
+    if (submit) {
+        //삭제할 과제 가져오기 성공
+        submit.isDeleted = 1;
+        await submit.save();
+        return res.sendStatus(200);
+    } else {
+        //삭제 실패
+        return res.sendStatus(400);
+    }
+    };
 
 //성적 조회 함수
 exports.viewGrade = async (req, res, next) => {
-  if (req.session.loginId) {
-    let total_grade = 0;
-    //해당 유저가 수강한 모든 수강 목록
-    let enrollments = await model.enrollments
-      .findAll({
-        where: { student_id: req.session.loginId },
-        include: { model: model.subjects },
-      })
-      .catch((err) => console.log(err));
+    if (req.session.loginId) {
+        let total_grade = 0;
+        //해당 유저가 수강한 모든 수강 목록
+        let enrollments = await model.enrollments
+        .findAll({
+            where: { student_id: req.session.loginId },
+            include: { model: model.subjects },
+        })
+        .catch((err) => console.log(err));
 
-    //현재까지의 총 수강 학점 계산
-    for (let enrollment of enrollments) {
-      //2023학년 2학기 신청 과목은 제외
-      if (enrollment.year === 2023 && enrollment.semester === 2) {
-        continue;
-      } else {
-        total_grade += enrollment.subject.subject_grade;
-      }
+        //현재까지의 총 수강 학점 계산
+        for (let enrollment of enrollments) {
+            //2023학년 2학기 신청 과목은 제외
+            if (enrollment.year === 2023 && enrollment.semester === 2) {
+                continue;
+            } else {
+                total_grade += enrollment.subject.subject_grade;
+            }
+        }
+        //학기 당 평균 평점(총 평점, 전공 평점, 전공 외 평점) 계산
+        let averageGrade = calculateGrade(enrollments);
+        let data = [enrollments, averageGrade, total_grade];
+        return res.status(200).send(data);
+    } else {
+        //로그인 돼 있지 않음.
+        return res.sendStatus(401);
     }
-    //학기 당 평균 평점(총 평점, 전공 평점, 전공 외 평점) 계산
-    let averageGrade = calculateGrade(enrollments);
-    let data = [enrollments, averageGrade, total_grade];
-    return res.status(200).send(data);
-  } else {
-    //로그인 돼 있지 않음.
-    return res.sendStatus(401);
-  }
 };
 
 //성적 입력 페이지 들어갔을 때 학생 조회 함수
-exports.getStudentList = async (req, res, next) => {
-  let subjectId = req.params.subject_id;
-  let data = await model.enrollments
-    .findAll({
-      where: { subject_id: subjectId },
-      include: { model: model.students },
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.sendStatus(400);
+exports.getStudentList = async(req, res, next) => {
+    let subjectId = req.params.subject_id;
+    let data = await model.enrollments.findAll({
+        where: {subject_id: subjectId},
+        include: {model: model.students}
+    }).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400);
     });
 
-  return res.status(200).send(data);
+    return res.status(200).send(data);
 };
 
 //성적 입력 함수
-exports.inputGrade = async (req, res, next) => {
-  let gradeDatas = req.body.data;
-  for (let gradeData of gradeDatas) {
-    let enrollmentId = gradeData.enrollment_id;
-    let data = {
-      grade: gradeData.grade,
-    };
-    let result = await model.enrollments
-      .update(data, {
-        where: { enrollment_id: enrollmentId },
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.sendStatus(400);
-      });
-  }
-  return res.sendStatus(200);
-};
+exports.inputGrade = async(req, res, next) => {
+    let gradeDatas = req.body.data;
+    for(let gradeData of gradeDatas) {
+        let enrollmentId = gradeData.enrollment_id;
+        let data = {
+            grade: gradeData.grade
+        };
+        let result = await model.enrollments.update(data, {
+            where: {enrollment_id: enrollmentId}
+        }).catch((err) => {
+            console.log(err);
+            return res.sendStatus(400);
+        });
+    }
+    return res.sendStatus(200);
+}
 
 //학기당 학점 계산하는 함수
 function calculateGrade(enrollments) {
