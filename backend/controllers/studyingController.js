@@ -36,8 +36,6 @@ exports.getAssignmentList = async (req, res, next) => {
         let fileId = assignment.assign_register_file;
         let file = await model.files.findOne({where: {file_id: fileId}}).catch((err) => console.log(err));
         let filename = file.file_name;
-        assignment.file_id = fileId;
-        assignment.filename = filename;
         file_assignment.push({...assignment.get(), file_id: fileId, filename: filename});
     } else {
         file_assignment.push(assignment.get());
@@ -59,8 +57,6 @@ exports.getAssignmentList = async (req, res, next) => {
                     where: {file_id: fileId}
                 }).catch((err) => console.log(err));
                 let filename = file.file_name;
-                submit.file_id = fileId;
-                submit.filename = filename;
                 file_submit.push({...submit.get(), file_id: fileId, filename: filename});
             } else {
                 file_submit.push(submit.get());
@@ -69,7 +65,7 @@ exports.getAssignmentList = async (req, res, next) => {
         }
       }
     } else {
-      assign_submit_List.push(file_assignment.get());
+      assign_submit_List.push(file_assignment);
     }
   }
   console.log(assign_submit_List);

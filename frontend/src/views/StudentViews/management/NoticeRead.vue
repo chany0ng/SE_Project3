@@ -15,7 +15,7 @@
             <span>조회수: {{ selectedPost.notice_views }}</span>
             <span>등록일: {{ formatDate(selectedPost.createdAt) }}</span>
           </div>
-          <div id="file-container">파일: {{ selectedPost.notice_file }}</div>
+          <div id="file-container">파일: <a :href="`/api/student/subject/download/${selectedPost.file_id}`">{{ selectedPost.filename }}</a></div>
           <div id="content-container">
             {{ selectedPost.notice_description }}
           </div>
@@ -52,8 +52,7 @@ onMounted(async () => {
     );
     const response = await getData();
     if (response.status === 200) {
-      // selectedPost.value = getPost(postId.value);
-      selectedPost.value = response.data;
+      selectedPost.value = response.data[0];
     } else {
       alert("게시물 조회 에러!");
       router.push(`/student/subject/notice/${subjectId.value}/1`);
@@ -74,6 +73,7 @@ const selectedPost = ref();
 // notice_id에 해당하는 게시글 객체 얻기
 function getPost(number) {
   const noticeList = computed(() => store.getters["noticeInfo/getNotice"]);
+
   const post = noticeList.value.find((notice) => notice.notice_id == number);
   return post;
 }

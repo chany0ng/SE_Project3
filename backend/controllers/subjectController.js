@@ -35,26 +35,37 @@ exports.getNoticeList = async (req, res, next) => {
 
 //공지사항 조회 함수
 exports.getNotice = async (req, res, next) => {
-  let noticeId = req.params.id;
-  let notice = await model.notices
-    .findOne({
-      where: { notice_id: noticeId },
-      include: { model: model.professors },
-    })
-    .catch((err) => console.log(err));
-
-  if (notice) {
-    //공지사항 조회 성공
-    //조회 수 1 증가
-    notice.notice_views += 1;
-    await notice.save();
-    let data = notice;
-    console.log(data);
-    return res.status(200).send(data);
-  } else {
-    //공지사항 조회 오류
-    return res.sendStatus(400); //Bad request
-  }
+    let noticeId = req.params.id;
+    let notice = await model.notices
+        .findOne({
+        where: { notice_id: noticeId },
+        include: { model: model.professors },
+        })
+        .catch((err) => console.log(err));
+    
+    if (notice) {
+        //공지사항 조회 성공
+        let file_notice = [];
+        //조회 수 1 증가
+        notice.notice_views += 1;
+        await notice.save();
+        if(notice.notice_file) {
+            let fileId = notice.notice_file;
+            let file = await model.files.findOne({
+                where: {file_id: fileId}
+            }).catch((err) => console.log(err));
+            let filename = file.file_name;
+            file_notice.push({...notice.get(), file_id: fileId, filename: filename});
+        } else {
+            file_notice.push({...notice.get()});
+        }
+        let data = file_notice;
+        console.log(data);
+        return res.status(200).send(data);
+    } else {
+        //공지사항 조회 오류
+        return res.sendStatus(400); //Bad request
+    }
 };
 
 //공지사항 작성 함수
@@ -95,17 +106,16 @@ exports.writeNotice = async (req, res, next) => {
 //다운로드 함수
 exports.Download = async (req, res, next) => {
     let fileId = req.params.id;
-    console.log(fileId);
     let file = await model.files
         .findOne({ where: { file_id: fileId } })
         .catch((err) => console.log(err));
-
+    console.log(fileId);
     res.setHeader("Content-Type", file.file_mimetype);
     res.setHeader(
         "Content-Disposition",
         `attachment; filename="${file.file_name}"`
     );
-    console.log(file.file_content);
+
     // 파일을 스트림 형태로 응답한다.
     const fileStream = new Readable();
     fileStream.push(file.file_content);
@@ -225,14 +235,12 @@ exports.deleteQnA = async (req, res, next) => {
 //강의계획서 조회 함수
 exports.getSyllabus = async (req, res, next) => {
   let subjectId = req.params.id;
-  console.log(subjectId);
   let syllabus = await model.syllabus
     .findOne({
       where: { subject_id: subjectId },
       include: [{ model: model.subjects }, { model: model.professors }],
     })
     .catch((err) => console.log(err));
-  console.log(syllabus);
   if (syllabus) {
     //강의계획서 조회 성공
     return res.status(200).send(syllabus);

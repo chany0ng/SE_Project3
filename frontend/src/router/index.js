@@ -97,7 +97,7 @@ const routes = [
     path: "/professor/notice/write",
     name: "교수 공지사항 등록",
     component: () =>
-      import("../views/ProfessorViews/management/ProfessorNoticeWrite"),
+      import("../views/ProfessorViews/management/ProfessorNoticeUpload"),
   },
 ];
 

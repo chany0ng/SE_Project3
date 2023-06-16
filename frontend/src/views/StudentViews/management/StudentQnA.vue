@@ -36,7 +36,7 @@
             </thead>
             <tbody>
               <tr v-for="(qna, index) of qnaList" :key="index">
-                <td>{{ indexNumber - index }}</td>
+                <td>{{ qnaList.length - index }}</td>
                 <td>
                   <router-link
                     :to="`/student/subject/qna/${subjectId}/${qna.QnA_id}/read`"
