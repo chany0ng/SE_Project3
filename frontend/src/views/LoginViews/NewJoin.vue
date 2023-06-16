@@ -17,7 +17,7 @@
             <option value="admin">관리자</option>
           </select>
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userNumber">이름</label>
           <input
             type="text"
@@ -65,7 +65,7 @@
             v-model="formData.passwordCheck"
           />
         </div>
-        <div class="flex-container" v-show="isAdmin">
+        <div class="flex-container" v-if="isAdmin">
           <label for="adminNumber">관리자 인증번호</label>
           <input
             type="text"
@@ -77,7 +77,7 @@
             v-model="formData.adminNumber"
           />
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userPwQ">비밀번호 찾기 질문</label>
           <select
             class="form-select"
@@ -91,7 +91,7 @@
             <option value="졸업한 중학교 이름">졸업한 중학교 이름</option>
           </select>
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userPwA">비밀번호 찾기 답변</label>
           <input
             type="text"
@@ -103,7 +103,7 @@
             v-model="formData.answer"
           />
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userBirth">생년월일</label>
           <input
             type="date"
@@ -127,7 +127,7 @@
             v-model="formData.phoneNumber"
           />
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userMajor">학과</label>
           <input
             type="text"
@@ -151,7 +151,7 @@
             v-model="formData.room"
           />
         </div>
-        <div class="flex-container" v-show="!isAdmin">
+        <div class="flex-container" v-if="!isAdmin">
           <label for="userEmail">이메일</label>
           <input
             type="email"

@@ -99,7 +99,7 @@ onBeforeMount(async () => {
     router.push("/login");
   } else {
     getArray();
-    getSyllabus();
+    await getSyllabus();
     isRendered.value = true;
   }
 });
@@ -107,11 +107,12 @@ onBeforeMount(async () => {
 const router = useRouter();
 const isRendered = ref(false);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
-const yearSemester = ref(
-  `${subjectData.value[0].year}/${subjectData.value[0].semester}`
-);
-const year = yearSemester.value.split("/")[0];
-const semester = yearSemester.value.split("/")[1];
+// const yearSemester = ref(
+//   `${subjectData.value[0].year}/${subjectData.value[0].semester}`
+// );
+const yearSemester = ref("2023/1");
+const year = computed(() => yearSemester.value.split("/")[0]);
+const semester = computed(() => yearSemester.value.split("/")[1]);
 
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const route = useRoute();
@@ -139,7 +140,7 @@ async function getSyllabus() {
 // 그 학기에 해당하는 과목 배열 리턴해주는 함수
 function getArray() {
   filteredSubject.value = subjectData.value.filter((course) => {
-    return course.year == year && course.semester == semester;
+    return course.year == year.value && course.semester == semester.value;
   });
   selectedSubject.value = filteredSubject.value[0].subject.subject_name;
 }
