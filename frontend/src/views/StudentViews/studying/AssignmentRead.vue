@@ -22,19 +22,29 @@
             </div>
             <span>작성자: {{ selectedPost[0].professor.name }}</span>
             <span>등록일: {{ formatDate(selectedPost[0].createdAt) }}</span>
-            <span>마감일: {{ formatDate(selectedPost[0].assign_due_date) }}</span>
+            <span
+              >마감일: {{ formatDate(selectedPost[0].assign_due_date) }}</span
+            >
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
           <div id="file-container">
-            파일: <a :href="`/api/student/subject/download/${selectedPost[0].file_id}`" >
-              {{ selectedPost[0].filename }}</a>
+            파일:
+            <a
+              :href="`/api/student/subject/download/${selectedPost[0].file_id}`"
+            >
+              {{ selectedPost[0].filename }}</a
+            >
           </div>
           <div id="content-container">
             {{ selectedPost[0].assign_description }}
           </div>
         </div>
-        <div class="form-container">
-          <form @submit.prevent="submitHandler" method="post" enctype="multipart/form-data">
+        <div class="form-container" v-if="!isSubmit">
+          <form
+            @submit.prevent="submitHandler"
+            method="post"
+            enctype="multipart/form-data"
+          >
             <p
               style="
                 color: var(--main-color);
@@ -57,11 +67,7 @@
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">파일 제출</label>
-              <input
-                type="file"
-                class="form-control"
-                ref="fileInput"
-              />
+              <input type="file" class="form-control" ref="fileInput" />
             </div>
             <div class="mb-3 input-container">
               <label class="form-label">과제 내용</label>
@@ -81,6 +87,47 @@
             >
           </button>
         </div>
+        <div v-if="isSubmit">
+          <p
+            style="
+              color: var(--main-color);
+              font-size: large;
+              font-weight: bold;
+            "
+          >
+            제출한 과제 정보
+          </p>
+          <table style="width: 100%; border: 1px solid black">
+            <colgroup>
+              <col style="width: 30%" />
+            </colgroup>
+            <tbody>
+              <tr>
+                <th>제목</th>
+                <td>{{ find.submit[0].submit_title }}</td>
+              </tr>
+              <tr>
+                <th>파일</th>
+                <td>
+                  <a
+                    :href="`/api/student/subject/download/${find.submit[0].file_id}`"
+                  >
+                    {{ find.submit[0].filename }}</a
+                  >
+                </td>
+              </tr>
+              <tr>
+                <th>내용</th>
+                <td>{{ find.submit[0].submit_description }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" id="returnBtn">
+            <router-link :to="`/student/studying/assignment/${subjectId}/1`"
+              >목록으로</router-link
+            >
+          </button>
+        </div>
       </template>
     </Background>
     <MainFooter />
@@ -88,7 +135,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive, } from "vue";
+import { onMounted, computed, ref, reactive, watch } from "vue";
 import { loginCheck, useGetAxios, usePostAxios } from "@/composable";
 import MainFooter from "@/layouts/MainFooter.vue";
 import StudentHeader from "@/layouts/StudentHeader.vue";
@@ -125,14 +172,30 @@ const writeData = reactive({
   description: "",
 });
 
+// 과제 제출 여부
+const isSubmit = ref(false);
+const assignments = computed(() => {
+  return store.getters["assignmentInfo/getAssignment"];
+});
+const find = assignments.value.find(
+  (obj) => obj[0].register_id === register_id.value
+);
+if (find.submit !== undefined) {
+  isSubmit.value = true;
+}
+
 const submitHandler = async () => {
   const formData = new FormData();
   formData.append("title", writeData.title);
   formData.append("description", writeData.description);
   if (fileInput.value.files.length > 0) {
-    formData.append("file", fileInput.value.files[0], encodeURIComponent(fileInput.value.files[0].name));
+    formData.append(
+      "file",
+      fileInput.value.files[0],
+      encodeURIComponent(fileInput.value.files[0].name)
+    );
   }
- 
+
   const { postData } = usePostAxios(
     `/api/student/studying/assignment/${register_id.value}`,
     formData,
@@ -209,6 +272,11 @@ const formatDate = (createdAt) => {
 }
 button {
   margin: 5px;
+}
+tr,
+td {
+  border: 1px solid black;
+  height: 5vh;
 }
 #commentForm {
   display: flex;

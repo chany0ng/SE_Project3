@@ -15,10 +15,7 @@ exports.getAssignmentList = async (req, res, next) => {
       order: [["assign_due_date", "ASC"]],
       limit: perPage,
       offset: (page - 1) * perPage,
-      include: [
-        { model: model.subjects },
-        { model: model.professors },
-      ]
+      include: [{ model: model.subjects }, { model: model.professors }],
     })
     .catch((err) => {
       console.log(err);
