@@ -1,6 +1,36 @@
 const express = require("express");
 const model = require("../models");
 const { Readable } = require("stream");
+const fs = require("fs");
+
+//과목에 해당하는 공지사항 리스트 주는 함수
+exports.getNoticeList = async (req, res, next) => {
+  let subjectId = req.params.id;
+  let page = req.params.page;
+  let perPage = 10;
+  let notices = await model.notices
+    .findAll({
+      where: { subject_id: subjectId },
+      order: [["createdAt", "DESC"]],
+      limit: perPage,
+      offset: (page - 1) * perPage,
+      include: { model: model.professors },
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.sendStatus(400); //Bad request
+    });
+  //삭제되지 않은 공지사항만 조회
+  let noticeList = notices.filter((notice) => notice.isDeleted === 0);
+  let result = await model.notices
+    .findAll({
+      where: { subject_id: subjectId },
+      include: { model: model.professors },
+    })
+    .catch((err) => console.log(err));
+  let count = result.length;
+  let data = [noticeList, count];
+  return res.status(200).send(data);
 const fs = require('fs');
 
 //과목에 해당하는 공지사항 리스트 주는 함수
@@ -35,6 +65,43 @@ exports.getNoticeList = async (req, res, next) => {
 
 //공지사항 조회 함수
 exports.getNotice = async (req, res, next) => {
+  let noticeId = req.params.id;
+  let notice = await model.notices
+    .findOne({
+      where: { notice_id: noticeId },
+      include: { model: model.professors },
+    })
+    .catch((err) => console.log(err));
+
+  if (notice) {
+    //공지사항 조회 성공
+    let file_notice = [];
+    //조회 수 1 증가
+    notice.notice_views += 1;
+    await notice.save();
+    if (notice.notice_file) {
+      let fileId = notice.notice_file;
+      let file = await model.files
+        .findOne({
+          where: { file_id: fileId },
+        })
+        .catch((err) => console.log(err));
+      let filename = file.file_name;
+      file_notice.push({
+        ...notice.get(),
+        file_id: fileId,
+        filename: filename,
+      });
+    } else {
+      file_notice.push({ ...notice.get() });
+    }
+    let data = file_notice;
+    console.log(data);
+    return res.status(200).send(data);
+  } else {
+    //공지사항 조회 오류
+    return res.sendStatus(400); //Bad request
+  }
     let noticeId = req.params.id;
     let notice = await model.notices
         .findOne({
