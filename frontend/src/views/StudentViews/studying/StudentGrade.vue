@@ -1,5 +1,5 @@
 <template>
-
+  <<<<<<< HEAD ======= >>>>>>> origin/BE_교수,관리자페이지
   <div v-if="isRendered">
     <StudentHeader />
     <Background>
