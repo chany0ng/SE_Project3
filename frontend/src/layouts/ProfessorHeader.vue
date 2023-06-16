@@ -20,7 +20,6 @@
           <button>성적 관리</button>
           <ul>
             <li><router-link to="">성적 입력/수정</router-link></li>
-            <li><router-link to="">석차 관리</router-link></li>
           </ul>
         </li>
         <li>

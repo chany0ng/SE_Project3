@@ -119,16 +119,18 @@ async function loginSubmit() {
   if (loginData.userType === "") {
     alert("로그인 유형을 선택하세요!!");
     loginButton.value.blur();
-  } else {
+  } else if (loginData.userType === "student") {
     const { postData } = usePostAxios("/api/login", loginData);
     const response = await postData();
     if (response.status == 200) {
-      // 로그인 성공 시
+      // 학생로그인 성공 시
       const subjectData = response.data;
       store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
       redirection("/student");
     } else if (response.status == 201) {
       redirection("/professor");
+    } else if (response.status == 202) {
+      redirection("/admin");
     } else {
       loginData.userType = "";
       loginButton.value.blur();
