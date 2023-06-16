@@ -103,6 +103,7 @@ exports.Login = async (req, res, next) => {
     } else {
       return res.sendStatus(400);
     }
+
   }
 };
 
@@ -152,6 +153,7 @@ exports.getStudentPage = async (req, res, next) => {
         .catch((err) => console.log(err));
 
       //미제출 과제 개수
+
       if(assignments.length !== 0){
         for (let assignment of assignments) {
             let submit_check = await model.assign_submit
@@ -165,6 +167,7 @@ exports.getStudentPage = async (req, res, next) => {
               not_submit_count += 1;
             }
           }
+
       }
       data.push({
         ...enrollment.get(),
