@@ -154,8 +154,6 @@ watch(yearSemester, (newValue) => {
       return course.year == year && course.semester == semester;
     });
     selectedSubject.value = filteredSubject.value[0].subject.subject_name;
-    console.log("선택한 학기:", newValue);
-    console.log("선택된 과목:", selectedSubject.value);
   } else {
     alert("학기 변경 에러!");
   }

@@ -65,14 +65,35 @@
                 <td class="tg-wp8o">{{ course.subject.subject_name }}</td>
                 <td class="tg-wp8o">{{ course.year }}-{{ course.semester }}</td>
                 <td class="tg-wp8o">{{ course.subject.subject_type }}</td>
-                <td class="tg-wp8o">{{ course.subject_subject_grade }}</td>
+                <td class="tg-wp8o">{{ course.subject.subject_grade }}</td>
                 <td class="tg-wp8o">{{ course.grade }}</td>
               </tr>
             </tbody>
           </table>
-          <h2>학기별 성적 그래프</h2>
-          <div style="width: 800px">
-            <canvas id="gradeChart" width="580" height="200"></canvas>
+          <h2>학기별 성적 확인</h2>
+          <div style="width: 100%">
+            <table class="tg">
+              <thead>
+                <tr>
+                  <th class="tg-baqh">학기</th>
+                  <th class="tg-baqh">전공 평점</th>
+                  <th class="tg-baqh">전공 외 평점</th>
+                  <th class="tg-baqh">평균 평점</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(course, index) of sortedSemesterInfo" :key="index">
+                  <td class="tg-wp8o">
+                    {{ course.year }}-{{ course.semester }}
+                  </td>
+                  <td class="tg-wp8o">
+                    {{ course.major_grade }}
+                  </td>
+                  <td class="tg-wp8o">{{ course.non_major_grade }}</td>
+                  <td class="tg-wp8o">{{ course.total_grade }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </template>
@@ -89,7 +110,6 @@ import StudentHeader from "@/layouts/StudentHeader.vue";
 import router from "@/router";
 import store from "@/store";
 import Background from "@/components/Background.vue";
-import Chart from "chart.js/auto";
 
 //로그인 유무 받아오기
 onBeforeMount(async () => {
@@ -117,23 +137,20 @@ const isRendered = ref(false);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
 // 학기 선택
 const yearSemester = ref("2023/1");
-console.log(yearSemester.value);
 const year = computed(() => yearSemester.value.split("/")[0]);
 const semester = computed(() => yearSemester.value.split("/")[1]);
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const semesterInfo = ref();
 const totalHakjum = ref();
-
+const sortedSemesterInfo = ref();
 watch(
   yearSemester,
   () => {
     const updatedYear = year.value;
     const updatedSemester = semester.value;
-    console.log(updatedYear, updatedSemester);
     filteredSubject.value = subjectData.value.filter((item) => {
       return item.year == updatedYear && item.semester == updatedSemester;
     });
-    console.log(filteredSubject.value);
   },
   { immediate: true }
 );
@@ -144,7 +161,19 @@ async function getGrades() {
   if (response.status === 200) {
     subjectData.value = response.data[0];
     semesterInfo.value = response.data[1];
+    console.log(semesterInfo.value);
     totalHakjum.value = response.data[2];
+    sortedSemesterInfo.value = semesterInfo.value.sort((a, b) => {
+      // Compare by year first
+      if (a.year !== b.year) {
+        return a.year - b.year;
+      }
+
+      // If the years are the same, compare by semester
+      return a.semester - b.semester;
+    });
+
+    console.log(sortedSemesterInfo.value);
   } else {
     alert("성적 조회 에러발생!");
   }
