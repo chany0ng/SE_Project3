@@ -85,6 +85,11 @@ exports.Login = async (req, res, next) => {
           user = await model.admins.findOne({
               where: {admin_id: id, pw: pw}
           }).catch((err) => console.log(err));
+          if(user){
+              return res.status(202).send(user);
+          } else {
+              return res.sendStatus(400);
+          }
     }
 };
 

@@ -5,32 +5,32 @@ const fs = require('fs');
 
 //과목에 해당하는 공지사항 리스트 주는 함수
 exports.getNoticeList = async (req, res, next) => {
-  let subjectId = req.params.id;
-  let page = req.params.page;
-  let perPage = 10;
-  let notices = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      order: [["createdAt", "DESC"]],
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      include: { model: model.professors },
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.sendStatus(400); //Bad request
-    });
-  //삭제되지 않은 공지사항만 조회
-  let noticeList = notices.filter((notice) => notice.isDeleted === 0);
-  let result = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      include: { model: model.professors },
-    })
-    .catch((err) => console.log(err));
-  let count = result.length;
-  let data = [noticeList, count];
-  return res.status(200).send(data);
+    let subjectId = req.params.id;
+    let page = req.params.page;
+    let perPage = 10;
+    let notices = await model.notices
+        .findAll({
+        where: { subject_id: subjectId },
+        order: [["createdAt", "DESC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.professors },
+        })
+        .catch((err) => {
+        console.log(err);
+        return res.sendStatus(400); //Bad request
+        });
+    //삭제되지 않은 공지사항만 조회
+    let noticeList = notices.filter((notice) => notice.isDeleted === 0);
+    let result = await model.notices
+        .findAll({
+        where: { subject_id: subjectId },
+        include: { model: model.professors },
+        })
+        .catch((err) => console.log(err));
+    let count = result.length;
+    let data = [noticeList, count];
+    return res.status(200).send(data);
 };
 
 //공지사항 조회 함수
@@ -109,13 +109,11 @@ exports.Download = async (req, res, next) => {
     let file = await model.files
         .findOne({ where: { file_id: fileId } })
         .catch((err) => console.log(err));
-    console.log(fileId);
     res.setHeader("Content-Type", file.file_mimetype);
     res.setHeader(
         "Content-Disposition",
-        `attachment; filename="${file.file_name}"`
+        `attachment; filename="${encodeURIComponent(file.file_name)}"`
     );
-
     // 파일을 스트림 형태로 응답한다.
     const fileStream = new Readable();
     fileStream.push(file.file_content);
@@ -125,28 +123,28 @@ exports.Download = async (req, res, next) => {
 
 //묻고 답하기 목록 함수
 exports.getQnAList = async (req, res, next) => {
-  let studentId = req.session.loginId;
-  let subjectId = req.params.id;
-  let perPage = 10;
-  let page = req.params.page;
-  let qnas = await model.QnAs.findAll({
-    where: { subject_id: subjectId, student_id: studentId },
-    order: [["createdAt", "DESC"]],
-    limit: perPage,
-    offset: (page - 1) * perPage,
-    include: { model: model.students },
-  }).catch((err) => {
-    console.log(err);
-    return res.sendStatus(400); //Bad request
-  });
-  //삭제되지 않은 묻고 답하기만 조회
-  let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-  let result = await model.QnAs.findAll({
-    where: { subject_id: subjectId, student_id: studentId },
-  }).catch((err) => console.log(err));
-  let count = result.length;
-  let data = [qnaList, count];
-  return res.status(200).send(data);
+    let studentId = req.session.loginId;
+    let subjectId = req.params.id;
+    let perPage = 10;
+    let page = req.params.page;
+    let qnas = await model.QnAs.findAll({
+        where: { subject_id: subjectId, student_id: studentId },
+        order: [["createdAt", "DESC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.students },
+    }).catch((err) => {
+        console.log(err);
+        return res.sendStatus(400); //Bad request
+    });
+    //삭제되지 않은 묻고 답하기만 조회
+    let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
+    let result = await model.QnAs.findAll({
+        where: { subject_id: subjectId, student_id: studentId },
+    }).catch((err) => console.log(err));
+    let count = result.length;
+    let data = [qnaList, count];
+    return res.status(200).send(data);
 };
 
 //묻고 답하기 글 조회 함수
