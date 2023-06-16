@@ -133,7 +133,8 @@ async function getSyllabus() {
     console.log(response.data);
     syllabus.value = response.data;
   } else {
-    alert("강의계획서 조회 에러!");
+    alert("강의계획서 미등록");
+    router.push("/student");
   }
 }
 
