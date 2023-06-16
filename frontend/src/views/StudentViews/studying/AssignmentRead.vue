@@ -26,7 +26,7 @@
             <span>상태: {{ selectedPost.submit ? "제출" : "미제출" }}</span>
           </div>
           <div id="file-container">
-            파일: <a href=""  @click="fileClick(selectedPost[0].file_id)">
+            파일: <a :href="`/api/student/subject/download/${selectedPost[0].file_id}`" >
               {{ selectedPost[0].filename }}</a>
           </div>
           <div id="content-container">
@@ -124,11 +124,6 @@ const writeData = reactive({
   title: "",
   description: "",
 });
-
-async function fileClick(fileId) {
-  const { getData } = useGetAxios(`/api/student/subject/download/${fileId}`);
-  const response = await getData();
-}
 
 const submitHandler = async () => {
   const formData = new FormData();
