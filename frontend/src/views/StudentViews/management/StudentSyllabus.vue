@@ -107,9 +107,13 @@ onBeforeMount(async () => {
 const router = useRouter();
 const isRendered = ref(false);
 const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+// const yearSemester = ref(
+//   `${subjectData.value[0].year}/${subjectData.value[0].semester}`
+// );
 const yearSemester = ref("2023/1");
 const year = computed(() => yearSemester.value.split("/")[0]);
 const semester = computed(() => yearSemester.value.split("/")[1]);
+
 const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const route = useRoute();
 const subjectId = computed(() => route.params.id);
@@ -129,16 +133,15 @@ async function getSyllabus() {
     console.log(response.data);
     syllabus.value = response.data;
   } else {
-    alert("강의계획서 조회 에러!");
+    alert("강의계획서 미등록");
+    router.push("/student");
   }
 }
 
 // 그 학기에 해당하는 과목 배열 리턴해주는 함수
 function getArray() {
   filteredSubject.value = subjectData.value.filter((course) => {
-
     return course.year == year.value && course.semester == semester.value;
-
   });
   selectedSubject.value = filteredSubject.value[0].subject.subject_name;
 }
@@ -152,7 +155,6 @@ watch(yearSemester, (newValue) => {
       return course.year == year && course.semester == semester;
     });
     selectedSubject.value = filteredSubject.value[0].subject.subject_name;
-
   } else {
     alert("학기 변경 에러!");
   }

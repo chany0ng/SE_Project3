@@ -81,7 +81,6 @@ exports.getAssignmentList = async (req, res, next) => {
 exports.submitAssignment = async (req, res, next) => {
   let assignId = req.params.assign_id;
   let fileId = "";
-  console.log(assignId);
   //업로드 파일이 있을 경우
   if (req.file) {
     let filedata = {
@@ -178,6 +177,15 @@ exports.deleteAssignment = async (req, res, next) => {
 exports.viewGrade = async (req, res, next) => {
     if (req.session.loginId) {
         let total_grade = 0;
+        let avg_total_grade = 0;
+        let avg_major_grade = 0;
+        let avg_non_major_grade = 0;
+        let sum_total_grade = 0;
+        let sum_major_grade = 0;
+        let sum_non_major_grade = 0;
+        let total_count = 0;
+        let major_count = 0;
+        let non_major_count = 0;
         //해당 유저가 수강한 모든 수강 목록
         let enrollments = await model.enrollments
         .findAll({
@@ -196,8 +204,25 @@ exports.viewGrade = async (req, res, next) => {
             }
         }
         //학기 당 평균 평점(총 평점, 전공 평점, 전공 외 평점) 계산
-        let averageGrade = calculateGrade(enrollments);
-        let data = [enrollments, averageGrade, total_grade];
+        let averageGrades = calculateGrade(enrollments);
+        for (let averageGrade of averageGrades) {
+            if(!isNaN(averageGrade.total_grade)) {
+                sum_total_grade += Number(averageGrade.total_grade);
+                total_count += 1;
+            }
+            if(!isNaN(averageGrade.major_grade)) {
+                sum_major_grade += Number(averageGrade.major_grade);
+                major_count += 1;
+            }
+            if(!isNaN(averageGrade.non_major_grade)) {
+                sum_non_major_grade += Number(averageGrade.non_major_grade);
+                non_major_count += 1;
+            }
+        }
+        avg_total_grade = (sum_total_grade / total_count).toFixed(2);
+        avg_major_grade = (sum_major_grade / major_count).toFixed(2);
+        avg_non_major_grade = (sum_non_major_grade / non_major_count).toFixed(2); 
+        let data = [enrollments, averageGrades, total_grade, avg_total_grade, avg_major_grade, avg_non_major_grade];
         return res.status(200).send(data);
     } else {
         //로그인 돼 있지 않음.
@@ -358,9 +383,9 @@ function calculateGrade(enrollments) {
     let gradeInfo = {
       year: year,
       semester: semester,
-      total_grade: total_calculatedGrade,
-      major_grade: major_calculatedGrade,
-      non_major_grade: non_major_calculatedGrade,
+      total_grade: isNaN(total_calculatedGrade) ? '-': total_calculatedGrade,
+      major_grade: isNaN(major_calculatedGrade)? '-' : major_calculatedGrade,
+      non_major_grade: isNaN(non_major_calculatedGrade) ? '-': non_major_calculatedGrade,
     };
     grades.push(gradeInfo);
   }

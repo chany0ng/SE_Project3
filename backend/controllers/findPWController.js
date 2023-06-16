@@ -24,12 +24,12 @@ exports.findPW = async (req, res, next) => {
     let answer = req.body.userPwA;
     result = await model.students.findAll({where: {student_id: id, pw_answer: answer }}).catch((err) => console.log(err)); 
 
-  if (result.length !== 0) {
-    //비밀번호 찾기 답변 일치
-        let pw = result[0].pw;
-        return res.status(200).send(pw);
-    } else {
-        //비밀번호 찾기 답변 불일치
-        return res.sendStatus(400);    
-    }
+    if (result.length !== 0) {
+      //비밀번호 찾기 답변 일치
+          let pw = result[0].pw;
+          return res.status(200).send(pw);
+      } else {
+          //비밀번호 찾기 답변 불일치
+          return res.sendStatus(400);    
+      }
 }

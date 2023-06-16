@@ -30,15 +30,6 @@
               <p>{{ comment.content }}</p>
               <hr />
             </div> -->
-            <div id="comment">
-              <span style="width: 10%">박찬용</span>
-              <span>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                Perspiciatis aliquid magni quas repellat nisi unde, incidunt
-                inventore necessitatibus praesentium ad repellendus error
-                maxime, modi in, nemo dignissimos amet ipsum velit.</span
-              >
-            </div>
           </div>
           <div id="new-comment">
             <form id="commentForm" method="post" action="">

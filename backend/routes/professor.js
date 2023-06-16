@@ -8,7 +8,7 @@ const studyingController = require('../controllers/studyingController');
 
 const upload = multer();
 
-router.get('/', loginController.CheckLogin);
+router.get('/', loginController.getProfessorPage);
 
 router.get('/studying/grade/:subject_id', studyingController.getStudentList);
 router.post('/studying/grade', studyingController.inputGrade);

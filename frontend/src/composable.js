@@ -47,8 +47,10 @@ export async function loginCheck(url) {
   const response = await getData();
   if (response.status === 200) {
     return true;
-  } else {
+  } else if (response.status === 201) {
     return false;
+  } else {
+    return undefined;
   }
 }
 

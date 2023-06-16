@@ -123,16 +123,18 @@ async function loginSubmit() {
     const { postData } = usePostAxios("/api/login", loginData);
     const response = await postData();
     if (response.status == 200) {
-      // 로그인 성공 시
-      const subjectData = response.data;
-      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
-      redirection("/student");
+        // 학생로그인 성공 시
+        const subjectData = response.data;
+        store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+        redirection("/student");
     } else if (response.status == 201) {
-      redirection("/professor");
+        redirection("/professor");
+    } else if (response.status == 202) {
+        redirection("/admin");
     } else {
-      loginData.userType = "";
-      loginButton.value.blur();
-      alert("존재하지 않는 계정입니다!");
+        loginData.userType = "";
+        loginButton.value.blur();
+        alert("존재하지 않는 계정입니다!");
     }
   }
 }
@@ -140,8 +142,13 @@ async function loginSubmit() {
 onMounted(async () => {
   const loggedIn = await loginCheck("/api/login");
   if (loggedIn === true) {
-    alert("로그인 되어있습니다!");
+    alert("학생 로그인 되어있습니다!");
     router.push("/student");
+  } else if (loggedIn === false) {
+    alert("교수 로그인 되어있습니다!");
+    router.push("/professor");
+  } else {
+    router.push("/login");
   }
 });
 </script>

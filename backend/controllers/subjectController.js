@@ -5,59 +5,29 @@ const fs = require("fs");
 
 //과목에 해당하는 공지사항 리스트 주는 함수
 exports.getNoticeList = async (req, res, next) => {
-  let subjectId = req.params.id;
-  let page = req.params.page;
-  let perPage = 10;
-  let notices = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      order: [["createdAt", "DESC"]],
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      include: { model: model.professors },
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.sendStatus(400); //Bad request
-    });
-  //삭제되지 않은 공지사항만 조회
-  let noticeList = notices.filter((notice) => notice.isDeleted === 0);
-  let result = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      include: { model: model.professors },
-    })
-    .catch((err) => console.log(err));
-  let count = result.length;
-  let data = [noticeList, count];
-  return res.status(200).send(data);
-const fs = require('fs');
-
-//과목에 해당하는 공지사항 리스트 주는 함수
-exports.getNoticeList = async (req, res, next) => {
     let subjectId = req.params.id;
     let page = req.params.page;
     let perPage = 10;
     let notices = await model.notices
-        .findAll({
+      .findAll({
         where: { subject_id: subjectId },
         order: [["createdAt", "DESC"]],
         limit: perPage,
         offset: (page - 1) * perPage,
         include: { model: model.professors },
-        })
-        .catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
         return res.sendStatus(400); //Bad request
-        });
+      });
     //삭제되지 않은 공지사항만 조회
     let noticeList = notices.filter((notice) => notice.isDeleted === 0);
     let result = await model.notices
-        .findAll({
+      .findAll({
         where: { subject_id: subjectId },
         include: { model: model.professors },
-        })
-        .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
     let count = result.length;
     let data = [noticeList, count];
     return res.status(200).send(data);
@@ -102,37 +72,6 @@ exports.getNotice = async (req, res, next) => {
     //공지사항 조회 오류
     return res.sendStatus(400); //Bad request
   }
-    let noticeId = req.params.id;
-    let notice = await model.notices
-        .findOne({
-        where: { notice_id: noticeId },
-        include: { model: model.professors },
-        })
-        .catch((err) => console.log(err));
-    
-    if (notice) {
-        //공지사항 조회 성공
-        let file_notice = [];
-        //조회 수 1 증가
-        notice.notice_views += 1;
-        await notice.save();
-        if(notice.notice_file) {
-            let fileId = notice.notice_file;
-            let file = await model.files.findOne({
-                where: {file_id: fileId}
-            }).catch((err) => console.log(err));
-            let filename = file.file_name;
-            file_notice.push({...notice.get(), file_id: fileId, filename: filename});
-        } else {
-            file_notice.push({...notice.get()});
-        }
-        let data = file_notice;
-        console.log(data);
-        return res.status(200).send(data);
-    } else {
-        //공지사항 조회 오류
-        return res.sendStatus(400); //Bad request
-    }
 };
 
 //공지사항 작성 함수
@@ -172,46 +111,46 @@ exports.writeNotice = async (req, res, next) => {
 
 //다운로드 함수
 exports.Download = async (req, res, next) => {
-    let fileId = req.params.id;
-    let file = await model.files
-        .findOne({ where: { file_id: fileId } })
-        .catch((err) => console.log(err));
-    res.setHeader("Content-Type", file.file_mimetype);
-    res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(file.file_name)}"`
-    );
-    // 파일을 스트림 형태로 응답한다.
-    const fileStream = new Readable();
-    fileStream.push(file.file_content);
-    fileStream.push(null);
-    fileStream.pipe(res);
+  let fileId = req.params.id;
+  let file = await model.files
+    .findOne({ where: { file_id: fileId } })
+    .catch((err) => console.log(err));
+  res.setHeader("Content-Type", file.file_mimetype);
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${encodeURIComponent(file.file_name)}"`
+  );
+  // 파일을 스트림 형태로 응답한다.
+  const fileStream = new Readable();
+  fileStream.push(file.file_content);
+  fileStream.push(null);
+  fileStream.pipe(res);
 };
 
 //묻고 답하기 목록 함수
 exports.getQnAList = async (req, res, next) => {
-    let studentId = req.session.loginId;
-    let subjectId = req.params.id;
-    let perPage = 10;
-    let page = req.params.page;
-    let qnas = await model.QnAs.findAll({
-        where: { subject_id: subjectId, student_id: studentId },
-        order: [["createdAt", "DESC"]],
-        limit: perPage,
-        offset: (page - 1) * perPage,
-        include: { model: model.students },
-    }).catch((err) => {
-        console.log(err);
-        return res.sendStatus(400); //Bad request
-    });
-    //삭제되지 않은 묻고 답하기만 조회
-    let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
-    let result = await model.QnAs.findAll({
-        where: { subject_id: subjectId, student_id: studentId },
-    }).catch((err) => console.log(err));
-    let count = result.length;
-    let data = [qnaList, count];
-    return res.status(200).send(data);
+  let studentId = req.session.loginId;
+  let subjectId = req.params.id;
+  let perPage = 10;
+  let page = req.params.page;
+  let qnas = await model.QnAs.findAll({
+    where: { subject_id: subjectId, student_id: studentId },
+    order: [["createdAt", "DESC"]],
+    limit: perPage,
+    offset: (page - 1) * perPage,
+    include: { model: model.students },
+  }).catch((err) => {
+    console.log(err);
+    return res.sendStatus(400); //Bad request
+  });
+  //삭제되지 않은 묻고 답하기만 조회
+  let qnaList = qnas.filter((qna) => qna.isDeleted === 0);
+  let result = await model.QnAs.findAll({
+    where: { subject_id: subjectId, student_id: studentId },
+  }).catch((err) => console.log(err));
+  let count = result.length;
+  let data = [qnaList, count];
+  return res.status(200).send(data);
 };
 
 //묻고 답하기 글 조회 함수

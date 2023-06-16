@@ -1,5 +1,4 @@
 <template>
-
   <div v-if="isRendered">
     <StudentHeader />
     <Background>
@@ -22,11 +21,9 @@
               <tr>
                 <td class="tg-baqh">144</td>
                 <td class="tg-baqh">{{ totalHakjum }}</td>
-                <td class="tg-baqh">{{ totalGrade / semesterInfo.length }}</td>
-                <td class="tg-baqh">{{ majorGrade / semesterInfo.length }}</td>
-                <td class="tg-baqh">
-                  {{ n_majorGrade / semesterInfo.length }}
-                </td>
+                <td class="tg-baqh">{{ totalGrade }}</td>
+                <td class="tg-baqh">{{ majorGrade }}</td>
+                <td class="tg-baqh">{{ n_majorGrade }}</td>
               </tr>
             </tbody>
           </table>
@@ -120,15 +117,6 @@ onBeforeMount(async () => {
     router.push("/login");
   } else {
     await getGrades();
-    const totalGrade = computed(() =>
-      semesterInfo.value.reduce((total, obj) => total + obj.total_grade, 0)
-    );
-    const majorGrade = computed(() =>
-      semesterInfo.value.reduce((total, obj) => total + obj.major_grade, 0)
-    );
-    const n_majorGrade = computed(() =>
-      semesterInfo.value.reduce((total, obj) => total + obj.non_major_grade, 0)
-    );
 
     isRendered.value = true;
   }
@@ -144,6 +132,10 @@ const filteredSubject = ref(); // 학기 선택 후, 그 학기의 과목배열
 const semesterInfo = ref();
 const totalHakjum = ref();
 const sortedSemesterInfo = ref();
+
+const totalGrade = ref();
+const majorGrade = ref();
+const n_majorGrade = ref();
 watch(
   yearSemester,
   () => {
@@ -162,8 +154,10 @@ async function getGrades() {
   if (response.status === 200) {
     subjectData.value = response.data[0];
     semesterInfo.value = response.data[1];
-    console.log(semesterInfo.value);
     totalHakjum.value = response.data[2];
+    totalGrade.value = response.data[3];
+    majorGrade.value = response.data[4];
+    n_majorGrade.value = response.data[5];
     sortedSemesterInfo.value = semesterInfo.value.sort((a, b) => {
       // Compare by year first
       if (a.year !== b.year) {
@@ -173,8 +167,6 @@ async function getGrades() {
       // If the years are the same, compare by semester
       return a.semester - b.semester;
     });
-
-    console.log(sortedSemesterInfo.value);
   } else {
     alert("성적 조회 에러발생!");
   }

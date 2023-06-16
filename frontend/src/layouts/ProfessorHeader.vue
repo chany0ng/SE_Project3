@@ -11,20 +11,43 @@
         <li>
           <button>강의 종합 정보</button>
           <ul>
-            <li><router-link to="">공지사항 관리</router-link></li>
-            <li><router-link to="">강의계획서 관리</router-link></li>
-            <li><router-link to="">강의 묻고 답하기</router-link></li>
+            <li>
+              <router-link
+                :to="`/professor/subject/notice/${subjectData[0].subject_id}/1`"
+                >공지사항 관리</router-link
+              >
+            </li>
+            <li>
+              <router-link
+                :to="`/professor/subject/syllabus/${subjectData[0].subject_id}/1`"
+                >강의계획서 관리</router-link
+              >
+            </li>
+            <li>
+              <router-link
+                :to="`/professor/subject/qna/${subjectData[0].subject_id}/1`"
+                >강의 묻고 답하기</router-link
+              >
+            </li>
           </ul>
         </li>
         <li>
           <button>성적 관리</button>
           <ul>
-            <li><router-link to="">성적 입력/수정</router-link></li>
-            <li><router-link to="">석차 관리</router-link></li>
+            <li>
+              <router-link
+                :to="`/professor/studying/grade/${subjectData[0].subject_id}`"
+                >성적 입력/수정</router-link
+              >
+            </li>
           </ul>
         </li>
         <li>
-          <button><router-link to="">마이페이지</router-link></button>
+          <button>
+            <router-link to="/professor/mypage/information"
+              >마이페이지</router-link
+            >
+          </button>
         </li>
       </ul>
       <button
@@ -46,15 +69,35 @@
 </template>
 
 <script setup>
-import { defineExpose } from "vue";
+import { defineExpose, computed } from "vue";
 import { useRouter } from "vue-router";
+import { usePostAxios } from "@/composable";
+import store from "@/store";
 const router = useRouter();
 
-function confirmLogout() {
-  if (confirm("Are you sure you want to log out?")) {
-    router.push("/login");
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+// 로그아웃 버튼 클릭 시 실행 함수
+async function confirmLogout() {
+  if (confirm("로그아웃 하시겠습니까?")) {
+    const { postData } = usePostAxios("/api/login/logout");
+    const response = await postData();
+    if (response.status === 200) {
+      logout(); // vuex초기화
+      router.push("/login");
+    } else {
+      alert("로그아웃 에러!!");
+    }
   }
 }
+const logout = () => {
+  // Clear user information from the Vuex store
+  store.dispatch("userInfo/setUser", null);
+  // store.dispatch("subjectInfo/setSubject", null);
+  store.dispatch("qnaInfo/setQna", null);
+  store.dispatch("noticeInfo/setNotice", null);
+  store.dispatch("assignmentInfo/setAssignment", null);
+  localStorage.removeItem("vuex");
+};
 defineExpose({ router });
 </script>
 
