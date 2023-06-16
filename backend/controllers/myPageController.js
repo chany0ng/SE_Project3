@@ -18,7 +18,6 @@ exports.getUserInfo = async(req, res, next) => {
         } else {
             //관리자인 경우
         }
-
         if(data) {
             //유저 정보 전송
             return res.status(200).send(data);

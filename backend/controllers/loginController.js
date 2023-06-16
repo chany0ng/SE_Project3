@@ -4,8 +4,11 @@ const model = require("../models");
 //로그인 체크 함수
 exports.CheckLogin = async (req, res, next) => {
   if (req.session.loginId) {
-    //로그인 상태
-    return res.sendStatus(200);
+    if(req.session.userType === "student") {
+        return res.sendStatus(200);
+    } else if (req.session.userType === "professor"){
+        return res.sendStatus(201);
+    }
   } else {
     return res.sendStatus(401); //로그아웃 상태
   }
@@ -16,7 +19,7 @@ exports.Login = async (req, res, next) => {
     let pw = req.body.password;
     let type = req.body.userType;
     let user = "";
-
+    console.log()
     if (type === "student") {
       //학생인 경우
       user = await model.students

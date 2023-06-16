@@ -5,32 +5,32 @@ const fs = require("fs");
 
 //과목에 해당하는 공지사항 리스트 주는 함수
 exports.getNoticeList = async (req, res, next) => {
-  let subjectId = req.params.id;
-  let page = req.params.page;
-  let perPage = 10;
-  let notices = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      order: [["createdAt", "DESC"]],
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      include: { model: model.professors },
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.sendStatus(400); //Bad request
-    });
-  //삭제되지 않은 공지사항만 조회
-  let noticeList = notices.filter((notice) => notice.isDeleted === 0);
-  let result = await model.notices
-    .findAll({
-      where: { subject_id: subjectId },
-      include: { model: model.professors },
-    })
-    .catch((err) => console.log(err));
-  let count = result.length;
-  let data = [noticeList, count];
-  return res.status(200).send(data);
+    let subjectId = req.params.id;
+    let page = req.params.page;
+    let perPage = 10;
+    let notices = await model.notices
+      .findAll({
+        where: { subject_id: subjectId },
+        order: [["createdAt", "DESC"]],
+        limit: perPage,
+        offset: (page - 1) * perPage,
+        include: { model: model.professors },
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.sendStatus(400); //Bad request
+      });
+    //삭제되지 않은 공지사항만 조회
+    let noticeList = notices.filter((notice) => notice.isDeleted === 0);
+    let result = await model.notices
+      .findAll({
+        where: { subject_id: subjectId },
+        include: { model: model.professors },
+      })
+      .catch((err) => console.log(err));
+    let count = result.length;
+    let data = [noticeList, count];
+    return res.status(200).send(data);
 };
 
 //공지사항 조회 함수

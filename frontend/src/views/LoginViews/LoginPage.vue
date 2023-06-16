@@ -119,22 +119,22 @@ async function loginSubmit() {
   if (loginData.userType === "") {
     alert("로그인 유형을 선택하세요!!");
     loginButton.value.blur();
-  } else if (loginData.userType === "student") {
+  } else {
     const { postData } = usePostAxios("/api/login", loginData);
     const response = await postData();
     if (response.status == 200) {
-      // 학생로그인 성공 시
-      const subjectData = response.data;
-      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
-      redirection("/student");
+        // 학생로그인 성공 시
+        const subjectData = response.data;
+        store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+        redirection("/student");
     } else if (response.status == 201) {
-      redirection("/professor");
+        redirection("/professor");
     } else if (response.status == 202) {
-      redirection("/admin");
+        redirection("/admin");
     } else {
-      loginData.userType = "";
-      loginButton.value.blur();
-      alert("존재하지 않는 계정입니다!");
+        loginData.userType = "";
+        loginButton.value.blur();
+        alert("존재하지 않는 계정입니다!");
     }
   }
 }
