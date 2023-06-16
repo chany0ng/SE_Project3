@@ -11,53 +11,97 @@
         <li>
           <button>수강 관리</button>
           <ul>
-            <li><router-link to="">공지사항 조회</router-link></li>
-            <li><router-link to="">강의계획서 조회</router-link></li>
-            <li><router-link to="">강의 묻고 답하기</router-link></li>
+            <li>
+              <router-link
+                :to="`/student/subject/notice/${subjectData[0].subject_id}/1`"
+                >공지사항 조회</router-link
+              >
+            </li>
+            <li>
+              <router-link
+                :to="`/student/subject/syllabus/${subjectData[0].subject_id}`"
+                >강의계획서 조회</router-link
+              >
+            </li>
+            <li>
+              <router-link
+                :to="`/student/subject/qna/${subjectData[0].subject_id}/1`"
+                >강의 묻고 답하기</router-link
+              >
+            </li>
           </ul>
         </li>
         <li>
           <button>학습 지원실</button>
           <ul>
-            <li><router-link to="">과제 제출</router-link></li>
-            <li><router-link to="">성적 조회</router-link></li>
-            <li><router-link to="">석차 조회</router-link></li>
+            <li>
+              <router-link
+                :to="`/student/studying/assignment/${subjectData[0].subject_id}/1`"
+                >과제 제출</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/studying/grade">성적 조회</router-link>
+            </li>
           </ul>
         </li>
         <li>
-          <button><router-link to="">수강 신청</router-link></button>
+          <button>
+            <router-link to="/student/enrollment/1">수강 신청</router-link>
+          </button>
         </li>
         <li>
-          <button><router-link to="">마이페이지</router-link></button>
+          <button>마이페이지</button>
+          <ul>
+            <li>
+              <router-link to="/student/mypage/information"
+                >내 정보 조회/수정</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/student/mypage/friends">친구 관리</router-link>
+            </li>
+          </ul>
         </li>
       </ul>
-      <button
-        type="button"
-        @click="confirmLogout"
-        style="
-          color: white;
-          font-size: small;
-          font-weight: 300;
-          margin-right: 10px;
-          margin-bottom: 20px;
-        "
-      >
-        <router-link to="/login" id="logout">Logout -></router-link>
+      <button type="button" @click="confirmLogout" id="logout">
+        Logout ->
       </button>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { defineExpose } from "vue";
+import { defineExpose, computed, onMounted } from "vue";
+import { usePostAxios } from "@/composable";
 import { useRouter } from "vue-router";
+import store from "@/store";
 const router = useRouter();
 
-function confirmLogout() {
-  if (confirm("Are you sure you want to log out?")) {
-    router.push("/login");
+const subjectData = computed(() => store.getters["subjectInfo/getSubject"]);
+
+// 로그아웃 버튼 클릭 시 실행 함수
+async function confirmLogout() {
+  if (confirm("로그아웃 하시겠습니까?")) {
+    const { postData } = usePostAxios("/api/login/logout");
+    const response = await postData();
+    if (response.status === 200) {
+      logout(); // vuex 초기화
+      router.push("/login");
+    } else {
+      alert("로그아웃 에러!!");
+    }
   }
 }
+const logout = () => {
+  // Clear user information from the Vuex store
+  store.dispatch("userInfo/setUser", null);
+  // store.dispatch("subjectInfo/setSubject", null);
+  store.dispatch("qnaInfo/setQna", null);
+  store.dispatch("noticeInfo/setNotice", null);
+  store.dispatch("assignmentInfo/setAssignment", null);
+  localStorage.removeItem("vuex");
+};
 defineExpose({ router });
 </script>
 
@@ -84,6 +128,7 @@ ul {
   border: 2px solid var(--main-color);
   padding: 2px 5px;
   margin-top: 10px;
+  margin-left: 10px;
 }
 nav li {
   margin-right: 3rem;
@@ -125,8 +170,10 @@ nav ul ul li a:hover {
   font-weight: bold;
 }
 #logout {
-  padding: 1px;
-  color: yello;
-  font-weight: bold;
+  color: var(--main-color);
+  font-size: small;
+  font-weight: 300;
+  margin-right: 10px;
+  margin-bottom: 20px;
 }
 </style>

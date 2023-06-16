@@ -35,13 +35,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
     },
     phone_number: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
     }, 
   }, {
     timestamps: false
   });
   students.associate = function(models) {
+    students.belongsToMany(models.subjects, {
+        through: models.enrollments,
+        foreignKey: 'student_id',
+        otherKey: 'subject_id'
+    });
     // associations can be defined here
   };
   return students;

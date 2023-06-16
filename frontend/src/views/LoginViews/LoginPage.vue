@@ -4,7 +4,7 @@
     <div class="col-flex">
       <div id="title" class="font">학사관리 시스템</div>
       <div class="col-md-6">
-        <form action="/api/login" method="post">
+        <form action="/api/login" method="post" ref="formRef">
           <div class="form-group">
             <label for="userNumber"></label>
             <input
@@ -12,9 +12,9 @@
               class="form-control"
               id="userNumber"
               name="userNumber"
-              placeholder="학번을 입력하세요"
+              placeholder="이용자 번호를 입력하세요"
               required
-              v-model="userNumber"
+              v-model="loginData.userNumber"
             />
           </div>
           <div class="form-group">
@@ -26,7 +26,7 @@
               name="password"
               placeholder="비밀번호를 입력하세요"
               required
-              v-model="password"
+              v-model="loginData.password"
             />
           </div>
           <router-link to="/login/findpw" id="forgot"
@@ -35,6 +35,7 @@
           <div class="row-flex">
             <button
               type="button"
+              ref="studentButton"
               @click="setUserType('student')"
               class="btn for-btn font"
             >
@@ -42,14 +43,30 @@
             </button>
             <button
               type="button"
+              ref="professorButton"
               @click="setUserType('professor')"
               class="btn for-btn font"
             >
               For professor
             </button>
-            <input type="hidden" name="userType" :value="userType" />
+            <button
+              type="button"
+              ref="adminButton"
+              @click="setUserType('admin')"
+              class="btn for-btn font"
+            >
+              For admin
+            </button>
+            <input type="hidden" name="userType" :value="loginData.userType" />
           </div>
-          <button type="submit" class="btn lgn-btn font">Login</button>
+          <button
+            type="submit"
+            ref="loginButton"
+            class="btn lgn-btn font"
+            @click.prevent="loginSubmit"
+          >
+            Login
+          </button>
         </form>
         <router-link to="/login/signup" style="color: var(--brown1)"
           >New to us? Join now!</router-link
@@ -60,20 +77,73 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { loginCheck } from "@/composable";
+import { reactive, ref, onMounted } from "vue";
+import { usePostAxios, loginCheck } from "@/composable";
+import { useRouter } from "vue-router";
+import store from "@/store";
 
-let userNumber = ref("");
-let password = ref("");
-let userType = ref("");
+// 로그인 시 필요한 입력 값
+const loginData = reactive({
+  userNumber: "",
+  password: "",
+  userType: "",
+});
+const formRef = ref(null);
+const studentButton = ref(null);
+const professorButton = ref(null);
+const adminButton = ref(null);
+const loginButton = ref(null);
+// 유저 타입 Setter
 let setUserType = (type) => {
-  userType.value = type;
+  if (loginData.userType === type) {
+    // 이미 선택된 유형인 경우 선택 해제
+    loginData.userType = "";
+    studentButton.value.blur();
+    professorButton.value.blur();
+    adminButton.value.blur();
+  } else {
+    // 선택되지 않은 유형인 경우 선택
+    loginData.userType = type;
+  }
 };
 
-// let id = this.$route.params.id;
+// 입력 값 초기화 후 메인페이지 이동
+const router = useRouter();
+function redirection(path) {
+  formRef.value.reset();
+  router.push(path);
+}
 
-// 로그인 유무 받아오기
-onMounted(loginCheck());
+// 로그인 양식 제출
+async function loginSubmit() {
+  if (loginData.userType === "") {
+    alert("로그인 유형을 선택하세요!!");
+    loginButton.value.blur();
+  } else {
+    const { postData } = usePostAxios("/api/login", loginData);
+    const response = await postData();
+    if (response.status == 200) {
+      // 로그인 성공 시
+      const subjectData = response.data;
+      store.dispatch("subjectInfo/setSubject", subjectData); // 과목정보
+      redirection("/student");
+    } else if (response.status == 201) {
+      redirection("/professor");
+    } else {
+      loginData.userType = "";
+      loginButton.value.blur();
+      alert("존재하지 않는 계정입니다!");
+    }
+  }
+}
+//로그인 유무 받아오기
+onMounted(async () => {
+  const loggedIn = await loginCheck("/api/login");
+  if (loggedIn === true) {
+    alert("로그인 되어있습니다!");
+    router.push("/student");
+  }
+});
 </script>
 
 <style scoped>
@@ -113,7 +183,7 @@ input {
 
 .btn {
   background-color: rgba(250, 152, 133, 0.3);
-  width: 35%;
+  width: 25%;
   color: var(--main-color);
   font-weight: bold;
 }

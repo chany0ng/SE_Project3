@@ -1,15 +1,20 @@
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
-const router = useRouter();
+import { useRoute } from "vue-router";
 
 // 서버에 get요청하기
 export function useGetAxios(url) {
   async function getData() {
     try {
       const response = await axios.get(url);
-      return response.data;
+      return { data: response.data, status: response.status };
     } catch (error) {
-      console.error(error);
+      if (error.response) {
+        // The error was a response from the server
+        return { data: null, status: error.response.status };
+      } else {
+        // Other types of errors
+        console.error(error);
+      }
     }
   }
   return {
@@ -18,26 +23,32 @@ export function useGetAxios(url) {
 }
 // 서버에 post요청하기
 export function usePostAxios(url, data = null) {
-  async function getData() {
+  async function postData() {
     try {
       const response = await axios.post(url, data);
-      return response.data;
+      return { data: response.data, status: response.status };
     } catch (error) {
-      console.error(error);
+      if (error.response) {
+        // The error was a response from the server
+        return { data: null, status: error.response.status };
+      } else {
+        // Other types of errors
+        console.error(error);
+      }
     }
   }
   return {
-    getData,
+    postData,
   };
 }
 // 로그인 유무 받아오기
-export async function loginCheck() {
-  const { getData } = useGetAxios("/api/login");
+export async function loginCheck(url) {
+  const { getData } = useGetAxios(url);
   const response = await getData();
-  if (response.login === false) {
-    router.push({ name: "Login" });
+  if (response.status === 200) {
+    return true;
   } else {
-    // 로그인이 되어있으므로 메인페이지로 이동해야함.
+    return false;
   }
 }
 

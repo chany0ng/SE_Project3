@@ -78,22 +78,22 @@ function redirection() {
 async function submitForm() {
   // 이름,학번 제출
   if (showQuestion.value) {
-    const { getData } = usePostAxios("/api/login/findpw", formData);
-    const response = await getData();
-    if (response.signup === true) {
-      pw_question.value = response.pw_question;
+    const { postData } = usePostAxios("/api/login/findpw", formData);
+    const response = await postData();
+    if (response.status === 200) {
+      pw_question.value = response.data;
       showQuestion.value = !showQuestion.value;
     } else alert("이름 혹은 학번이 일치하지 않습니다!");
   }
   // 비밀번호 찾기 답변 제출
   else {
-    const { getData } = usePostAxios("/api/login/findpw_process", {
+    const { postData } = usePostAxios("/api/login/findpw_process", {
       userPwA: answer.value,
       userNumber: formData.userNumber,
     });
-    const response = await getData();
-    if (response.find === true) {
-      alert(`비밀번호는 ${response.pw}입니다.`);
+    const response = await postData();
+    if (response.status === 200) {
+      alert(`비밀번호는 ${response.data}입니다.`);
       showQuestion.value = !showQuestion.value;
       redirection();
     } else {

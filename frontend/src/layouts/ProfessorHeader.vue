@@ -30,6 +30,7 @@
       <button
         type="button"
         @click="confirmLogout"
+        id="logout"
         style="
           color: white;
           font-size: small;
@@ -38,7 +39,7 @@
           margin-bottom: 20px;
         "
       >
-        <router-link to="/login" id="logout">Logout -></router-link>
+        Logout ->
       </button>
     </div>
   </nav>
@@ -80,6 +81,7 @@ ul {
   border: 2px solid var(--main-color);
   padding: 2px 5px;
   margin-top: 10px;
+  cursor: pointer;
 }
 nav li {
   margin-right: 3rem;
@@ -122,7 +124,10 @@ nav ul ul li a:hover {
 }
 #logout {
   padding: 1px;
+  width: 80px;
+  height: 30px;
   color: yello;
   font-weight: bold;
+  cursor: pointer;
 }
 </style>

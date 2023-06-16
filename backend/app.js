@@ -12,11 +12,16 @@ const option = {
   host: config.host,
   user: config.username,
   password: config.password,
-  database: config.database
+  database: config.database,
+  expiration: 1000 * 60 * 60,               //1hour
+  clearExpired: true,
+  checkExpirationInterval: 1000 * 60 * 60
 }
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
+const studentRouter = require('./routes/student');
+const professorRouter = require('./routes/professor');
 
 const app = express();
 db.sequelize.sync();
@@ -30,7 +35,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: new MySQLStore(option),
-  expires: 1000 * 60 * 60,  //1hour
 }));
 
 app.use(logger('dev'));
@@ -41,10 +45,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/student', studentRouter);
+app.use('/api/professor', professorRouter);
 
-//모든 get 요청은 vue 파일 로드
+//라우팅 경로 외 모든 get 요청은 vue 파일 로드
 app.get('*', (req, res, next) => {
-  res.sendfile(path.join(__dirname, './public', 'index.html'));
+    res.sendfile(path.join(__dirname, './public', 'index.html'));
 });
 
 // catch 404 and forward to error handler
