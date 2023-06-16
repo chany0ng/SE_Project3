@@ -176,8 +176,8 @@ exports.deleteAssignment = async (req, res, next) => {
     }
     };
 
-    //성적 조회 함수
-    exports.viewGrade = async (req, res, next) => {
+//성적 조회 함수
+exports.viewGrade = async (req, res, next) => {
     if (req.session.loginId) {
         let total_grade = 0;
         //해당 유저가 수강한 모든 수강 목록
@@ -190,12 +190,12 @@ exports.deleteAssignment = async (req, res, next) => {
 
         //현재까지의 총 수강 학점 계산
         for (let enrollment of enrollments) {
-        //2023학년 2학기 신청 과목은 제외
-        if (enrollment.year === 2023 && enrollment.semester === 2) {
-            continue;
-        } else {
-            total_grade += enrollment.subject.subject_grade;
-        }
+            //2023학년 2학기 신청 과목은 제외
+            if (enrollment.year === 2023 && enrollment.semester === 2) {
+                continue;
+            } else {
+                total_grade += enrollment.subject.subject_grade;
+            }
         }
         //학기 당 평균 평점(총 평점, 전공 평점, 전공 외 평점) 계산
         let averageGrade = calculateGrade(enrollments);
